@@ -77,7 +77,7 @@ import java.util.*;
 public class ForgeWorld implements LocalWorld
 {
 	public int clientDimensionId = 0;
-	
+
     private OTGChunkGenerator generator;
     public World world;
     private ConfigProvider settings;
@@ -121,45 +121,45 @@ public class ForgeWorld implements LocalWorld
     private WorldGenTaiga1 taigaTree1;
     private WorldGenTaiga2 taigaTree2;
 
-    public static HashMap<Integer, ResourceLocation> vanillaResouceLocations = new HashMap<Integer, ResourceLocation>();   
-    public static Biome[] vanillaBiomes = new Biome[MAX_BIOMES_COUNT];    
+    public static HashMap<Integer, ResourceLocation> vanillaResouceLocations = new HashMap<Integer, ResourceLocation>();
+    public static Biome[] vanillaBiomes = new Biome[MAX_BIOMES_COUNT];
     public static boolean vanillaBiomesCached = false;
-    
+
     public boolean isMainWorld = false;
-    
+
     public ForgeWorld() { }
-    
+
     public ForgeWorld(String _name, boolean isMainWorld)
-    {    	
+    {
 		OTG.log(LogMarker.INFO, "Creating world \"" + _name + "\"");
-    	
+
         this.name = _name;
         this.isMainWorld = isMainWorld;
 
         cacheVanillaBiomes();
-                
+
         // If this is the main world (which should be the first world to be generated)
         // cache the vanilla biomes and clear the biome registry and dictionary
-        if(isMainWorld) 
-        {	         	
-        	// Default settings are not restored on world unload / server quit because this was causing problems 
+        if(isMainWorld)
+        {
+        	// Default settings are not restored on world unload / server quit because this was causing problems
         	// (unloading dimensions while their worlds were still ticking etc)
         	// Unload all world and biomes here instead.
-        	
-        	OTGDimensionManager.UnloadAllCustomDimensionData();       	
-        	((ForgeEngine)OTG.getEngine()).worldLoader.unloadAllWorlds();       	
+
+        	OTGDimensionManager.UnloadAllCustomDimensionData();
+        	((ForgeEngine)OTG.getEngine()).worldLoader.unloadAllWorlds();
 	        // Clear the BiomeDictionary (it will be refilled when biomes are loaded in createBiomeFor)
-	    	((ForgeEngine)OTG.getEngine()).worldLoader.clearBiomeDictionary(null);	    	
-	        ((ForgeEngine)OTG.getEngine()).worldLoader.unRegisterDefaultBiomes();	        
+	    	((ForgeEngine)OTG.getEngine()).worldLoader.clearBiomeDictionary(null);
+	        ((ForgeEngine)OTG.getEngine()).worldLoader.unRegisterDefaultBiomes();
 	        ((ForgeEngine)OTG.getEngine()).worldLoader.unRegisterTCBiomes();
 
 	    	OTGDimensionManager.RemoveTCDims();
         }
     }
-          
+
     @Override
     public LocalBiome createBiomeFor(BiomeConfig biomeConfig, BiomeIds biomeIds, ConfigProvider configProvider)
-    {  	    	
+    {
     	// When creating custom dimensions don't override biomes that already exist in other worlds
         if(!isMainWorld)
         {
@@ -169,50 +169,50 @@ public class ForgeWorld implements LocalWorld
         	{
         		biomeConfig = existingBiome.getBiomeConfig();
         	}
-        }        
-    	
-		// Make an exception for the hell and sky biomes. 
-		// The hell and end chunk providers refer specifically to 
+        }
+
+		// Make an exception for the hell and sky biomes.
+		// The hell and end chunk providers refer specifically to
 		// Biomes.HELL and Biomes.SKY and query the biome registry
 		// for them. Other biomes are not referred to in this way.
     	if(biomeConfig.getName().equals("Hell"))
     	{
     		ForgeBiome forgeBiome = new ForgeBiome(Biomes.HELL, biomeConfig, new BiomeIds(8,8));
-    		this.biomeNames.put("Hell", forgeBiome);    		
+    		this.biomeNames.put("Hell", forgeBiome);
     		return forgeBiome;
 		}
     	if(biomeConfig.getName().equals("Sky"))
     	{
     		ForgeBiome forgeBiome = new ForgeBiome(Biomes.SKY, biomeConfig, new BiomeIds(9,9));
-    		this.biomeNames.put("Sky", forgeBiome);    		
+    		this.biomeNames.put("Sky", forgeBiome);
     		return forgeBiome;
 		}
     	if(biomeConfig.getName().equals("The Void"))
     	{
     		ForgeBiome forgeBiome = new ForgeBiome(Biomes.VOID, biomeConfig, new BiomeIds(127,127));
-    		this.biomeNames.put("The Void", forgeBiome);            
+    		this.biomeNames.put("The Void", forgeBiome);
     		return forgeBiome;
 		}
-    	
+
     	ForgeBiome forgeBiome = (ForgeBiome)OTG.getBiomeAllWorlds(biomeConfig.getName());
 
-    	Biome biome = OTGBiome.getOrCreateBiome(biomeConfig, biomeIds, isMainWorld);    
-    	
-    	if(forgeBiome == null)
+    	Biome biome = OTGBiome.getOrCreateBiome(biomeConfig, biomeIds, isMainWorld);
+
+    	if(forgeBiome == null) // Could be registered already by another world.
     	{
 	    	// Always try to register biomes and create Biome Configs. Biomes with id's > 255 are registered
 	    	// only for biome -> id queries, any (saved)id -> biome query will return the ReplaceToBiomeName biome.
-	        
-	        Biome existingBiome = Biome.getBiome(biomeIds.getSavedId());              
+
+	        Biome existingBiome = Biome.getBiome(biomeIds.getSavedId());
 	    	//Biome biome = BiomeGenCustom.getOrCreateBiome(biomeConfig, biomeIds);
 	        int requestedGenerationId = biomeIds.getGenerationId();
-	        int allocatedGenerationId = Biome.REGISTRY.underlyingIntegerMap.getId(biome);       
-	        
+	        int allocatedGenerationId = Biome.REGISTRY.underlyingIntegerMap.getId(biome);
+
 	        if (requestedGenerationId != allocatedGenerationId)
 	        {
 	        	// When creating the ForgeBiome later in this method use the actual id's
 	        	biomeIds = new BiomeIds(requestedGenerationId, allocatedGenerationId);
-	        	
+
 	            if (requestedGenerationId < 256 && allocatedGenerationId >= 256)
 	            {
 	                throw new RuntimeException("Could not allocate the requested id " + requestedGenerationId + " for biome " + biomeConfig.getName() + ". All available id's under 256 have been allocated\n"
@@ -222,26 +222,26 @@ public class ForgeWorld implements LocalWorld
 	        } else {
 	            OTG.log(LogMarker.TRACE, "Registered {} with id {}", biomeConfig.getName(), allocatedGenerationId);
 	        }
-	
+
 	        forgeBiome = new ForgeBiome(biome, biomeConfig, biomeIds);
-	        
+
 	        registerBiomeInBiomeDictionary(biome, existingBiome, biomeConfig, configProvider);
     	}
-        
+
         this.biomeNames.put(biome.getBiomeName(), forgeBiome);
-        
+
         return forgeBiome;
     }
-    
+
     private void registerBiomeInBiomeDictionary(Biome biome, Biome sourceBiome, BiomeConfig biomeConfig, ConfigProvider configProvider)
-    {        	
-        // Add inherited BiomeDictId's for replaceToBiomeName. Biome dict id's are stored twice, 
+    {
+        // Add inherited BiomeDictId's for replaceToBiomeName. Biome dict id's are stored twice,
         // there is 1 list of biomedict types per biome id and one list of biomes (not id's) per biome dict type.
-    	
+
         ArrayList<Type> types = new ArrayList<Type>();
         if(biomeConfig.replaceToBiomeName != null && biomeConfig.replaceToBiomeName.length() > 0)
         {
-        	// Inherit from an existing biome        	
+        	// Inherit from an existing biome
     		LocalBiome replaceToBiome = configProvider.getBiomeByIdOrNull(Biome.getIdForBiome(sourceBiome != null ? sourceBiome : biome));
             // For forge make sure all dimensions are queried since the biome we're looking for may be owned by another dimension
         	if(replaceToBiome == null)
@@ -257,21 +257,21 @@ public class ForgeWorld implements LocalWorld
         	// If not replaceToBiomeName then attach BiomeDictId
 	        if(biomeConfig.biomeDictId != null && biomeConfig.biomeDictId.trim().length() > 0)
 	        {
-	        	types = getTypesList(biomeConfig.biomeDictId.split(","));			  
-	        }	       	       
+	        	types = getTypesList(biomeConfig.biomeDictId.split(","));
+	        }
         }
-        
+
     	Type[] typeArr = new Type[types.size()];
 		types.toArray(typeArr);
-		
+
 		if(!ForgeRegistries.BIOMES.containsValue(biome))
 		{
 			OTG.log(LogMarker.WARN, "Biome " + biome.getBiomeName() + " could not be found in the registry. This could be because it is a virtual biome (id > 255) but does not have a ReplaceToBiomeName configured.");
 		}
-		
+
     	BiomeDictionary.addTypes(biome, typeArr);
     }
-    
+
     private ArrayList<Type> getTypesList(String[] typearr)
     {
     	ArrayList<Type> types = new ArrayList<Type>();
@@ -297,7 +297,7 @@ public class ForgeWorld implements LocalWorld
 		}
 		return types;
     }
-    
+
     @Override
     public int getMaxBiomesCount()
     {
@@ -316,7 +316,7 @@ public class ForgeWorld implements LocalWorld
     	throw new RuntimeException("Whatever it is you're trying to do, we didn't write any code for it (sorry). Please contact Team OTG about this crash.");
         //return nextBiomeId++;
     }
-    
+
     @Override
     public ArrayList<LocalBiome> getAllBiomes()
     {
@@ -327,7 +327,7 @@ public class ForgeWorld implements LocalWorld
 		}
     	return biomes;
     }
-    
+
     @Override
     public ForgeBiome getBiomeById(int id) throws BiomeNotFoundException
     {
@@ -339,13 +339,13 @@ public class ForgeWorld implements LocalWorld
     {
         return (ForgeBiome) this.settings.getBiomeByIdOrNull(id);
     }
-    
+
     @Override
     public LocalBiome getBiomeByNameOrNull(String name)
-    {     
+    {
         return this.biomeNames.get(name);
     }
-    
+
     @Override
     public Collection<BiomeLoadInstruction> getDefaultBiomes()
     {
@@ -393,10 +393,10 @@ public class ForgeWorld implements LocalWorld
     {
         return this.fossilGen.generate(this.world, rand, new BlockPos(chunkCoord.getBlockX(), 0, chunkCoord.getBlockZ()));
     }
-    
+
     @Override
     public boolean placeTree(TreeType type, Random rand, int x, int y, int z)
-    {    	
+    {
         BlockPos blockPos = new BlockPos(x, y, z);
         switch (type)
         {
@@ -480,9 +480,9 @@ public class ForgeWorld implements LocalWorld
             return;
         }
 
-    	replaceBlocks(this.getChunk(chunkCoord.getBlockX() + 16, chunkCoord.getBlockZ() + 16, false), 8, 8, 16);
-    	replaceBlocks(this.getChunk(chunkCoord.getBlockX(), chunkCoord.getBlockZ() + 16, false), 0, 8, 16);
-    	replaceBlocks(this.getChunk(chunkCoord.getBlockX() + 16, chunkCoord.getBlockZ(), false), 8, 0, 16);
+    	replaceBlocks(this.getChunk(chunkCoord.getBlockX() + 16, chunkCoord.getBlockZ() + 16, false), 0, 0, 16);
+    	replaceBlocks(this.getChunk(chunkCoord.getBlockX(), chunkCoord.getBlockZ() + 16, false), 0, 0, 16);
+    	replaceBlocks(this.getChunk(chunkCoord.getBlockX() + 16, chunkCoord.getBlockZ(), false), 0, 0, 16);
     	replaceBlocks(this.getChunk(chunkCoord.getBlockX(), chunkCoord.getBlockZ(), false), 0, 0, 16);
     }
 
@@ -498,7 +498,9 @@ public class ForgeWorld implements LocalWorld
         for (ExtendedBlockStorage section : sectionsArray)
         {
             if (section == null)
+            {
                 continue;
+            }
 
             for (int sectionX = startXInChunk; sectionX < endXInChunk; sectionX++)
             {
@@ -513,15 +515,21 @@ public class ForgeWorld implements LocalWorld
                             IBlockState block = section.getData().get(sectionX, sectionY, sectionZ);
                             int blockId = Block.getIdFromBlock(block.getBlock());
                             if (replaceArray[blockId] == null)
+                            {
                                 continue;
+                            }
 
                             int y = section.getYLocation() + sectionY;
                             if (y >= replaceArray[blockId].length)
+                            {
                                 break;
+                            }
 
                             ForgeMaterialData replaceTo = (ForgeMaterialData) replaceArray[blockId][y];
                             if (replaceTo == null || replaceTo.getBlockId() == blockId)
+                            {
                                 continue;
+                            }
 
                             section.set(sectionX, sectionY, sectionZ, replaceTo.internalBlock());
                         }
@@ -538,41 +546,53 @@ public class ForgeWorld implements LocalWorld
                 chunkCoord.getBlockXCenter(), chunkCoord.getBlockZCenter(), ChunkCoordinate.CHUNK_X_SIZE,
                 ChunkCoordinate.CHUNK_Z_SIZE, random);
     }
-    
+
+    boolean allowSpawningOutsideBounds = false;
+    @Override
+	public void setAllowSpawningOutsideBounds(boolean allowSpawningOutsideBounds)
+	{
+		this.allowSpawningOutsideBounds = allowSpawningOutsideBounds;
+	}
+
+    public boolean getAllowSpawningOutsideBounds()
+	{
+		return this.allowSpawningOutsideBounds;
+	}
+
     // If allowOutsidePopulatinArea then normal OTG rules are used:
     // returns any chunk that is inside the area being populated.
     // returns null for chunks outside the populated area if populationBoundsCheck=true
     // returns any loaded chunk or null if populationBoundsCheck=false and chunk is outside the populated area
- 
+
     // If !allowOutsidePopulatinArea then OTG+ rules are used:
     // returns any chunk that is inside the area being populated. TODO: Or any chunk that is cached, which technically should only be chunks that are in the populated area. Cached chunks could also be from the previously populated area, fix that?
-    // returns any loaded chunk outside the populated area 
+    // returns any loaded chunk outside the populated area
     // throws an exception if any unloaded chunk outside the populated area is requested or if a loaded chunk could not be queried.
-    
+
     public Map<ChunkCoordinate,Chunk> chunkCacheOTGPlus = new HashMap<ChunkCoordinate, Chunk>();
     public Chunk lastUsedChunk;
     public int lastUsedChunkX;
     public int lastUsedChunkZ;
     public Chunk getChunk(int x, int z, boolean isOTGPlus)
-    {    	
+    {
         int chunkX = x >> 4;
         int chunkZ = z >> 4;
-         
+
         if(lastUsedChunk != null && lastUsedChunkX == chunkX && lastUsedChunkZ == chunkZ)
         {
         	return lastUsedChunk;
         }
-        
+
         Chunk chunk = chunkCacheOTGPlus.get(ChunkCoordinate.fromChunkCoords(chunkX, chunkZ));
         if(chunk != null)
-        {      
+        {
         	lastUsedChunk = chunk;
         	lastUsedChunkX = chunkX;
         	lastUsedChunkZ = chunkZ;
         	return chunk;
         }
-        
-        boolean outsidePopulatingArea = 
+
+        boolean outsidePopulatingArea =
 			(
 				chunkX != getObjectSpawner().populatingX &&
 				chunkX != getObjectSpawner().populatingX + 1
@@ -580,10 +600,10 @@ public class ForgeWorld implements LocalWorld
 			||
 			(
 				chunkZ != getObjectSpawner().populatingZ &&
-				chunkZ != getObjectSpawner().populatingZ + 1					
+				chunkZ != getObjectSpawner().populatingZ + 1
 			)
 		;
-        
+
 		if(outsidePopulatingArea && !isOTGPlus)
 		{
 			if(this.getConfigs().getWorldConfig().populationBoundsCheck)
@@ -596,55 +616,78 @@ public class ForgeWorld implements LocalWorld
 			{
 				lastUsedChunk = loadedChunk;
 	        	lastUsedChunkX = chunkX;
-	        	lastUsedChunkZ = chunkZ;				
-				chunkCacheOTGPlus.put(ChunkCoordinate.fromChunkCoords(chunkX, chunkZ), loadedChunk);	
+	        	lastUsedChunkZ = chunkZ;
+				chunkCacheOTGPlus.put(ChunkCoordinate.fromChunkCoords(chunkX, chunkZ), loadedChunk);
 			}
-			return this.getLoadedChunkWithoutMarkingActive(chunkX, chunkZ);
+
+			if(!allowSpawningOutsideBounds || loadedChunk != null)
+			{
+				return loadedChunk;
+			}
+
+			// For BO3AtSpawn we may be forced to populate a chunk outside of the chunks being populated.
+			if(allowSpawningOutsideBounds)
+			{
+		        Chunk spawnedChunk = world.getChunkFromChunkCoords(chunkX, chunkZ);
+		        if(spawnedChunk == null)
+		        {
+		        	OTG.log(LogMarker.INFO, "Chunk request failed X" + chunkX + " Z" + chunkZ);
+		        	throw new RuntimeException();
+		        }
+
+		        chunkCacheOTGPlus.put(ChunkCoordinate.fromChunkCoords(chunkX, chunkZ), spawnedChunk);
+				lastUsedChunk = spawnedChunk;
+		    	lastUsedChunkX = chunkX;
+		    	lastUsedChunkZ = chunkZ;
+
+				return spawnedChunk;
+			}
 		}
-        
+
         boolean outsideBorder = false;
-    	if(!IsInsideWorldBorder(ChunkCoordinate.fromChunkCoords(chunkX, chunkZ), true))    		
-    	{   
+    	if(!IsInsideWorldBorder(ChunkCoordinate.fromChunkCoords(chunkX, chunkZ), true))
+    	{
     		// This can happen when net.minecraft.server.MinecraftServer.updateTimeLightAndEntities() is called
     		//OTG.log(LogMarker.INFO, "Requested chunk outside world border X" + chunkX + " Z" + chunkZ);
     		outsideBorder = true;
     	}
-        
+
     	// This never happens when we're spawning stuff on neighbouring BO3's inside the 2x2 population area
     	if(
 			!outsideBorder && outsidePopulatingArea
 		)
-    	{    		
-    		if(!((WorldServer)this.getWorld()).isBlockLoaded(new BlockPos(chunkX * 16, 1, chunkZ * 16)))
+    	{
+    		//if(!((WorldServer)this.getWorld()).isBlockLoaded(new BlockPos(chunkX * 16, 1, chunkZ * 16)))
+    		if(!((WorldServer)this.getWorld()).isChunkGeneratedAt(chunkX, chunkZ))
     		{
-    			// Happens when part of a BO3 or smoothing area is spawned and triggers height/material checks in unpopulated chunks.   			
+    			// Happens when part of a BO3 or smoothing area is spawned and triggers height/material checks in unpopulated chunks.
     			// Also happens when /otg tp requests a block in an unpopulated chunk.
     			return null;
     		} else {
     			// Chunk was provided by chunkprovider
-    		}    	
+    		}
     	}
-    	
-        Chunk spawnedChunk = world.getChunkFromChunkCoords(chunkX, chunkZ);    	
+
+        Chunk spawnedChunk = world.getChunkFromChunkCoords(chunkX, chunkZ);
         if(spawnedChunk == null)
         {
         	OTG.log(LogMarker.INFO, "Chunk request failed X" + chunkX + " Z" + chunkZ);
         	throw new RuntimeException();
-        }        
-        
+        }
+
         chunkCacheOTGPlus.put(ChunkCoordinate.fromChunkCoords(chunkX, chunkZ), spawnedChunk);
 		lastUsedChunk = spawnedChunk;
     	lastUsedChunkX = chunkX;
     	lastUsedChunkZ = chunkZ;
-		
+
 		return spawnedChunk;
-    }    
+    }
 
     public void ClearChunkCache()
     {
     	chunkCacheOTGPlus.clear();
     	lastUsedChunk = null;
-    	
+
     	/*
         // Cache only chunks in the 2x2 chunk area being populated
         Map<ChunkCoordinate,Chunk> chunkCache2 = new HashMap<ChunkCoordinate, Chunk>();
@@ -653,12 +696,12 @@ public class ForgeWorld implements LocalWorld
         {
         	if(
     			!(
-					a.getKey().getChunkX() == getObjectSpawner().populatingX || 
+					a.getKey().getChunkX() == getObjectSpawner().populatingX ||
 					a.getKey().getChunkX() == getObjectSpawner().populatingX + 1
 				)
-				|| 
+				||
 				!(
-					a.getKey().getChunkZ() == getObjectSpawner().populatingZ || 
+					a.getKey().getChunkZ() == getObjectSpawner().populatingZ ||
 					a.getKey().getChunkZ() == getObjectSpawner().populatingZ + 1
 				)
 			)
@@ -668,7 +711,7 @@ public class ForgeWorld implements LocalWorld
         }
         */
     }
-    
+
     // TODO: This is interesting, could use it more?
     public Chunk getLoadedChunkWithoutMarkingActive(int chunkX, int chunkZ)
     {
@@ -686,7 +729,7 @@ public class ForgeWorld implements LocalWorld
         	highestY += 1;
         } else {
         	highestY = -1;
-        }    		    		
+        }
 		return highestY;
     }
 
@@ -702,7 +745,7 @@ public class ForgeWorld implements LocalWorld
         }
 		return highestY;
     }
-    
+
     @Override
     public boolean isNullOrAir(int x, int y, int z, boolean isOTGPlus)
     {
@@ -710,40 +753,40 @@ public class ForgeWorld implements LocalWorld
     	{
     		return true;
     	}
-    	
+
         Chunk chunk = this.getChunk(x, z, isOTGPlus);
         if (chunk == null)
         {
         	return true;
         }
-        
-        return chunk.getBlockState(x & 0xF, y, z & 0xF).getMaterial().equals(Material.AIR);  
+
+        return chunk.getBlockState(x & 0xF, y, z & 0xF).getMaterial().equals(Material.AIR);
     }
-    
+
     @Override
     public BlockFunction[] getBlockColumn(int x, int z)
-    {   	   	
+    {
     	//OTG.log(LogMarker.INFO, "getBlockColumn at X" + x + " Z" + z);
     	return generator.getBlockColumnInUnloadedChunk(x,z);
-    }    
-   
+    }
+
     // TODO: This returns AIR for nothing and AIR, refactor?
     @Override
     public LocalMaterialData getMaterial(int x, int y, int z, boolean IsOTGPlus)
     {
         if (y >= OTG.WORLD_HEIGHT || y < OTG.WORLD_DEPTH)
         {
-        	return ForgeMaterialData.ofMinecraftBlock(Blocks.AIR);            	
+        	return ForgeMaterialData.ofMinecraftBlock(Blocks.AIR);
         	//throw new RuntimeException();
         }
 
         Chunk chunk = this.getChunk(x, z, IsOTGPlus);
-        
+
         if(chunk == null && !IsOTGPlus)
         {
         	return ForgeMaterialData.ofMinecraftBlock(Blocks.AIR);
         }
-        
+
         // Can happen when requesting a chunk outside the world border
         // or a chunk that has not yet been populated
         if (chunk == null)
@@ -751,16 +794,16 @@ public class ForgeWorld implements LocalWorld
         	return generator.getMaterialInUnloadedChunk(x,y,z);
         	//throw new RuntimeException();
 		}
-               
+
 		// Get internal coordinates for block in chunk
         z &= 0xF;
-        x &= 0xF;        
-        
+        x &= 0xF;
+
         ForgeMaterialData material = ForgeMaterialData.ofMinecraftBlockState(chunk.getBlockState(x, y, z));
-               
+
         return material;
     }
-    
+
     @Override
     public void setBlock(int x, int y, int z, LocalMaterialData material, NamedBinaryTag metaDataTag, boolean isOTGPlus)
     {
@@ -768,29 +811,29 @@ public class ForgeWorld implements LocalWorld
 	     * This method usually breaks on every Minecraft update. Always check
 	     * whether the names are still correct. Often, you'll also need to
 	     * rewrite parts of this method for newer block place logic.
-	     */ 		
-		    		
+	     */
+
         if (y < OTG.WORLD_DEPTH || y >= OTG.WORLD_HEIGHT)
         {
             return;
         }
 
-        DefaultMaterial defaultMaterial = material.toDefaultMaterial();
-        
+        //DefaultMaterial defaultMaterial = material.toDefaultMaterial();
+
         // TODO: Fix this
-        if(defaultMaterial.equals(DefaultMaterial.DIODE_BLOCK_ON))
+        //if(defaultMaterial.equals(DefaultMaterial.DIODE_BLOCK_ON))
         {
-        	material = ForgeMaterialData.ofDefaultMaterial(DefaultMaterial.DIODE_BLOCK_OFF, material.getBlockData());
+        	//material = ForgeMaterialData.ofDefaultMaterial(DefaultMaterial.DIODE_BLOCK_OFF, material.getBlockData());
         }
-        else if(defaultMaterial.equals(DefaultMaterial.REDSTONE_COMPARATOR_ON))
+        //else if(defaultMaterial.equals(DefaultMaterial.REDSTONE_COMPARATOR_ON))
         {
-        	material = ForgeMaterialData.ofDefaultMaterial(DefaultMaterial.REDSTONE_COMPARATOR_OFF, material.getBlockData());
+        	//material = ForgeMaterialData.ofDefaultMaterial(DefaultMaterial.REDSTONE_COMPARATOR_OFF, material.getBlockData());
         }
-        
+
         IBlockState newState = ((ForgeMaterialData) material).internalBlock();
-        
-        BlockPos pos = new BlockPos(x, y, z);              
-	
+
+        BlockPos pos = new BlockPos(x, y, z);
+
         // Get chunk from (faster) custom cache
         Chunk chunk = getChunk(x, z, isOTGPlus);
         if (chunk == null)
@@ -798,20 +841,20 @@ public class ForgeWorld implements LocalWorld
             // Chunk is unloaded
         	throw new RuntimeException("Whatever it is you're trying to do, we didn't write any code for it (sorry). Please contact Team OTG about this crash.");
         }
-        
+
         /*
         IBlockState oldState = this.world.getBlockState(pos);
         int oldLight = oldState.getLightValue(this.world, pos);
         int oldOpacity = oldState.getLightOpacity(this.world, pos);
         */
-               	    	        
-        IBlockState iblockstate = setBlockState(chunk, pos, newState);    	
-        
+
+        IBlockState iblockstate = setBlockState(chunk, pos, newState);
+
         if (iblockstate == null)
         {
         	return; // Happens when block to place is the same as block being placed? TODO: Is that the only time this happens?
         }
-        
+
         /*
         // Relight and update players
         if (newState.getLightOpacity(this.world, pos) != oldOpacity || newState.getLightValue(this.world, pos) != oldLight)
@@ -819,17 +862,17 @@ public class ForgeWorld implements LocalWorld
             this.world.profiler.startSection("checkLight");
             this.world.checkLight(pos);
             this.world.profiler.endSection();
-        } 
-        */      
-        
+        }
+        */
+
 	    if (metaDataTag != null)
-	    {            
+	    {
 	    	attachMetadata(x, y, z, metaDataTag, isOTGPlus);
 	    }
-	    
-	    this.world.markAndNotifyBlock(pos, chunk, iblockstate, newState, 2 | 16);	   
-    } 
-    
+
+	    this.world.markAndNotifyBlock(pos, chunk, iblockstate, newState, 2 | 16);
+    }
+
     public IBlockState setBlockState(Chunk _this, BlockPos pos, IBlockState state)
     {
         int i = pos.getX() & 15;
@@ -942,8 +985,8 @@ public class ForgeWorld implements LocalWorld
                 return iblockstate;
             }
         }
-    }  
-        
+    }
+
     // Not used by OTG+
     @Override
     public int getHighestBlockYAt(int x, int z)
@@ -977,14 +1020,14 @@ public class ForgeWorld implements LocalWorld
     // Only used by OTG+
     @Override
     public int getHighestBlockYAt(int x, int z, boolean findSolid, boolean findLiquid, boolean ignoreLiquid, boolean ignoreSnow)
-    {   	
+    {
         Chunk chunk = this.getChunk(x, z, true);
         if (chunk == null)
         {
-        	int y = generator.getHighestBlockYInUnloadedChunk(x,z, findSolid, findLiquid, ignoreLiquid, ignoreSnow);        	        	
+        	int y = generator.getHighestBlockYInUnloadedChunk(x,z, findSolid, findLiquid, ignoreLiquid, ignoreSnow);
         	return y;
         }
-       
+
 		// Get internal coordinates for block in chunk
         z &= 0xF;
         x &= 0xF;
@@ -999,21 +1042,21 @@ public class ForgeWorld implements LocalWorld
         	if(!(isLiquid && ignoreLiquid))
         	{
             	if((findSolid && isSolid) || (findLiquid && isLiquid))
-        		{            		
+        		{
             		return i;
         		}
             	if((findSolid && isLiquid) || (findLiquid && isSolid))
-            	{          		            		
+            	{
             		return -1;
             	}
         	}
         }
 
     	// Can happen if this is a chunk filled with air
-    	
+
         return -1;
-    }    
-    
+    }
+
     @Override
     public void startPopulation(ChunkCoordinate chunkCoord)
     {
@@ -1056,7 +1099,7 @@ public class ForgeWorld implements LocalWorld
     {
         return this.getWorld().getWorldInfo().getWorldName();
     }
-    
+
     @Override
     public long getSeed()
     {
@@ -1087,7 +1130,7 @@ public class ForgeWorld implements LocalWorld
         this.world = world;
         this.seed = world.getSeed();
     }
-    
+
     @SideOnly(Side.CLIENT)
     public void provideClientConfigs(ClientConfigProvider config)
     {
@@ -1100,7 +1143,7 @@ public class ForgeWorld implements LocalWorld
         this.world = world;
         this.seed = world.getSeed();
     }
-    
+
     /**
      * Call this method when the configs are loaded.
      * @param configs The configs.
@@ -1118,9 +1161,9 @@ public class ForgeWorld implements LocalWorld
     public void provideWorldInstance(WorldServer world)
     {
         ServerConfigProvider configs = (ServerConfigProvider) this.settings;
-        
+
         // Custom dimension settings
-        // world is unique for this dimension however its worldinfo 
+        // world is unique for this dimension however its worldinfo
         // was derived from the main world and has the same seed
         // configure the correct seed for this dimension.
 		// If the world is a TCWorldServerMulti then it was created
@@ -1140,32 +1183,32 @@ public class ForgeWorld implements LocalWorld
             		OTG.log(LogMarker.ERROR, "WorldConfig for world \"" + world.getWorldInfo().getWorldName() + "\" has value \"" + configs.getWorldConfig().worldSeed + "\" for worldSeed which cannot be parsed as a number. Using a random seed instead.");
                 }
             }
-            
+
     		GameType gameType = world.getWorldInfo().getGameType();
     		boolean enableMapFeatures = world.getWorldInfo().isMapFeaturesEnabled(); // Whether the map features (e.g. strongholds) generation is enabled or disabled.
     		boolean hardcoreMode = world.getWorldInfo().isHardcoreModeEnabled();
     		WorldType worldTypeIn = world.getWorldType();
-    		
+
     		String generatorOptions = world.getWorldInfo().getGeneratorOptions();
     		boolean enableCommands = world.getWorldInfo().areCommandsAllowed();
-    	
+
     		WorldSettings settings = new WorldSettings(seedIn, gameType, enableMapFeatures, hardcoreMode, worldTypeIn);
     		settings.setGeneratorOptions(generatorOptions);
     		if(enableCommands) { settings.enableCommands(); }
-    		
-    		WorldInfo worldInfo = new WorldInfo(settings, world.getWorldInfo().getWorldName());        	
-        	
+
+    		WorldInfo worldInfo = new WorldInfo(settings, world.getWorldInfo().getWorldName());
+
     		try {
     			Field[] fields = World.class.getDeclaredFields();
     			for(Field field : fields)
     			{
-    				Class<?> fieldClass = field.getType();  				
+    				Class<?> fieldClass = field.getType();
     				if(fieldClass.equals(net.minecraft.world.storage.WorldInfo.class))
     				{
-    			        field.setAccessible(true);			        
+    			        field.setAccessible(true);
     			        field.set(world, worldInfo);
     			        break;
-    				}    				
+    				}
     			}
     		} catch (SecurityException e) {
     			e.printStackTrace();
@@ -1176,16 +1219,16 @@ public class ForgeWorld implements LocalWorld
     		}
         }
         //
-        
+
         this.world = world;
         this.seed = world.getWorldInfo().getSeed();
         world.setSeaLevel(configs.getWorldConfig().waterLevelMax);
-        
+
         this.dataFixer = DataFixesManager.createFixer();
 
         this.dungeonGen = new WorldGenDungeons();
         this.fossilGen = new WorldGenFossils();
-        this.strongholdGen = new OTGStrongholdGen(configs);
+        this.strongholdGen = new OTGStrongholdGen(configs, world);
 
         this.villageGen = new OTGVillageGen(configs);
         this.mineshaftGen = new OTGMineshaftGen();
@@ -1219,7 +1262,7 @@ public class ForgeWorld implements LocalWorld
 
         this.WorldSession = new ForgeWorldSession(this);
         this.generator = new OTGChunkGenerator(this);
-        
+
         this.structureCache = new CustomObjectStructureCache(this);
     }
 
@@ -1241,14 +1284,14 @@ public class ForgeWorld implements LocalWorld
 
     @Override
     public LocalBiome getBiome(int x, int z)
-    {    	   	
+    {
         if (this.settings.getWorldConfig().populateUsingSavedBiomes)
         {
             return getSavedBiome(x, z);
         } else
         {
             return getCalculatedBiome(x, z);
-        }            
+        }
     }
 
     @Override
@@ -1265,7 +1308,7 @@ public class ForgeWorld implements LocalWorld
     	}
     	//ForgeBiome forgeBiome = getBiomeById(biomeId);
     	ForgeBiome forgeBiome = (ForgeBiome) OTG.getBiomeAllWorlds(biomeId);
-    	
+
         return forgeBiome;
     }
 
@@ -1278,11 +1321,11 @@ public class ForgeWorld implements LocalWorld
         nmsTag.setInteger("y", y);
         nmsTag.setInteger("z", z);
         // Update to current Minecraft format (maybe we want to do this at
-        // server startup instead, and then save the result?)       
+        // server startup instead, and then save the result?)
         // TODO: Use datawalker instead
         //nmsTag = this.dataFixer.process(FixTypes.BLOCK_ENTITY, nmsTag, -1);
         nmsTag = this.dataFixer.process(FixTypes.BLOCK_ENTITY, nmsTag);
-        
+
         // Add that data to the current tile entity in the world
         TileEntity tileEntity = this.world.getTileEntity(new BlockPos(x, y, z));
         if (tileEntity != null)
@@ -1321,7 +1364,7 @@ public class ForgeWorld implements LocalWorld
     {
         return this.generator.spawner;
     }
-    
+
     @Override
     public BiomeGenerator getBiomeGenerator()
     {
@@ -1340,11 +1383,11 @@ public class ForgeWorld implements LocalWorld
         }
         return new MojangStructurePart(name, mojangStructurePart);
     }
-    
+
     private void cacheVanillaBiomes()
     {
         if(!vanillaBiomesCached)
-        {        	
+        {
 	        // Cache original vanilla biomes, they will be replaced
         	// in the biome registry with TC biomes so we will keep
         	// a cache of them to use as default values for new worlds
@@ -1354,8 +1397,8 @@ public class ForgeWorld implements LocalWorld
 	            int biomeId = defaultBiome.Id;
 	            Biome oldBiome = Biome.getBiome(biomeId);
 	            vanillaBiomes[biomeId] = oldBiome;
-	            
-	            // Cache resource locations for default/vanilla biomes so we can use these 
+
+	            // Cache resource locations for default/vanilla biomes so we can use these
 	            // to replace the biomes in the biome registry later.
 	    		for(ResourceLocation ob : Biome.REGISTRY.registryObjects.keySet())
 	    		{
@@ -1364,13 +1407,13 @@ public class ForgeWorld implements LocalWorld
 	    			{
 	    				vanillaResouceLocations.put(vanillaBiomeId, ob);
 	    				break;
-	    			}	    			
+	    			}
 	    		}
 	        }
 	        vanillaBiomesCached = true;
         }
     }
-     
+
     /**
      * Used by mob inheritance code. Used to inherit default mob spawning settings (including those added by other mods)
      * @param biomeConfigStub
@@ -1390,49 +1433,44 @@ public class ForgeWorld implements LocalWorld
         }
     	if(biome != null)
     	{
-			// Merge the vanilla biome's mob spawning lists with the mob spawning lists from the BiomeConfig. 
+			// Merge the vanilla biome's mob spawning lists with the mob spawning lists from the BiomeConfig.
     		// Mob spawning settings for the same creature will not be inherited (so BiomeConfigs can override vanilla mob spawning settings).
 			// We also inherit any mobs that have been added to vanilla biomes' mob spawning lists by other mods.
 			biomeConfigStub.spawnMonstersMerged = biomeConfigStub.mergeMobs(biomeConfigStub.spawnMonstersMerged, MobSpawnGroupHelper.getListFromMinecraftBiome(biome, EntityCategory.MONSTER));
 			biomeConfigStub.spawnCreaturesMerged = biomeConfigStub.mergeMobs(biomeConfigStub.spawnCreaturesMerged, MobSpawnGroupHelper.getListFromMinecraftBiome(biome, EntityCategory.CREATURE));
 			biomeConfigStub.spawnAmbientCreaturesMerged = biomeConfigStub.mergeMobs(biomeConfigStub.spawnAmbientCreaturesMerged, MobSpawnGroupHelper.getListFromMinecraftBiome(biome, EntityCategory.AMBIENT_CREATURE));
-			biomeConfigStub.spawnWaterCreaturesMerged = biomeConfigStub.mergeMobs(biomeConfigStub.spawnWaterCreaturesMerged, MobSpawnGroupHelper.getListFromMinecraftBiome(biome, EntityCategory.WATER_CREATURE));						
+			biomeConfigStub.spawnWaterCreaturesMerged = biomeConfigStub.mergeMobs(biomeConfigStub.spawnWaterCreaturesMerged, MobSpawnGroupHelper.getListFromMinecraftBiome(biome, EntityCategory.WATER_CREATURE));
     	}
 	}
-	
+
 	public void unRegisterBiomes()
-	{		
+	{
 		// Unregister only the biomes registered by this world
 		for(LocalBiome localBiome : this.biomeNames.values())
-		{				
-			// Make an exception for the hell and sky biomes. 
-			// The hell and end chunk providers refer specifically to 
+		{
+			// Make an exception for the hell and sky biomes.
+			// The hell and end chunk providers refer specifically to
 			// Biomes.HELL and Biomes.SKY and query the biome registry
 			// for them. Other biomes are not referred to in this way.
-			if(localBiome.getName().equals("The Void") || localBiome.getName().equals("The End") || localBiome.getName().equals("Hell") || localBiome.getName().equals("Sky")) { continue; }			
-			
+			// TODO: Only "Hell" ever seems to occur? Find out what's going on with the other biomes?
+			if(localBiome.getName().equals("The Void") || localBiome.getName().equals("The End") || localBiome.getName().equals("Hell") || localBiome.getName().equals("Sky"))
+			{
+				continue;
+			}
+
 			if(((ForgeEngine)OTG.getEngine()).worldLoader.isConfigUnique(localBiome.getBiomeConfig().getName()))
-			{			
-		        //int generationId = localBiome.getIds().getGenerationId();
-		        
-		        // 0-39 and 127-167 are vanilla biomes   
-		        //if((generationId >= 0 && generationId <= 39) || (generationId >= 127 && generationId <= 167))
-		        {
-		        	// Don't unregister vanilla biomes (there will always be a dimension that uses them) 
-		        	//continue;
-		        }
-		        
-		        String biomeNameForRegistry = StringHelper.toComputerFriendlyName(localBiome.getName());                      
-		        String resourceDomain = PluginStandardValues.PLUGIN_NAME.toLowerCase();		        
+			{
+		        String biomeNameForRegistry = StringHelper.toComputerFriendlyName(localBiome.getName());
+		        String resourceDomain = PluginStandardValues.PLUGIN_NAME.toLowerCase();
 		        ResourceLocation registryKey = new ResourceLocation(resourceDomain, biomeNameForRegistry);
-		        
+
 		        ((ForgeEngine)OTG.getEngine()).unRegisterForgeBiome(registryKey);
 			}
 		}
-		
+
 		((ForgeEngine)OTG.getEngine()).worldLoader.clearBiomeDictionary(this);
 	}
-	
+
     @Override
     public void SpawnEntity(EntityFunction entityData)
     {
@@ -1440,16 +1478,16 @@ public class ForgeWorld implements LocalWorld
     	{
     		OTG.log(LogMarker.DEBUG, "Attempting to spawn BO3 Entity() " + entityData.groupSize + " x " + entityData.mobName + " at " + entityData.x + " " + entityData.y + " " + entityData.z);
     	}
-    	
+
     	Random rand = new Random();
-    	
+
 		String mobTypeName = entityData.mobName;
 		int groupSize = entityData.groupSize;
 		String nameTag = entityData.nameTagOrNBTFileName;
 		ResourceLocation entityResourceLocation = null;
-		
+
         Class<?> entityClass = null;
-        
+
         for(ResourceLocation entry : EntityList.getEntityNameList())
         {
         	if(entry.getResourcePath().toLowerCase().trim().replace("entity", "").replace("_", "").equals(mobTypeName.toLowerCase().replace("entity", "").replace("_", "")))
@@ -1459,29 +1497,29 @@ public class ForgeWorld implements LocalWorld
         		break;
         	}
         }
-        	                                
+
         if(entityClass == null)
-        {            
+        {
         	OTG.log(LogMarker.WARN, "Could not find entity: " + mobTypeName);
         	return;
         }
 
-        Entity entityliving = null;        		
-        
+        Entity entityliving = null;
+
         if(entityData.nameTagOrNBTFileName != null && (entityData.nameTagOrNBTFileName.toLowerCase().trim().endsWith(".txt") || entityData.nameTagOrNBTFileName.toLowerCase().trim().endsWith(".nbt")))
-        {        	        
+        {
         	NBTTagCompound nbttagcompound = new NBTTagCompound();
-	        
+
 	        try
-	        {	        	
+	        {
 	            NBTBase nbtbase = JsonToNBT.getTagFromJson(entityData.getMetaData());
-	
+
 	            if (!(nbtbase instanceof NBTTagCompound))
 	            {
 		        	OTG.log(LogMarker.WARN, "Invalid NBT tag for mob in EntityFunction: " + entityData.getMetaData() + ". Skipping mob.");
 		        	return;
 	            }
-	
+
 	            nbttagcompound = (NBTTagCompound)nbtbase;
 	        }
 	        catch (NBTException nbtexception)
@@ -1489,8 +1527,8 @@ public class ForgeWorld implements LocalWorld
 	        	OTG.log(LogMarker.WARN, "Invalid NBT tag for mob in EntityFunction: " + entityData.getMetaData() + ". Skipping mob.");
 	        	return;
 	        }
-	        
-	        nbttagcompound.setString("id", entityResourceLocation.getResourcePath());        
+
+	        nbttagcompound.setString("id", entityResourceLocation.getResourcePath());
 	        entityliving = EntityList.createEntityFromNBT(nbttagcompound, world);
         } else {
 	        try
@@ -1498,12 +1536,12 @@ public class ForgeWorld implements LocalWorld
 	            entityliving = (Entity) entityClass.getConstructor(new Class[] {World.class}).newInstance(new Object[] { world });
 	        }
 	        catch (Exception exception)
-	        {	                                    		
+	        {
 	            exception.printStackTrace();
 	            return;
-	        }	    
+	        }
         }
-        
+
         if(entityliving != null)
         {
             EnumCreatureType creatureType = EnumCreatureType.MONSTER;
@@ -1521,67 +1559,67 @@ public class ForgeWorld implements LocalWorld
                         	creatureType = EnumCreatureType.CREATURE;
                 		}
             		}
-            	}                                    	
+            	}
             }
-            
+
             int j1 = entityData.x;
             int k1 = entityData.y;
             int l1 = entityData.z;
-            
+
             boolean isWaterMob = entityliving instanceof EntityGuardian;
-            
+
             Material material = world.getBlockState(new BlockPos(j1, k1, l1)).getMaterial();
             if (!world.isBlockNormalCube(new BlockPos(j1, k1, l1), false) && (((creatureType == EnumCreatureType.WATER_CREATURE || isWaterMob) && material == Material.WATER) || material == Material.AIR))
-            {					                            						                            	                                  			                                    	
+            {
 	            float f = (float)j1 + 0.5F;
 	            float f1 = (float)k1;
 	            float f2 = (float)l1 + 0.5F;
-	            
-	            entityliving.setLocationAndAngles((double)f, (double)f1, (double)f2, rand.nextFloat() * 360.0F, 0.0F);                               
-	           
+
+	            entityliving.setLocationAndAngles((double)f, (double)f1, (double)f2, rand.nextFloat() * 360.0F, 0.0F);
+
 	            if(entityliving instanceof EntityLiving)
-	            {	
+	            {
 	            	for(int r = 0; r < groupSize; r++)
-	            	{                                    		
+	            	{
 	            		if(r != 0)
 	            		{
 	            	        if(entityData.nameTagOrNBTFileName != null && (entityData.nameTagOrNBTFileName.toLowerCase().trim().endsWith(".txt") || entityData.nameTagOrNBTFileName.toLowerCase().trim().endsWith(".nbt")))
-	            	        {        	        
-	            	        	NBTTagCompound nbttagcompound = new NBTTagCompound();			                                   
-	            		        
+	            	        {
+	            	        	NBTTagCompound nbttagcompound = new NBTTagCompound();
+
 	            		        try
 	            		        {
 	            		            NBTBase nbtbase = JsonToNBT.getTagFromJson(entityData.getMetaData());
-	            		
+
 	            		            if (!(nbtbase instanceof NBTTagCompound))
 	            		            {
 		            		        	OTG.log(LogMarker.WARN, "Invalid NBT tag for mob in EntityFunction: " + entityData.getMetaData() + ". Skipping mob.");
 		            		        	return;
 	            		            }
-	            		
+
 	            		            nbttagcompound = (NBTTagCompound)nbtbase;
 	            		        }
 	            		        catch (NBTException nbtexception)
 	            		        {
 	            		        	OTG.log(LogMarker.WARN, "Invalid NBT tag for mob in EntityFunction: " + entityData.getMetaData() + ". Skipping mob.");
 	            		        	return;
-	            		        }		                                            
-	            		        
+	            		        }
+
 	            		        nbttagcompound.setString("id", entityResourceLocation.getResourcePath());
 	            		        entityliving = EntityList.createEntityFromNBT(nbttagcompound, world);
-	            	        } else {        
+	            	        } else {
 	            		        try
 	            		        {
 	            		            entityliving = (Entity) entityClass.getConstructor(new Class[] {World.class}).newInstance(new Object[] { world });
 	            		        }
 	            		        catch (Exception exception)
-	            		        {	                                    		
+	            		        {
 	            		            exception.printStackTrace();
 	            		            return;
-	            		        }	    
-	            	        }                                			                                                                                        
+	            		        }
+	            	        }
 	                        entityliving.setLocationAndAngles((double)f, (double)f1, (double)f2, rand.nextFloat() * 360.0F, 0.0F);
-	            		}	
+	            		}
 
 	            		if(entityData.nameTagOrNBTFileName != null && !entityData.nameTagOrNBTFileName.toLowerCase().trim().endsWith(".txt") && !entityData.nameTagOrNBTFileName.toLowerCase().trim().endsWith(".nbt"))
 	            		{
@@ -1590,21 +1628,21 @@ public class ForgeWorld implements LocalWorld
 	        					((EntityLiving) entityliving).setCustomNameTag(nameTag);
 	        				}
 	            		}
-	            		
+
     					((EntityLiving) entityliving).enablePersistence(); // <- makes sure mobs don't de-spawn
-	            		
+
     			    	if(OTG.getPluginConfig().SpawnLog)
     			    	{
     			    		OTG.log(LogMarker.DEBUG, "Spawned OK");
     			    	}
-    					
+
     					world.spawnEntity(entityliving);
 	            	}
-	            } else {                    					                                                						                                                                                    					                                                
+	            } else {
 	            	for(int r = 0; r < groupSize; r++)
-	            	{                                    		
+	            	{
 	            		if(r != 0)
-	            		{	            			
+	            		{
 	                        try
 	                        {
 	                        	entityliving = (Entity) entityClass.getConstructor(new Class[] {World.class}).newInstance(new Object[] { world });
@@ -1614,40 +1652,40 @@ public class ForgeWorld implements LocalWorld
 	                            exception.printStackTrace();
 	                            return;
 	                        }
-	                        entityliving.setLocationAndAngles((double)f, (double)f1, (double)f2, rand.nextFloat() * 360.0F, 0.0F);                      
-	            		}		
-	            		
+	                        entityliving.setLocationAndAngles((double)f, (double)f1, (double)f2, rand.nextFloat() * 360.0F, 0.0F);
+	            		}
+
     			    	if(OTG.getPluginConfig().SpawnLog)
     			    	{
     			    		OTG.log(LogMarker.DEBUG, "Spawned OK");
     			    	}
-	            		
+
 	            		world.spawnEntity(entityliving);
-	            	}						                                                	
+	            	}
 	            }
             }
 		}
     }
-    
+
     @Override
     public ChunkCoordinate getSpawnChunk()
     {
     	BlockPos spawnPos = getSpawnPoint();
     	return ChunkCoordinate.fromBlockCoords(spawnPos.getX(), spawnPos.getZ());
     }
-    
+
     public BlockPos getSpawnPoint()
-    {    	
-    	BlockPos spawnPos = world.provider.getSpawnPoint(); 
+    {
+    	BlockPos spawnPos = world.provider.getSpawnPoint();
     	return new BlockPos(spawnPos.getX(), spawnPos.getY(), spawnPos.getZ());
     }
-    
+
     @Override
 	public boolean IsInsidePregeneratedRegion(ChunkCoordinate chunk, boolean includeBorder)
 	{
 		return
 			!(
-				// TODO: Make this prettier. 
+				// TODO: Make this prettier.
 				// Cycle 0 for the pre-generator can mean 2 things:
 				// 1. Nothing has been pre-generated.
 				// 2. Oly the spawn chunk has been generated.
@@ -1660,32 +1698,32 @@ public class ForgeWorld implements LocalWorld
 			(
 				GetWorldSession().getPregenerationRadius() > 0 &&
 				chunk.getChunkX() >= GetWorldSession().getPreGeneratorCenterPoint().getChunkX() - GetWorldSession().getPregeneratedBorderLeft()
-				&& 
+				&&
 				chunk.getChunkX() <= GetWorldSession().getPreGeneratorCenterPoint().getChunkX() + GetWorldSession().getPregeneratedBorderRight() - (!includeBorder ? 1 : 0)
-				&& 
+				&&
 				chunk.getChunkZ() >= GetWorldSession().getPreGeneratorCenterPoint().getChunkZ() - GetWorldSession().getPregeneratedBorderTop()
-				&& 
+				&&
 				chunk.getChunkZ() <= GetWorldSession().getPreGeneratorCenterPoint().getChunkZ() + GetWorldSession().getPregeneratedBorderBottom() - (!includeBorder ? 1 : 0)
 			)
 		;
 	}
-    
+
     @Override
 	public boolean IsInsideWorldBorder(ChunkCoordinate chunk, boolean spawningResources)
-	{    	
+	{
 		return
 			GetWorldSession().getWorldBorderRadius() == 0 ||
 			(
 				chunk.getChunkX() >= GetWorldSession().getWorldBorderCenterPoint().getChunkX() - (GetWorldSession().getWorldBorderRadius() - 1)
-				&& 
+				&&
 				chunk.getChunkX() <= GetWorldSession().getWorldBorderCenterPoint().getChunkX() + (GetWorldSession().getWorldBorderRadius() - 1) - (spawningResources ? 1 : 0) // Resources are spawned at an offset of + half a chunk so stop 1 chunk short of the border
-				&& 
+				&&
 				chunk.getChunkZ() >= GetWorldSession().getWorldBorderCenterPoint().getChunkZ() - (GetWorldSession().getWorldBorderRadius() - 1)
-				&& 
+				&&
 				chunk.getChunkZ() <= GetWorldSession().getWorldBorderCenterPoint().getChunkZ() + (GetWorldSession().getWorldBorderRadius() - 1) - (spawningResources ? 1 : 0) // Resources are spawned at an offset of + half a chunk so stop 1 chunk short of the border
 			);
 	}
-	
+
 	ForgeWorldSession WorldSession;
     @Override
 	public WorldSession GetWorldSession()

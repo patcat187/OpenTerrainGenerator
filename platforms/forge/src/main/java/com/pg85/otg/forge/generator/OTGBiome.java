@@ -39,10 +39,10 @@ public class OTGBiome extends Biome
         this.generationId = id.getGenerationId();
 
         this.skyColor = config.skyColor;
-          
+
         // TODO: Is clearing really necessary here?
-        // Don't use the TC default values for mob spawning for Forge, 
-        // instead we'll copy mobs lists from the vanilla biomes so we 
+        // Don't use the TC default values for mob spawning for Forge,
+        // instead we'll copy mobs lists from the vanilla biomes so we
         // also get mobs added by other mods.
         // These mobs should be included in config's mob lists.
         this.spawnableMonsterList.clear();
@@ -56,7 +56,7 @@ public class OTGBiome extends Biome
         addMobs(this.spawnableWaterCreatureList, config.spawnWaterCreaturesMerged);//, improvedMobSpawning);
         addMobs(this.spawnableCaveCreatureList, config.spawnAmbientCreaturesMerged);//, improvedMobSpawning);
     }
-    
+
     /**
      * Extension of BiomeProperties so that we are able to access the protected
      * methods.
@@ -84,7 +84,7 @@ public class OTGBiome extends Biome
             if (biomeConfig.biomeTemperature <= WorldStandardValues.SNOW_AND_ICE_MAX_TEMP)
             {
                 this.setSnowEnabled();
-            }             
+            }
         }
     }
 
@@ -93,52 +93,37 @@ public class OTGBiome extends Biome
         // If this biome should replace a vanilla biome then use the vanilla biome's resourcelocation to register the biome.
         ResourceLocation registryKey = ForgeWorld.vanillaResouceLocations.get(biomeIds.getGenerationId());
     	if(registryKey == null)
-    	{   
+    	{
 	        int generationId = biomeIds.getGenerationId();
-    		
+
 	        // This is a custom biome, get or register it
-	        String biomeNameForRegistry = StringHelper.toComputerFriendlyName(biomeConfig.getName());                      
+	        String biomeNameForRegistry = StringHelper.toComputerFriendlyName(biomeConfig.getName());
 	        String resourceDomain = PluginStandardValues.PLUGIN_NAME.toLowerCase();
-	        // 0-39 and 127-167 are vanilla biomes so register them as such   
+	        // 0-39 and 127-167 are vanilla biomes so register them as such
 	        // so that biomes are properly recognised by non-modded clients
 	        if((generationId >= 0 && generationId <= 39) || (generationId >= 127 && generationId <= 167))
-	        {	        	
-	        	//resourceDomain = "minecraft";	        	
+	        {
 	        	throw new RuntimeException("Whatever it is you're trying to do, we didn't write any code for it (sorry). Please contact Team OTG about this crash.");
 	        }
-	        
+
 	        registryKey = new ResourceLocation(resourceDomain, biomeNameForRegistry);
     	}
-        
+
         // Check if registered earlier
         Biome alreadyRegisteredBiome = Biome.REGISTRY.registryObjects.get(registryKey);
         if (alreadyRegisteredBiome != null)
         {
         	if(isMainWorld) // Override Vanilla biomes
-        	{       		        		
+        	{
         		((ForgeEngine)OTG.getEngine()).unRegisterForgeBiome(registryKey);
         	} else {
         		return alreadyRegisteredBiome;
         	}
-        	/*
-        	else {
-	        	
-        		if(1 == 1) { throw new RuntimeException("Whatever it is you're trying to do, we didn't write any code for it (sorry). Please contact Team OTG about this crash."); }
-        		
-	        	// Even if the biome is present in registryObjects it may be because the biome was added and removed earlier (only possible for other dimensions) 
-	        	// and only its availability was set to "can re-use". If so set the availability back to "used"
-	        	// TODO: Is alreadyRegisteredBiome really a reference to the same biome object? Need to replace it with new?        	
-	    		BitSet biomeRegistryAvailabiltyMap = ((ForgeEngine)OTG.getEngine()).getWorldLoader().getBiomeRegistryAvailabiltyMap();
-				biomeRegistryAvailabiltyMap.set(Biome.getIdForBiome(alreadyRegisteredBiome), true); // Set back to "used" so it doesn't get overridden
-
-        		return alreadyRegisteredBiome;
-        	}
-        	*/
         }
 
         // No existing biome, create new one
-        OTGBiome customBiome = new OTGBiome(biomeConfig, biomeIds);              
-        
+        OTGBiome customBiome = new OTGBiome(biomeConfig, biomeIds);
+
         int savedBiomeId = biomeIds.getSavedId();
         ForgeEngine forgeEngine = ((ForgeEngine) OTG.getEngine());
 
@@ -152,7 +137,7 @@ public class OTGBiome extends Biome
             forgeEngine.registerForgeBiome(MAX_TC_BIOME_ID, maxTcBiomeKey,
                     new OTGBiome(biomeConfig, new BiomeIds(MAX_TC_BIOME_ID, MAX_TC_BIOME_ID)));
         }
-       
+
         if (biomeIds.isVirtual())
         {
             // Virtual biomes hack: register, then let original biome overwrite
@@ -176,14 +161,14 @@ public class OTGBiome extends Biome
                         biomeIds.getGenerationId());
             }
         }
-        else if (savedBiomeId < 256 && !biomeIds.isVirtual())
+        else //if (savedBiomeId < 256 && !biomeIds.isVirtual())
         {
             // Normal insertion
             Biome.REGISTRY.register(savedBiomeId, registryKey, customBiome);
             OTG.log(LogMarker.TRACE, ",{},{},{}", biomeConfig.getName(), savedBiomeId,
                     biomeIds.getGenerationId());
         }
-        
+
         return customBiome;
     }
 
@@ -199,7 +184,7 @@ public class OTGBiome extends Biome
     {
         return "OTGBiome of " + getBiomeName();
     }
-   
+
     // Fix for swamp colors (there's a custom noise applied to swamp colors)
     // TODO: Make these colors configurable via the BiomeConfig
     @SideOnly(Side.CLIENT)
@@ -213,7 +198,7 @@ public class OTGBiome extends Biome
     		return super.getGrassColorAtPos(pos);
     	}
     }
-    
+
     // Fix for swamp colors (there's a custom noise applied to swamp colors)
     // TODO: Make these colors configurable via the BiomeConfig
     @SideOnly(Side.CLIENT)
@@ -226,16 +211,16 @@ public class OTGBiome extends Biome
     		return super.getFoliageColorAtPos(pos);
     	}
     }
-   
+
     // Adds the mobs to the internal list
     public void addMobs(List<SpawnListEntry> internalList, List<WeightedMobSpawnGroup> configList)//, boolean improvedMobSpawning)
-    {    
+    {
     	List<SpawnListEntry> newList = new ArrayList<SpawnListEntry>();
     	List<SpawnListEntry> newListParent = new ArrayList<SpawnListEntry>();
     	// Add mobs defined in bc's mob spawning settings
         List<SpawnListEntry> spawnListEntry = MobSpawnGroupHelper.toMinecraftlist(configList);
         newList.addAll(spawnListEntry);
-        
+
     	for(SpawnListEntry entryParent : internalList)
     	{
 			boolean bFound = false;
@@ -252,15 +237,15 @@ public class OTGBiome extends Biome
 			}
     	}
     	newList.addAll(newListParent);
-    	
+
         internalList.clear();
-        
+
         for(SpawnListEntry spe : newList)
         {
         	if(spe.itemWeight > 0 && spe.maxGroupCount > 0)
         	{
-        		internalList.add(spe);		
+        		internalList.add(spe);
         	}
-        }              
+        }
     }
 }

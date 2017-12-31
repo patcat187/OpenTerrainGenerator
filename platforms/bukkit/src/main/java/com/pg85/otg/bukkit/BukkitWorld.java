@@ -162,7 +162,7 @@ public class BukkitWorld implements LocalWorld
         this.name = _name;
         this.WorldSession = new BukkitWorldSession(this);
     }
-    
+
     public LocalBiome createBiomeFor(BiomeConfig biomeConfig, BiomeIds biomeIds)
     {
         BukkitBiome biome;
@@ -207,7 +207,7 @@ public class BukkitWorld implements LocalWorld
 		}
     	return biomes;
     }
-    
+
     @Override
     public BukkitBiome getBiomeById(int id) throws BiomeNotFoundException
     {
@@ -218,7 +218,7 @@ public class BukkitWorld implements LocalWorld
         }
         return (BukkitBiome) biome;
     }
-    
+
     @Override
     public LocalBiome getBiomeByIdOrNull(int id)
     {
@@ -353,7 +353,7 @@ public class BukkitWorld implements LocalWorld
             this.oceanMonumentGen.a(this.world, random, chunkIntPair);
         if (worldConfig.woodLandMansionsEnabled)
         	this.mansionGen.a(this.world, random, chunkIntPair);
-        
+
         return villageGenerated;
     }
 
@@ -438,7 +438,7 @@ public class BukkitWorld implements LocalWorld
         {
             // Blocks requested outside population step
             // (Tree growing, /otg spawn, etc.)
-           return world.getChunkAt(chunkX, chunkZ); 
+           return world.getChunkAt(chunkX, chunkZ);
         }
 
         // Restrict to chunks we are currently populating
@@ -557,6 +557,11 @@ public class BukkitWorld implements LocalWorld
                     world.methodProfiler.b();
                 }
             }
+
+    	    if (metaDataTag != null)
+    	    {
+    	    	attachMetadata(x, y, z, metaDataTag);
+    	    }
 
             // Notify world: (2 | 16) == update client, don't update observers
             world.notifyAndUpdatePhysics(blockPos, chunk, oldBlockData, blockData, 2 | 16);
@@ -744,7 +749,7 @@ public class BukkitWorld implements LocalWorld
     /**
      * Sets the new settings and deprecates any references to the old
      * settings, if any.
-     * 
+     *
      * @param newSettings The new settings.
      */
     public void setSettings(ServerConfigProvider newSettings)
@@ -994,7 +999,7 @@ public class BukkitWorld implements LocalWorld
         }
         return new MojangStructurePart(name, mojangStructurePart);
     }
-        
+
 	@Override
 	public void SpawnEntity(EntityFunction entityData)
 	{
@@ -1003,9 +1008,9 @@ public class BukkitWorld implements LocalWorld
 		String mobTypeName = entityData.mobName;
 		int groupSize = entityData.groupSize;
 		String nameTag = entityData.nameTagOrNBTFileName;
-	
+
 		EntityType entityType = null;
-		
+
 		for(EntityType entityType1 : EntityType.values())
 		{
 			if(entityType1.name() != null && mobTypeName.toLowerCase().replace("_", "").replace(" ", "").replace("entity","").equals(entityType1.name().toLowerCase().replace("_", "").replace(" ", "").replace("entity","")))
@@ -1014,9 +1019,9 @@ public class BukkitWorld implements LocalWorld
 				break;
 			}
 		}
-		
+
 		// Make sure all mob names that forge accepts also work here
-		
+
     	if(mobTypeName.toLowerCase().replace("entity", "").replace("_", "").replace(" ", "").equals("evocationillager"))
     	{
     		entityType = org.bukkit.entity.EntityType.EVOKER;
@@ -1031,7 +1036,7 @@ public class BukkitWorld implements LocalWorld
     	}
 
     	//
-    	
+
 		if(entityType == null)
 		{
 			OTG.log(LogMarker.WARN, "Could not find entity: " + mobTypeName);
@@ -1042,19 +1047,19 @@ public class BukkitWorld implements LocalWorld
 		{
 			return;
 		}
-		
+
 		Entity entityLiving = getEntity(entityType.getEntityClass());
 		org.bukkit.entity.Entity bukkitEntityLiving = entityLiving.getBukkitEntity();
-		        
+
 		boolean isWaterMob = bukkitEntityLiving instanceof CraftGuardian || bukkitEntityLiving instanceof CraftElderGuardian;
-		
+
         if(entityLiving != null)
-        {           	
+        {
 			EnumCreatureType creatureType = EnumCreatureType.CREATURE;
-			
+
 			// MONSTER
 			if(
-				bukkitEntityLiving instanceof CraftComplexLivingEntity || // Dragon			
+				bukkitEntityLiving instanceof CraftComplexLivingEntity || // Dragon
 				bukkitEntityLiving instanceof CraftSlime || // Slime/Magma
 				bukkitEntityLiving instanceof CraftMonster ||
 				bukkitEntityLiving instanceof CraftFlying // Ghast
@@ -1062,7 +1067,7 @@ public class BukkitWorld implements LocalWorld
 			{
 				creatureType = EnumCreatureType.MONSTER;
 			}
-			
+
 			// AMBIENT
 			if(
 				bukkitEntityLiving instanceof CraftAmbient // Bat
@@ -1070,7 +1075,7 @@ public class BukkitWorld implements LocalWorld
 			{
 				creatureType = EnumCreatureType.AMBIENT;
 			}
-			
+
 			// CREATURE
 			if(
 				bukkitEntityLiving instanceof CraftAnimals || // Creature
@@ -1080,7 +1085,7 @@ public class BukkitWorld implements LocalWorld
 			{
 				creatureType = EnumCreatureType.CREATURE;
 			}
-			
+
 			// WATERCREATURE
 			if(
 				bukkitEntityLiving instanceof CraftWaterMob
@@ -1088,41 +1093,41 @@ public class BukkitWorld implements LocalWorld
 			{
 				creatureType = EnumCreatureType.WATER_CREATURE;
 			}
-            
+
             int j1 = entityData.x;
             int k1 = entityData.y;
             int l1 = entityData.z;
-            
+
             int x = entityData.x;
             int y = entityData.y;
             int z = entityData.z;
-            
+
             CraftBlock block = (CraftBlock) world.getWorld().getBlockAt(new Location(world.getWorld(), x, y, z));
-            org.bukkit.Material material = block.getType();            
+            org.bukkit.Material material = block.getType();
 
             boolean isOutsideBuildHeight = y < 0 || y >= 256;
             boolean isOpaque = material.isTransparent() ? false : material.isSolid();
             boolean isFullCube = material != org.bukkit.Material.STEP;
             boolean canProvidePower = block.isBlockPowered();
             boolean isBlockNormalCube = !isOutsideBuildHeight && isOpaque && isFullCube && !canProvidePower;
-                        
+
             if (!isBlockNormalCube && (((creatureType == EnumCreatureType.WATER_CREATURE || isWaterMob) && (material == org.bukkit.Material.WATER || material == org.bukkit.Material.STATIONARY_WATER)) || material == org.bukkit.Material.AIR))
-            {           	
+            {
 	            float f = (float)j1 + 0.5F;
 	            float f1 = (float)k1;
-	            float f2 = (float)l1 + 0.5F;                              
-	           
+	            float f2 = (float)l1 + 0.5F;
+
 	            if(entityLiving instanceof EntityLiving)
 	            {
 	            	for(int r = 0; r < groupSize; r++)
-	            	{ 
+	            	{
             			CraftEntity entity = (CraftEntity) world.getWorld().spawn(new Location(world.getWorld(), (double)f, (double)f1, (double)f2, rand.nextFloat() * 360.0F, 0.0F), entityType.getEntityClass());
-	            			            		            			            			
+
 	            		if(entityData.nameTagOrNBTFileName != null && (entityData.nameTagOrNBTFileName.toLowerCase().trim().endsWith(".txt") || entityData.nameTagOrNBTFileName.toLowerCase().trim().endsWith(".nbt")))
 	           			{
 	           				applyMetaData(entity, entityData.mobName, entityData.getMetaData());
 	           			}
-	            		
+
 	            		if(entityData.nameTagOrNBTFileName != null && !entityData.nameTagOrNBTFileName.toLowerCase().trim().endsWith(".txt") && !entityData.nameTagOrNBTFileName.toLowerCase().trim().endsWith(".nbt"))
 	            		{
 	            			if(nameTag != null && nameTag.length() > 0)
@@ -1130,27 +1135,27 @@ public class BukkitWorld implements LocalWorld
 	            				entity.setCustomName(nameTag);
 	        				}
 	            		}
-	            		
+
 	            		if(entity instanceof CraftLivingEntity)
 	            		{
 	            			((CraftLivingEntity) entity).setRemoveWhenFarAway(false); // <- makes sure mobs don't de-spawn
 	            		}
 	            	}
-	            } else { 
+	            } else {
 	            	for(int r = 0; r < groupSize; r++)
-	            	{                                    		
+	            	{
 	            		CraftEntity entity = (CraftEntity) world.getWorld().spawn(new Location(world.getWorld(), (double)f, (double)f1, (double)f2, rand.nextFloat() * 360.0F, 0.0F), entityType.getEntityClass());
-	           			
+
 	            		if(entityData.nameTagOrNBTFileName != null && (entityData.nameTagOrNBTFileName.toLowerCase().trim().endsWith(".txt") || entityData.nameTagOrNBTFileName.toLowerCase().trim().endsWith(".nbt")))
 	           			{
 	           				applyMetaData(entity, entityData.mobName, entityData.getMetaData());
 	           			}
-	            	}						                                                	
+	            	}
 	            }
             }
 		}
 	}
-	
+
 	private void applyMetaData(CraftEntity entity, String mobName, String metaDataString)
 	{
     	NBTTagCompound nbttagcompound = new NBTTagCompound();
@@ -1171,9 +1176,9 @@ public class BukkitWorld implements LocalWorld
         {
         	OTG.log(LogMarker.DEBUG, "Invalid NBT tag for mob in EntityFunction: " + metaDataString + ". Skipping mob.");
         	return;
-        }		                                            
+        }
 
-        nbttagcompound.setString("id", mobName);        
+        nbttagcompound.setString("id", mobName);
 
 		Entity nmsEntity = ((CraftEntity)entity).getHandle();
 
@@ -1194,15 +1199,15 @@ public class BukkitWorld implements LocalWorld
 		nmsEntity.f(nbttagcompound);
 		nmsEntity.recalcPosition();
 	}
-	
+
 	private Entity getEntity(Class<? extends org.bukkit.entity.Entity> clazz)
-	{		
+	{
 		// TODO: Clean up and optimise this
-		
+
 		double x = 0;
 		double y = 0;
 		double z = 0;
-		
+
 		if (org.bukkit.entity.Boat.class.isAssignableFrom(clazz))
 		{
 			return new net.minecraft.server.v1_11_R1.EntityBoat(world, x, y, z);
@@ -1341,7 +1346,7 @@ public class BukkitWorld implements LocalWorld
 				{
 					return new net.minecraft.server.v1_11_R1.EntityShulker(world);
 				}
-			} 
+			}
 			else if (org.bukkit.entity.Creeper.class.isAssignableFrom(clazz))
 			{
 				return new net.minecraft.server.v1_11_R1.EntityCreeper(world);
@@ -1473,17 +1478,17 @@ public class BukkitWorld implements LocalWorld
 				}
 			}
 		}
-				
+
 		//TODO: Does this need to be re-enabled??
 		/*
 		else if (org.bukkit.entity.Hanging.class.isAssignableFrom(clazz))
 		{
 			org.bukkit.block.Block block = getBlockAt(location);
 			BlockFace face = BlockFace.SELF;
-	
+
 			int width = 16;
 			int height = 16;
-			  
+
 			if (org.bukkit.entity.ItemFrame.class.isAssignableFrom(clazz))
 			{
 				width = 12;
@@ -1494,7 +1499,7 @@ public class BukkitWorld implements LocalWorld
 				width = 9;
 				height = 9;
 			}
-			  
+
 			BlockFace[] faces = { BlockFace.EAST, BlockFace.NORTH, BlockFace.WEST, BlockFace.SOUTH };
 			BlockPosition pos = new BlockPosition((int)x, (int)y, (int)z);
 			for (BlockFace dir : faces)
@@ -1513,7 +1518,7 @@ public class BukkitWorld implements LocalWorld
 							taken = true;
 						}
 					}
-			      
+
 					if (!taken)
 					{
 						face = dir;
@@ -1521,14 +1526,14 @@ public class BukkitWorld implements LocalWorld
 					}
 			    }
 		  	}
-			  
+
 			if (org.bukkit.entity.LeashHitch.class.isAssignableFrom(clazz))
 			{
 			    return new net.minecraft.server.v1_10_R1.EntityLeash(world, new BlockPosition((int)x, (int)y, (int)z));
 			    attachedToPlayer = true;
 			} else {
 			    com.google.common.base.Preconditions.checkArgument(face != BlockFace.SELF, "Cannot spawn hanging entity for %s at %s (no free face)", new Object[] { clazz.getName(), location });
-			    
+
 			    EnumDirection dir = CraftBlock.blockFaceToNotch(face).opposite();
 			    if (org.bukkit.entity.Painting.class.isAssignableFrom(clazz))
 			    {
@@ -1539,7 +1544,7 @@ public class BukkitWorld implements LocalWorld
 			      return new net.minecraft.server.v1_10_R1.EntityItemFrame(world, new BlockPosition((int)x, (int)y, (int)z), dir);
 			    }
 			}
-			  
+
 			if ((entity != null) && (!((EntityHanging)entity).survives()))
 			{
 			    throw new IllegalArgumentException("Cannot spawn hanging entity for " + clazz.getName() + " at " + location);
@@ -1568,24 +1573,24 @@ public class BukkitWorld implements LocalWorld
 		else if (org.bukkit.entity.AreaEffectCloud.class.isAssignableFrom(clazz))
 		{
 			return new net.minecraft.server.v1_11_R1.EntityAreaEffectCloud(world, x, y, z);
-		}		
-				
+		}
+
 		if(org.bukkit.entity.Donkey.class.isAssignableFrom(clazz))
 		{
 			return new net.minecraft.server.v1_11_R1.EntityHorseDonkey(world);
-		}		
+		}
 		if(org.bukkit.entity.ElderGuardian.class.isAssignableFrom(clazz))
 		{
 			return new net.minecraft.server.v1_11_R1.EntityGuardianElder(world);
-		}		
+		}
 		if(org.bukkit.entity.Evoker.class.isAssignableFrom(clazz))
 		{
 			return new net.minecraft.server.v1_11_R1.EntityEvoker(world);
-		}		
+		}
 		if(org.bukkit.entity.EvokerFangs.class.isAssignableFrom(clazz))
 		{
 			return new net.minecraft.server.v1_11_R1.EntityEvokerFangs(world);
-		}		
+		}
 		if(org.bukkit.entity.Husk.class.isAssignableFrom(clazz))
 		{
 			return new net.minecraft.server.v1_11_R1.EntityZombieHusk(world);
@@ -1597,7 +1602,7 @@ public class BukkitWorld implements LocalWorld
 		if(org.bukkit.entity.LlamaSpit.class.isAssignableFrom(clazz))
 		{
 			return new net.minecraft.server.v1_11_R1.EntityLlamaSpit(world);
-		}		
+		}
 		if(org.bukkit.entity.Mule.class.isAssignableFrom(clazz))
 		{
 			return new net.minecraft.server.v1_11_R1.EntityHorseMule(world);
@@ -1630,12 +1635,12 @@ public class BukkitWorld implements LocalWorld
 		{
 			return new net.minecraft.server.v1_11_R1.EntityZombieVillager(world);
 		}
-		
+
 		return null;
 	}
-	
-    // Forge only TODO: Shouldn't really be here, clean this up. 
-    
+
+    // Forge only TODO: Shouldn't really be here, clean this up.
+
     @Override
     public LocalBiome createBiomeFor(BiomeConfig biomeConfig, BiomeIds biomeIds, ConfigProvider configProvider)
     {
@@ -1644,16 +1649,16 @@ public class BukkitWorld implements LocalWorld
 
     @Override
     public void mergeVanillaBiomeMobSpawnSettings(BiomeConfigStub biomeConfigStub) { }
-        
+
     @Override
     public ChunkCoordinate getSpawnChunk()
     {
     	BlockPosition spawnPos = world.getSpawn();
-    	
+
     	return ChunkCoordinate.fromBlockCoords(spawnPos.getX(), spawnPos.getZ());
     }
 
-    // OTG+    
+    // OTG+
 
 	@Override
 	public int getHighestBlockYAt(int x, int z, boolean findSolid, boolean findLiquid, boolean ignoreLiquid, boolean ignoreSnow)
@@ -1664,7 +1669,7 @@ public class BukkitWorld implements LocalWorld
 
 	@Override
 	public ObjectSpawner getObjectSpawner()
-	{	
+	{
 		return this.generator.getObjectSpawner();
 	}
 
@@ -1688,7 +1693,7 @@ public class BukkitWorld implements LocalWorld
 		// TODO Implement this
 		throw new RuntimeException();
 	}
-	
+
 	BukkitWorldSession WorldSession;
     @Override
 	public WorldSession GetWorldSession()
@@ -1731,13 +1736,19 @@ public class BukkitWorld implements LocalWorld
     	{
         	return true;
     	}
-    	
+
         Chunk chunk = this.getChunk(x, y, z);
         if (chunk == null)
         {
             return true;
         }
-    	
+
         return chunk.a(x & 0xF, y, z & 0xF).getMaterial().equals(Material.AIR);
+	}
+
+	@Override
+	public void setAllowSpawningOutsideBounds(boolean isSpawningBO3AtSpawn) {
+		// TODO Auto-generated method stub
+
 	}
 }

@@ -198,6 +198,12 @@ public class OTGToForgeEventConverter extends EventHandler
             return GenerateMinable.EventType.LAPIS;
         if (block.isMaterial(DefaultMaterial.REDSTONE_ORE))
             return GenerateMinable.EventType.REDSTONE;
+        if (block.isMaterial(DefaultMaterial.STONE) && block.getBlockData() == 1)
+            return GenerateMinable.EventType.GRANITE;
+        if (block.isMaterial(DefaultMaterial.STONE) && block.getBlockData() == 3)
+            return GenerateMinable.EventType.DIORITE;
+        if (block.isMaterial(DefaultMaterial.STONE) && block.getBlockData() == 5)
+            return GenerateMinable.EventType.ANDESITE;
         return GenerateMinable.EventType.CUSTOM;
     }
 

@@ -52,7 +52,7 @@ public class OTGWorldServerMulti extends WorldServer
             	getWorldBorder().setDamageBuffer(newSize);
             }
         };
-        this.delegate.getWorldBorder().addListener(this.borderListener);        
+        this.delegate.getWorldBorder().addListener(this.borderListener);
     }
 
     /**

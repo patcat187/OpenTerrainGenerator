@@ -23,6 +23,7 @@ import com.pg85.otg.generator.biome.VanillaBiomeGenerator;
 import com.pg85.otg.logging.LogMarker;
 import com.pg85.otg.util.minecraftTypes.StructureNames;
 
+import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.structure.MapGenStructureIO;
@@ -165,6 +166,9 @@ public class OTGPlugin
 
         // Register ChunkLoadListener for updating Cartographer map
         MinecraftForge.EVENT_BUS.register(new ChunkEventListener());
+
+        // Fix lava as light source not working when spawning lava as resource
+        Blocks.LAVA.setLightOpacity(255);
     }
 
     @EventHandler

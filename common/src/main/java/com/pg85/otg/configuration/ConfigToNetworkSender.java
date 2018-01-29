@@ -125,6 +125,12 @@ public final class ConfigToNetworkSender
 
 		stream.writeInt(worldConfig.spawnPointZ); // "Use this with SpawnPointSet: true to set a spawn coordinate.
 
+		stream.writeBoolean(worldConfig.playersCanBreakBlocks);  // When set to false players cannot break blocks in this world. Defaults to: true
+
+		stream.writeBoolean(worldConfig.explosionsCanBreakBlocks);  // When set to false explosions cannot break blocks in this world. Defaults to: true
+
+		stream.writeBoolean(worldConfig.playersCanPlaceBlocks); // When set to false players cannot place blocks in this world. Defaults to: true
+
         // Fetch all non-virtual biomes
         Collection<LocalBiome> nonVirtualBiomes = new ArrayList<LocalBiome>();
         Collection<LocalBiome> nonVirtualCustomBiomes = new ArrayList<LocalBiome>();

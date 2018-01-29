@@ -316,6 +316,10 @@ public class WorldConfig extends ConfigFile
     public int spawnPointY;
     public int spawnPointZ;
 
+    public boolean playersCanBreakBlocks;
+    public boolean explosionsCanBreakBlocks;
+    public boolean playersCanPlaceBlocks;
+
 	//
 
     /**
@@ -772,6 +776,10 @@ public class WorldConfig extends ConfigFile
         this.spawnPointX = reader.getSetting(WorldStandardValues.SPAWN_POINT_X);
         this.spawnPointY = reader.getSetting(WorldStandardValues.SPAWN_POINT_Y);
         this.spawnPointZ = reader.getSetting(WorldStandardValues.SPAWN_POINT_Z);
+
+        this.playersCanBreakBlocks = reader.getSetting(WorldStandardValues.PLAYERS_CAN_BREAK_BLOCKS);
+        this.explosionsCanBreakBlocks = reader.getSetting(WorldStandardValues.EXPLOSIONS_CAN_BREAK_BLOCKS);
+        this.playersCanPlaceBlocks = reader.getSetting(WorldStandardValues.PLAYERS_CAN_PLACE_BLOCKS);
     }
 
     private void readBiomeGroups(SettingsMap reader)
@@ -1478,6 +1486,15 @@ public class WorldConfig extends ConfigFile
 
 		writer.putSetting(WorldStandardValues.SPAWN_POINT_Z, this.spawnPointZ,
 				"Use this with SpawnPointSet: true to set a spawn coordinate.");
+
+		writer.putSetting(WorldStandardValues.PLAYERS_CAN_BREAK_BLOCKS, this.playersCanBreakBlocks,
+				"When set to false players cannot break blocks in this world. Defaults to: true");
+
+		writer.putSetting(WorldStandardValues.EXPLOSIONS_CAN_BREAK_BLOCKS, this.explosionsCanBreakBlocks,
+				"When set to false explosions cannot break blocks in this world. Defaults to: true");
+
+		writer.putSetting(WorldStandardValues.PLAYERS_CAN_PLACE_BLOCKS, this.playersCanPlaceBlocks,
+				"When set to false players cannot place blocks in this world. Defaults to: true");
     }
 
     private void WriteCustomBiomes(SettingsMap writer)

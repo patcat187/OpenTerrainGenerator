@@ -47,12 +47,12 @@ import net.minecraft.client.gui.GuiListExtended;;
 public class OTGGuiListWorldSelectionEntry implements GuiListExtended.IGuiListEntry
 {
 	// Taken from net.minecraft.client.gui.GuiListWorldSelectionEntry. Only added getSelectedWorldName().
-	
+
 	public String getSelectedWorldName()
 	{
 		return this.worldSummary != null ? this.worldSummary.getFileName() : null;
 	}
-	
+
     private static final Logger LOGGER = LogManager.getLogger();
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat();
     private static final ResourceLocation ICON_MISSING = new ResourceLocation("textures/misc/unknown_server.png");
@@ -304,6 +304,7 @@ public class OTGGuiListWorldSelectionEntry implements GuiListExtended.IGuiListEn
         {
             try
             {
+            	PregeneratorUI.ResetIngameUI();
             	clientHandler.getClient().launchIntegratedServer(comparator.getFileName(), comparator.getDisplayName(), null);
             }
             catch (StartupQuery.AbortedException e)
@@ -312,7 +313,7 @@ public class OTGGuiListWorldSelectionEntry implements GuiListExtended.IGuiListEn
             }
         }
     }
-    
+
     private void loadServerIcon()
     {
         boolean flag = this.iconFile != null && this.iconFile.isFile();

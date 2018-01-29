@@ -542,9 +542,11 @@ public class ForgeWorld implements LocalWorld
     @Override
     public void placePopulationMobs(LocalBiome biome, Random random, ChunkCoordinate chunkCoord)
     {
-        WorldEntitySpawner.performWorldGenSpawning(this.getWorld(), ((ForgeBiome) biome).getHandle(),
-                chunkCoord.getBlockXCenter(), chunkCoord.getBlockZCenter(), ChunkCoordinate.CHUNK_X_SIZE,
-                ChunkCoordinate.CHUNK_Z_SIZE, random);
+        if (net.minecraftforge.event.terraingen.TerrainGen.populate(this.getChunkGenerator(), this.world, random, chunkCoord.getChunkX(), chunkCoord.getChunkZ(), false, net.minecraftforge.event.terraingen.PopulateChunkEvent.Populate.EventType.ANIMALS))
+        {
+	        //WorldEntitySpawner.performWorldGenSpawning(this.world, biome, i + 8, j + 8, 16, 16, this.rand);
+	        WorldEntitySpawner.performWorldGenSpawning(this.getWorld(), ((ForgeBiome) biome).getHandle(), chunkCoord.getBlockXCenter(), chunkCoord.getBlockZCenter(), ChunkCoordinate.CHUNK_X_SIZE, ChunkCoordinate.CHUNK_Z_SIZE, random);
+        }
     }
 
     boolean allowSpawningOutsideBounds = false;
@@ -842,28 +844,12 @@ public class ForgeWorld implements LocalWorld
         	throw new RuntimeException("Whatever it is you're trying to do, we didn't write any code for it (sorry). Please contact Team OTG about this crash.");
         }
 
-        /*
-        IBlockState oldState = this.world.getBlockState(pos);
-        int oldLight = oldState.getLightValue(this.world, pos);
-        int oldOpacity = oldState.getLightOpacity(this.world, pos);
-        */
-
         IBlockState iblockstate = setBlockState(chunk, pos, newState);
 
         if (iblockstate == null)
         {
         	return; // Happens when block to place is the same as block being placed? TODO: Is that the only time this happens?
         }
-
-        /*
-        // Relight and update players
-        if (newState.getLightOpacity(this.world, pos) != oldOpacity || newState.getLightValue(this.world, pos) != oldLight)
-        {
-            this.world.profiler.startSection("checkLight");
-            this.world.checkLight(pos);
-            this.world.profiler.endSection();
-        }
-        */
 
 	    if (metaDataTag != null)
 	    {
@@ -962,6 +948,7 @@ public class ForgeWorld implements LocalWorld
                 // If capturing blocks, only run block physics for TE's. Non-TE's are handled in ForgeHooks.onPlaceItemIntoWorld
                 //if (!_this.getWorld().isRemote && block1 != block && (!_this.getWorld().captureBlockSnapshots || block.hasTileEntity(state)))
                 {
+                	// Don't do this when spawning resources and BO2's/BO3's, they are considered to be in their intended updated state when spawned
                     //block.onBlockAdded(_this.getWorld(), pos, state);
                 }
 

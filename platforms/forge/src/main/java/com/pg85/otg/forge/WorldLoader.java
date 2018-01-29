@@ -17,6 +17,7 @@ import com.pg85.otg.logging.LogMarker;
 import com.pg85.otg.util.minecraftTypes.DefaultBiome;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiYesNo;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.init.Biomes;
 import net.minecraft.util.IntIdentityHashBiMap;
@@ -147,6 +148,11 @@ public final class WorldLoader
 
     public ForgeWorld getWorld(String name)
     {
+    	if(name.equals("overworld"))
+    	{
+    		return ((ForgeEngine)OTG.getEngine()).getOverWorld();
+    	}
+
     	ForgeWorld forgeWorld = null;
         synchronized(this.worlds)
         {
@@ -349,7 +355,7 @@ public final class WorldLoader
     private void applyWorldCreationMenuSettings(ServerConfigProvider config)
     {
         // If this is a new world use the pre-generator and world border settings from world creation menu
-    	if(GuiHandler.lastGuiOpened.equals(OTGGuiCreateWorld.class))
+    	if(GuiHandler.lastGuiOpened.equals(OTGGuiCreateWorld.class) || (GuiHandler.lastGuiOpened.equals(GuiYesNo.class) && GuiHandler.askModCompatContinue)) // GUIYesNo is used for mod warnings (custommobspawner, bop etc)
     	{
 			config.getWorldConfig().PreGenerationRadius = GuiHandler.PregenerationRadius;
 			config.getWorldConfig().WorldBorderRadius = GuiHandler.WorldBorderRadius;

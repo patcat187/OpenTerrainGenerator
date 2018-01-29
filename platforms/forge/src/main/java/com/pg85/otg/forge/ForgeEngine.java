@@ -23,17 +23,17 @@ import net.minecraftforge.common.DimensionManager;
 public class ForgeEngine extends OTGEngine
 {
 	// OTG+
-	
+
     public void onSave(World world)
     {
-    	//OTG.log(LogMarker.INFO, "ForgeEngine onSave");    	
+    	//OTG.log(LogMarker.INFO, "ForgeEngine onSave");
     	ForgeWorld forgeWorld = (ForgeWorld) getWorld(world);
     	if(forgeWorld != null && forgeWorld.getObjectSpawner().saveRequired && !forgeWorld.GetWorldSession().getPreGeneratorIsRunning())
     	{
     		forgeWorld.getStructureCache().SaveToDisk();
     	}
     }
-    
+
     public void ProcessPregeneratorTick()
     {
     	for(LocalWorld world : getAllWorlds())
@@ -41,9 +41,9 @@ public class ForgeEngine extends OTGEngine
     		((ForgeWorldSession)world.GetWorldSession()).getPregenerator().ProcessTick();
     	}
     }
-    
+
 	//
-    
+
 	protected WorldLoader worldLoader;
 
     protected Map<ResourceLocation, Biome> biomeMap;
@@ -60,23 +60,23 @@ public class ForgeEngine extends OTGEngine
     public void registerForgeBiome(int id, ResourceLocation resourceLocation, Biome biome)
     {
     	OTG.log(LogMarker.TRACE, "Registering biome " + resourceLocation.toString());
-    	
+
         Biome.REGISTRY.registryObjects.put(resourceLocation, biome);
         Biome.REGISTRY.underlyingIntegerMap.put(biome, id);
         Biome.REGISTRY.inverseObjectRegistry.put(biome, resourceLocation);
     }
-    
+
     public void unRegisterForgeBiome(ResourceLocation resourceLocation)
-    {    	    
+    {
 		OTG.log(LogMarker.TRACE, "Unregistering biome " + resourceLocation.toString());
-    	
+
     	Biome biome = Biome.REGISTRY.registryObjects.get(resourceLocation);
-    	
+
 		BitSet biomeRegistryAvailabiltyMap = ((ForgeEngine)OTG.getEngine()).worldLoader.getBiomeRegistryAvailabiltyMap();
 		try
 		{
 			int biomeId = Biome.getIdForBiome(biome);
-			// If this biome uses replaceToBiomeName and has an id > 255 then it is not actually registered in the biome id 
+			// If this biome uses replaceToBiomeName and has an id > 255 then it is not actually registered in the biome id
 			// registry and biomeId will be 0. Check if biomeId is actually registered to this biome.
 			if(Biome.getBiomeForId(biomeId) == biome)
 			{
@@ -88,40 +88,40 @@ public class ForgeEngine extends OTGEngine
 			// This can happen when:
 			// A. The dimension was unloaded automatically because noone was in it and then the world was unloaded because the server shut down.
 			// B. The dimensions was unloaded automatically because noone was in it and then deleted and recreated.
-			
+
 			// This can happen when a world was deleted and recreated and the index was set as "can be re-used" but when re-registering the biomes
 			// it wasn't set back to "used" because it looked like the biome registry already had the biome properly registered.
-			
+
 			OTG.log(LogMarker.ERROR, "Could not unregister " + biome.getBiomeName());
 			throw new RuntimeException("Whatever it is you're trying to do, we didn't write any code for it (sorry). Please contact Team OTG about this crash.");
-			
+
 			//biomeRegistryAvailabiltyMap.set(localBiome.getIds().getSavedId(), false); // This should be enough to make Forge re-use the biome id
 		}
-        
-		int biomeId = Biome.REGISTRY.getIDForObject(biome);	
+
+		int biomeId = Biome.REGISTRY.getIDForObject(biome);
         Biome.REGISTRY.registryObjects.remove(resourceLocation);
-        
-		// If this biome uses replaceToBiomeName and has an id > 255 then it is not actually registered in the biome id 
+
+		// If this biome uses replaceToBiomeName and has an id > 255 then it is not actually registered in the biome id
 		// registry and biomeId will be 0. Check if biomeId is actually registered to this biome.
 		if(Biome.REGISTRY.getObjectById(biomeId) == biome)
 		{
 			Biome.REGISTRY.underlyingIntegerMap.put(null, biomeId);
 		}
-        
+
         Biome.REGISTRY.inverseObjectRegistry.remove(biome);
     }
 
     public WorldLoader getWorldLoader()
     {
     	return worldLoader;
-    }   
-    
+    }
+
     public boolean getCartographerEnabled()
-    {   	
+    {
     	ForgeWorld world = getOverWorld(); // If overworld is null then the overworld is not an OTG world
     	return world == null ? false : world.getConfigs().getWorldConfig().Cartographer;
     }
-    
+
     public ForgeWorld getOverWorld()
     {
 		ArrayList<LocalWorld> allWorlds = getAllWorlds();
@@ -134,7 +134,7 @@ public class ForgeEngine extends OTGEngine
 		}
 		return null;
     }
-    
+
     public ForgeWorld getWorldByDimId(int dimensionId)
     {
     	ForgeWorld forgeWorld;
@@ -147,10 +147,14 @@ public class ForgeEngine extends OTGEngine
     	}
     	return forgeWorld;
     }
-    
+
     public LocalWorld getWorld(World world)
     {
-    	if(world.provider.getDimension() > 1)
+    	if(world.provider.getDimension() == 0)
+    	{
+    		return (ForgeWorld)((ForgeEngine)OTG.getEngine()).getOverWorld();
+    	}
+    	else if(world.provider.getDimension() > 1)
     	{
 			if(world.provider.getDimensionType().getSuffix() != null && world.provider.getDimensionType().getSuffix().equals("OTG"))
 	    	{
@@ -167,16 +171,16 @@ public class ForgeEngine extends OTGEngine
 		{
 			return this.worldLoader.getUnloadedWorld(world.getWorldInfo().getWorldName());
 		}
-    			
+
         return localWorld;
     }
-        
+
     @Override
     public LocalWorld getWorld(String name)
     {
         return this.worldLoader.getWorld(name);
     }
-    
+
     @Override
     public LocalWorld getUnloadedWorld(String name)
     {
@@ -187,7 +191,7 @@ public class ForgeEngine extends OTGEngine
     {
     	return this.worldLoader.getUnloadedWorlds();
     }
-    
+
     @Override
     public ArrayList<LocalWorld> getAllWorlds()
     {

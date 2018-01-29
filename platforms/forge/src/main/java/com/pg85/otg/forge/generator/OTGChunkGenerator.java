@@ -194,13 +194,16 @@ public class OTGChunkGenerator implements IChunkGenerator
 
         fixSpawnChunk();
 
+        if(world.getConfigs().getWorldConfig().spawnPointSet)
+        {
+    		world.getWorld().provider.setSpawnPoint(new BlockPos(world.getConfigs().getWorldConfig().spawnPointX, world.getConfigs().getWorldConfig().spawnPointY, world.getConfigs().getWorldConfig().spawnPointZ));
+    		world.getConfigs().getWorldConfig().spawnPointSet = false; // This will reset when the world is reloaded, so if users manually reconfigure the spawn point it will be reverted. They will have to set spawnPointSet: false to prevent this.
+        }
+
         this.spawner.populate(chunkCoord);
 
         BlockSand.fallInstantly = false;
         BlockGravel.fallInstantly = false;
-
-    	//ChunkCoordinate chunkCoord = ChunkCoordinate.fromChunkCoords(x, z);
-        //this.world.generateSkylightMap(chunkCoord.getBlockX(),chunkCoord.getBlockZ());
 
         HashMap<String,ArrayList<ModDataFunction>> MessagesPerMod = world.GetWorldSession().GetModDataForChunk(chunkCoord);
         if(MessagesPerMod == null && world.getConfigs().getWorldConfig().IsOTGPlus)
@@ -551,7 +554,7 @@ public class OTGChunkGenerator implements IChunkGenerator
 		        fillBiomeArray(chunk);
 		        //if(world.getConfigs().getWorldConfig().ModeTerrain == TerrainMode.TerrainTest)
 		        {
-		        	chunk.generateSkylightMap(); // Normally chunks lit in the ObjectSpawner after finishing their population step, TerrainTest skips the population step though so light blocks here.
+		        	chunk.generateSkylightMap(); // Normally chunks are lit in the ObjectSpawner after finishing their population step, TerrainTest skips the population step though so light blocks here.
 		        }
 		        chunkBuffer = null;
 	        }
@@ -561,7 +564,7 @@ public class OTGChunkGenerator implements IChunkGenerator
 		        fillBiomeArray(chunk);
 		        //if(world.getConfigs().getWorldConfig().ModeTerrain == TerrainMode.TerrainTest)
 		        {
-		        	chunk.generateSkylightMap(); // Normally chunks lit in the ObjectSpawner after finishing their population step, TerrainTest skips the population step though so light blocks here.
+		        	chunk.generateSkylightMap(); // Normally chunks are lit in the ObjectSpawner after finishing their population step, TerrainTest skips the population step though so light blocks here.
 		        }
 	        }
         	chunkCache.remove(ChunkCoordinate.fromChunkCoords(chunkX,chunkZ));

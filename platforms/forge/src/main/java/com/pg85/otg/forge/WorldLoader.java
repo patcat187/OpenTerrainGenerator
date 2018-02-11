@@ -114,8 +114,24 @@ public final class WorldLoader
     	synchronized(unloadedWorlds)
     	{
     		ForgeWorld forgeWorld = unloadedWorlds.get(worldName);
-    		forgeWorld.DeleteWorldSessionData();
-    		unloadedWorlds.remove(worldName);
+    		if(forgeWorld != null)
+    		{
+	    		forgeWorld.DeleteWorldSessionData();
+	    		unloadedWorlds.remove(worldName);
+    		}
+    	}
+    }
+
+    public void RemoveLoadedWorld(String worldName)
+    {
+    	synchronized(worlds)
+    	{
+    		ForgeWorld forgeWorld = worlds.get(worldName);
+    		if(forgeWorld != null)
+    		{
+	    		forgeWorld.DeleteWorldSessionData();
+	    		worlds.remove(worldName);
+    		}
     	}
     }
 
@@ -148,7 +164,11 @@ public final class WorldLoader
 
     public ForgeWorld getWorld(String name)
     {
-    	if(name.equals("overworld"))
+    	if(name == null)
+    	{
+    		return null;
+    	}
+    	if(name.equals("Overworld")) // For 1.12.2 overworld is all lower-case
     	{
     		return ((ForgeEngine)OTG.getEngine()).getOverWorld();
     	}

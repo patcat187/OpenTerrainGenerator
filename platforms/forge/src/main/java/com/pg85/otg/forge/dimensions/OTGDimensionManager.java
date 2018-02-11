@@ -49,7 +49,7 @@ public class OTGDimensionManager
 {
 	public static boolean isDimensionNameRegistered(String dimensionName)
 	{
-		if(dimensionName.equals("overworld"))
+		if(dimensionName.equals("Overworld")) // For 1.12.2 overworld is all lower-case
 		{
 			return true;
 		}
@@ -114,7 +114,7 @@ public class OTGDimensionManager
 	{
 		int newDimId = DimensionManager.getNextFreeDimId();
 
-		OTGDimensionManager.registerDimension(newDimId, DimensionType.register(dimensionName, "OTG", newDimId, WorldProviderOTG.class, keepLoaded));
+		registerDimension(newDimId, DimensionType.register(dimensionName, "OTG", newDimId, WorldProviderOTG.class, keepLoaded));
 		if(initDimension)
 		{
 			initDimension(newDimId, dimensionName);
@@ -152,6 +152,9 @@ public class OTGDimensionManager
 		world.unRegisterBiomes();
 
 		((ForgeEngine)OTG.getEngine()).getWorldLoader().RemoveUnloadedWorld(world.getName());
+
+		// Client side only
+		((ForgeEngine)OTG.getEngine()).getWorldLoader().RemoveLoadedWorld(world.getName());
 
 		OTGDimensionManager.UnloadCustomDimensionData(dimToRemove);
 

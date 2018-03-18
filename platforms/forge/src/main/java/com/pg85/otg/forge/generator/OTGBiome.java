@@ -248,4 +248,34 @@ public class OTGBiome extends Biome
         	}
         }
     }
+
+    /*
+    // TODO: This fixes mod compatibility problems for 1.12.2 but doesn't work for 1.11.2, fix this?
+    @Override
+    public boolean equals(Object obj)
+    {
+		// TODO: This is a super ugly hack, make this prettier..
+		// Need to do this to make sure that any OTGBiome of Ocean registered in the biome registry
+		// can be found when querying biome names / id's using a different OTGBiome of Ocean.
+		// This is because MC and mods may cache the ocean biome at some point and use it as a default value/fallback.
+		// Since OTG replaces the biome in the registry every time a new (over)world is created this causes problems.
+    	return obj instanceof OTGBiome && ((OTGBiome)obj).getBiomeName().equals("Ocean") && this.getBiomeName().equals("Ocean") ? true : super.equals(obj);
+    }
+
+    @Override
+    public int hashCode()
+    {
+    	if(this.getBiomeName().equals("Ocean"))
+    	{
+    		// TODO: This is a super ugly hack, make this prettier..
+    		// Need to do this to make sure that any OTGBiome of Ocean registered in the biome registry
+    		// can be found when querying biome names / id's using a different OTGBiome of Ocean.
+    		// This is because MC and mods may cache the ocean biome at some point and use it as a default value/fallback.
+    		// Since OTG replaces the biome in the registry every time a new (over)world is created this causes problems.
+    		return 0;
+    	} else {
+    		return super.hashCode();
+    	}
+    }
+    */
 }

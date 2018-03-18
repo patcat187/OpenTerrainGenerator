@@ -325,6 +325,19 @@ public class WorldProviderOTG extends WorldProvider
     	return super.getSkyRenderer();
     }
 
+    public double getGravityFactor()
+    {
+    	WorldConfig worldConfig = GetWorldConfig();
+    	return worldConfig != null ? worldConfig.gravityFactor : WorldStandardValues.gravityFactor.getDefaultValue();
+    }
+
+    public double getFallDamageFactor(double y)
+    {
+    	double baseGravityFactor = WorldStandardValues.gravityFactor.getDefaultValue();
+    	double gravityFactor = getGravityFactor();
+    	return (y * (gravityFactor / baseGravityFactor));
+    }
+
     /**
      * The dimension's movement factor.
      * Whenever a player or entity changes dimension from world A to world B, their coordinates are multiplied by

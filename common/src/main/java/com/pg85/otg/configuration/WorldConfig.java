@@ -298,6 +298,8 @@ public class WorldConfig extends ConfigFile
 
     public double voidFogYFactor; // A double value representing the Y value relative to the top of the map at which void fog is at its maximum. The default factor of 0.03125 relative to 256, for example, means the void fog will be at its maximum at (256*0.03125), or 8.
 
+    public double gravityFactor; // 0.08D; Affects entities jumping and falling
+
     public boolean shouldMapSpin; // Determine if the cursor on the map should 'spin' when rendered, like it does for the player in the nether.
 
     public boolean canDropChunk; // Called to determine if the chunk at the given chunk coordinates within the provider's world can be dropped. Used in WorldProviderSurface to prevent spawn chunks from being unloaded.
@@ -756,6 +758,8 @@ public class WorldConfig extends ConfigFile
         this.isNightWorld = reader.getSetting(WorldStandardValues.isNightWorld); // false;
 
         this.voidFogYFactor = reader.getSetting(WorldStandardValues.voidFogYFactor); // 0.03125D; // A double value representing the Y value relative to the top of the map at which void fog is at its maximum. The default factor of 0.03125 relative to 256, for example, means the void fog will be at its maximum at (256*0.03125), or 8.
+
+        this.gravityFactor = reader.getSetting(WorldStandardValues.gravityFactor); // 0.08D; Affects entities jumping and falling
 
         this.shouldMapSpin = reader.getSetting(WorldStandardValues.shouldMapSpin); // false; // Determine if the cursor on the map should 'spin' when rendered, like it does for the player in the nether.
 
@@ -1362,9 +1366,9 @@ public class WorldConfig extends ConfigFile
         		"If this is set to true then portals to this dimension will always teleport players to the world's spawn point.");
 
         writer.putSetting(WorldStandardValues.CARTOGRAPHER, this.Cartographer,
-                "Currently in development, the Cartographer is a miniature version of the world (1/16th scale) that can be used to view the world (including players) and teleport players and items. Setting this to true loads and updates the Cartographer world map in the Cartographer dimension. The Cartographer can be reached via a Quartz portal with a chiseled quartz base. The mods/OpenTerrainGenerator/worlds/DIM-Cartographer directory must be present (if you also have OTG-Cartographer.jar in your mods directory worlds/DIM-Cartographer should be created automatically).");
+                "In development, don't use this.");
 
-        writer.smallTitle("Game rules (dimensions only)", "Game rules for dimensions (these do not work for the overworld at the moment). These settings are still in development and may be subject to change in upcoming releases.", "");
+        writer.smallTitle("Game rules", "Game rules for this world. These settings are still in development, may not all work (please submit an issue on the git) and may be subject to change in upcoming releases.", "");
 
         writer.putSetting(WorldStandardValues.commandBlockOutput, Boolean.parseBoolean(this.commandBlockOutput),
         		"Whether command blocks should notify admins when they perform commands");
@@ -1412,7 +1416,7 @@ public class WorldConfig extends ConfigFile
         		"Whether players in spectator mode can generate chunks");
 
         // World provider settings for worlds used as dimensions with Forge : TODO: Apply to overworld too?
-        writer.smallTitle("World provider settings (dimensions only)", "World provider settings for dimensions (these do not work for the overworld at the moment). These settings are still in development and may be subject to change in upcoming releases.", "");
+        writer.smallTitle("World provider settings", "World provider settings for this world. These settings are still in development, may not all work (please submit an issue on the git) and may be subject to change in upcoming releases.", "");
 
         writer.putSetting(WorldStandardValues.welcomeMessage, this.welcomeMessage,
         		"A message to display to the user when they transfer to this dimension.");
@@ -1451,6 +1455,8 @@ public class WorldConfig extends ConfigFile
         		"If true then the sky will be locked at midnight with the moon and stars above but the world will be lit as if it were day time. Useful for space dimensions.");
         writer.putSetting(WorldStandardValues.voidFogYFactor, this.voidFogYFactor,
         		"A double value representing the Y value relative to the top of the map at which void fog is at its maximum. The default factor of 0.03125 relative to 256, for example, means the void fog will be at its maximum at (256*0.03125), or 8.");
+        writer.putSetting(WorldStandardValues.gravityFactor, this.gravityFactor,
+        		"A value above 0.0, defaults to 0.08. Affects entities jumping and falling. 0.04 would result in half the gravity and falling damage.");
         writer.putSetting(WorldStandardValues.shouldMapSpin, this.shouldMapSpin,
         		"Determine if the cursor on the map should 'spin' when rendered, like it does for the player in the nether.");
         writer.putSetting(WorldStandardValues.canDropChunk, this.canDropChunk,

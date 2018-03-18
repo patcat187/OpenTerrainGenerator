@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class OTGVillageGen extends MapGenStructure
+public class OTGVillageGen extends OTGMapGenStructure
 {
     /**
      * A list of all the biomes villages can spawn in.
@@ -97,7 +97,7 @@ public class OTGVillageGen extends MapGenStructure
     {
         return StructureNames.VILLAGE;
     }
-    
+
 	@Override
     public BlockPos getNearestStructurePos(World worldIn, BlockPos pos, boolean p_180706_3_)
     {

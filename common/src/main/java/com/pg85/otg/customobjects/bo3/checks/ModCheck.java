@@ -61,7 +61,9 @@ public class ModCheck extends BO3Check
         for (String mod : mods)
         {
             if (!OTG.getEngine().isModLoaded(mod))
+            {
                 return false;
+            }
         }
         return true;
     }

@@ -1,8 +1,19 @@
 package com.pg85.otg;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 import com.pg85.otg.common.LocalBiome;
 import com.pg85.otg.common.LocalWorld;
-import com.pg85.otg.common.OTGEngine;
 import com.pg85.otg.configuration.PluginConfig;
 import com.pg85.otg.configuration.biome.settings.BiomeResourcesManager;
 import com.pg85.otg.configuration.customobjects.CustomObjectResourcesManager;
@@ -16,42 +27,21 @@ import com.pg85.otg.customobjects.CustomObjectManager;
 import com.pg85.otg.customobjects.bo4.BO4Config;
 import com.pg85.otg.events.EventHandler;
 import com.pg85.otg.events.EventPriority;
-import com.pg85.otg.generator.ChunkBuffer;
-import com.pg85.otg.generator.biome.BiomeModeManager;
-import com.pg85.otg.generator.resource.Resource;
 import com.pg85.otg.logging.LogMarker;
+import com.pg85.otg.terraingen.ChunkBuffer;
+import com.pg85.otg.terraingen.biome.BiomeModeManager;
+import com.pg85.otg.terraingen.resource.Resource;
 import com.pg85.otg.util.ChunkCoordinate;
-
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import com.pg85.otg.util.CompressionUtils;
 
 public class OTG
-{		
-	// Used to determine if a new world is being created or if a world save already exists
-	// TODO: Make this prettier.
-	public static boolean IsNewWorldBeingCreated = false;
+{
+    private OTG() { }
 	
-    /**
-     * The engine that powers Open Terrain Generator.
-     */
     private static OTGEngine Engine;
-	
-    private OTG()
-    {
-        // Forbidden to instantiate.
-    }
-	
+    
     // Engine
-    	
+	
     /**
      * Returns the engine, containing the API methods.
      * <p>
@@ -279,53 +269,21 @@ public class OTG
     
     // Logging
     
-    /**
-     * Logs the messages with the given importance. Message will be
-     * prefixed with [OpenTerrainGenerator], so don't do that yourself.
-     * <p>
-     * @param messages The messages to log.
-     * @param level    The severity of the message
-     */
     public static void log(LogMarker level, List<String> messages)
     {
-        Engine.getLogger().log(level, messages);
+    	Engine.getLogger().log(level, messages);
     }
 
-    /**
-     * Logs a format string message with the given importance. Message will
-     * be prefixed with [OpenTerrainGenerator], so don't do that yourself.
-     * <p>
-     * @param message The messages to log formatted similar to Logger.log()
-     *                with the same args.
-     * @param level   The severity of the message
-     * @param params  The parameters belonging to {0...} in the message
-     *                string
-     */
     public static void log(LogMarker level, String message, Object... params)
     {
-        Engine.getLogger().log(level, message, params);
+    	Engine.getLogger().log(level, message, params);
     }
 
-    /**
-     * Prints the stackTrace of the provided Throwable object
-     * <p>
-     * @param level The log level to log this stack trace at
-     * @param e     The Throwable object to obtain stack trace information from
-     */
     public static void printStackTrace(LogMarker level, Throwable e)
     {
         printStackTrace(level, e, Integer.MAX_VALUE);
     }
 
-    /**
-     * Prints the stackTrace of the provided Throwable object to a certain
-     * depth
-     * <p>
-     * @param level    The log level to log this stack trace at
-     * @param e        The Throwable object to obtain stack trace information
-     *                 from
-     * @param maxDepth The max number of trace elements to print
-     */
     public static void printStackTrace(LogMarker level, Throwable e, int maxDepth)
     {
         StringWriter stringWriter = new StringWriter();
@@ -334,6 +292,8 @@ public class OTG
         Engine.getLogger().log(level, stringWriter.toString());
     }
     
+    // Misc TODO: Clean up
+
     public static String correctOldBiomeConfigFolder(File settingsDir)
     {
         // Rename the old folder
@@ -396,7 +356,7 @@ public class OTG
 				ByteArrayOutputStream bos = new ByteArrayOutputStream();
 				DataOutputStream dos = new DataOutputStream(bos);
 				config.writeToStream(dos);
-				byte[] compressedBytes = com.pg85.otg.util.CompressionUtils.compress(bos.toByteArray());
+				byte[] compressedBytes = CompressionUtils.compress(bos.toByteArray());
 				dos.close();
 				FileOutputStream fos = new FileOutputStream(file);
 				DataOutputStream dos2 = new DataOutputStream(fos);
@@ -412,5 +372,5 @@ public class OTG
                 e.printStackTrace();
             }
         }
-    }
+    }        
 }

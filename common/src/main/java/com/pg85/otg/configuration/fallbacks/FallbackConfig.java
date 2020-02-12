@@ -11,18 +11,18 @@ public class FallbackConfig extends ConfigFile {
 
 	private List<BlockFallback> fallbacks = new ArrayList<BlockFallback>();
 
-	public FallbackConfig(SettingsMap settingsReader) {
-
+	public FallbackConfig(SettingsMap settingsReader)
+	{
 		super(settingsReader.getName());
-
+		
 		this.renameOldSettings(settingsReader);
 		this.readConfigSettings(settingsReader);
-
 		this.correctSettings(true);
 	}
 
 	@Override
-	protected void writeConfigSettings(SettingsMap writer) {
+	protected void writeConfigSettings(SettingsMap writer)
+	{
 		writer.bigTitle("The Block Fallback File",
 				"Designates block replacements when the original block cannot be found. (Usually occurs when missing other mods)",
 				"Usage: BlockFallback(SourceBlockName,ReplacementBlockName[,ReplacementBlockName[,...]])",
@@ -32,30 +32,31 @@ public class FallbackConfig extends ConfigFile {
 	}
 
 	@Override
-	protected void readConfigSettings(SettingsMap reader) {
-		for (ConfigFunction<FallbackConfig> res : reader.getConfigFunctions(this, false)) {
-			if (res != null && res instanceof BlockFallback) {
+	protected void readConfigSettings(SettingsMap reader)
+	{
+		for (ConfigFunction<FallbackConfig> res : reader.getConfigFunctions(this, false))
+		{
+			if (res != null && res instanceof BlockFallback)
+			{
 				fallbacks.add((BlockFallback) res);
 			}
 		}
-
 	}
 
 	@Override
-	protected void correctSettings(boolean logWarnings) {
+	protected void correctSettings(boolean logWarnings)
+	{
 		// Nothing to correct the moment
-
 	}
 
 	@Override
-	protected void renameOldSettings(SettingsMap reader) {
+	protected void renameOldSettings(SettingsMap reader)
+	{
 		// Nothing to rename at the moment
-
 	}
 
     public List<BlockFallback> getAllFallbacks()
     {
         return fallbacks;
     }
-
 }

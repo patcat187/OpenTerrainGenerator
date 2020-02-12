@@ -37,5 +37,4 @@ class BooleanSetting extends Setting<Boolean>
         }
         throw new InvalidConfigException(string + " is not a boolean");
     }
-
 }

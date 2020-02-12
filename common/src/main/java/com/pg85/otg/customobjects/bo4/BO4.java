@@ -12,6 +12,7 @@ import com.pg85.otg.common.LocalWorld;
 import com.pg85.otg.configuration.biome.BiomeConfig;
 import com.pg85.otg.configuration.io.FileSettingsReaderOTGPlus;
 import com.pg85.otg.configuration.io.FileSettingsWriterOTGPlus;
+import com.pg85.otg.configuration.standard.DefaultMaterial;
 import com.pg85.otg.configuration.standard.PluginStandardValues;
 import com.pg85.otg.configuration.world.WorldConfig.ConfigMode;
 import com.pg85.otg.customobjects.bo4.bo4function.BO4BlockFunction;
@@ -19,13 +20,12 @@ import com.pg85.otg.customobjects.bo4.bo4function.BO4RandomBlockFunction;
 import com.pg85.otg.customobjects.structures.Branch;
 import com.pg85.otg.customobjects.structures.StructuredCustomObject;
 import com.pg85.otg.exception.InvalidConfigException;
-import com.pg85.otg.generator.surface.MesaSurfaceGenerator;
 import com.pg85.otg.logging.LogMarker;
+import com.pg85.otg.terraingen.surface.MesaSurfaceGenerator;
 import com.pg85.otg.util.ChunkCoordinate;
 import com.pg85.otg.util.bo3.NamedBinaryTag;
 import com.pg85.otg.util.bo3.Rotation;
 import com.pg85.otg.util.materials.MaterialHelper;
-import com.pg85.otg.util.minecraft.defaults.DefaultMaterial;
 
 public class BO4 implements StructuredCustomObject
 {

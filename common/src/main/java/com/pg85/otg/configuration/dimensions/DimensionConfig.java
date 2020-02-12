@@ -58,11 +58,17 @@ public class DimensionConfig extends DimensionConfigBase
         DimensionConfig dimConfig = null;
        	try {
        		dimConfig = mapper.readValue(readStringFromStream, DimensionConfig.class);
-		} catch (JsonParseException e) {
+		}
+       	catch (JsonParseException e)
+       	{
 			e.printStackTrace();
-		} catch (JsonMappingException e) {
+		}
+       	catch (JsonMappingException e)
+       	{
 			e.printStackTrace();
-		} catch (IOException e) {
+		}
+       	catch (IOException e)
+       	{
 			e.printStackTrace();
 		}
        	

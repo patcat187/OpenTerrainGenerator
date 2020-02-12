@@ -600,17 +600,22 @@ public class NamedBinaryTag
     {
         Type type = t.getType();
         if (type == Type.TAG_End)
+        {
             return;
+        }
         String name = t.getName();
         indent(indent);
         System.out.print(getTypeString(t.getType()));
         if (name != null)
+        {
             System.out.print("(\"" + t.getName() + "\")");
+        }
         if (type == Type.TAG_Byte_Array)
         {
             byte[] b = (byte[]) t.getValue();
             System.out.println(": [" + b.length + " bytes]");
-        } else if (type == Type.TAG_List)
+        }
+        else if (type == Type.TAG_List)
         {
             NamedBinaryTag[] subtags = (NamedBinaryTag[]) t.getValue();
             System.out.println(": " + subtags.length + " entries of type " + getTypeString(t.getListType()));
@@ -620,7 +625,8 @@ public class NamedBinaryTag
             }
             indent(indent);
             System.out.println("}");
-        } else if (type == Type.TAG_Compound)
+        }
+        else if (type == Type.TAG_Compound)
         {
             NamedBinaryTag[] subtags = (NamedBinaryTag[]) t.getValue();
             System.out.println(": " + (subtags.length - 1) + " entries");
@@ -632,15 +638,14 @@ public class NamedBinaryTag
             }
             indent(indent);
             System.out.println("}");
-        } else if (type == Type.TAG_Int_Array)
+        }
+        else if (type == Type.TAG_Int_Array)
         {
             int[] i = (int[]) t.getValue();
             System.out.println(": [" + i.length * 4 + " bytes]");
 
-        } else
-        {
+        } else {
             System.out.println(": " + t.getValue());
         }
     }
-
 }

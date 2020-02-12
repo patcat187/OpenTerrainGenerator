@@ -8,9 +8,7 @@ import java.util.Random;
  */
 public class RandomHelper
 {
-    private RandomHelper()
-    {
-    }
+    private RandomHelper() { }
 	
     /**
      * Gets a Random generator with a random seed. However, the same input

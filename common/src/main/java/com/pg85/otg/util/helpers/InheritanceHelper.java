@@ -9,8 +9,6 @@ import java.util.List;
 
 public class InheritanceHelper
 {
-	// OTG+
-	
     public static final <T, C extends CustomObjectConfigFunction<T>> List<C> mergeListsCustomObject(Collection<? extends C> childList, Collection<? extends C> parentList)
     {
         List<C> returnList = new ArrayList<C>(childList);
@@ -34,13 +32,6 @@ public class InheritanceHelper
             }
         }
         return false;
-    }
-    
-	//
-	
-	
-    private InheritanceHelper()
-    {
     }
 
     /**
@@ -91,5 +82,4 @@ public class InheritanceHelper
         }
         return false;
     }
-
 }

@@ -1,15 +1,15 @@
 package com.pg85.otg.configuration.settingType;
 
+import java.util.List;
+
 import com.pg85.otg.common.LocalMaterialData;
 import com.pg85.otg.configuration.biome.settings.ReplaceBlocks;
 import com.pg85.otg.configuration.biome.settings.ReplacedBlocksMatrix;
 import com.pg85.otg.configuration.biome.settings.WeightedMobSpawnGroup;
-import com.pg85.otg.generator.surface.SurfaceGenerator;
+import com.pg85.otg.configuration.standard.DefaultMaterial;
+import com.pg85.otg.terraingen.surface.SurfaceGenerator;
 import com.pg85.otg.util.bo3.Rotation;
 import com.pg85.otg.util.materials.MaterialSet;
-import com.pg85.otg.util.minecraft.defaults.DefaultMaterial;
-
-import java.util.List;
 
 /**
  * Acts as a factory for creating settings. Classes holding settings must

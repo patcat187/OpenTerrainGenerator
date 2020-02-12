@@ -47,7 +47,8 @@ public abstract class BO3Check extends CustomObjectConfigFunction<BO3Config>
     @Override
     public boolean isAnalogousTo(CustomObjectConfigFunction<BO3Config> other)
     {
-        if(!getClass().equals(other.getClass())) {
+        if(!getClass().equals(other.getClass()))
+        {
             return false;
         }
         BO3Check check = (BO3Check) other;

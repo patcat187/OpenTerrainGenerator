@@ -10,7 +10,6 @@ import java.nio.charset.StandardCharsets;
 
 public class StreamHelper
 {
-
 	public static void writeStringToStream(DataOutput stream, String value) throws IOException
 	{
 	    stream.writeBoolean(value == null);

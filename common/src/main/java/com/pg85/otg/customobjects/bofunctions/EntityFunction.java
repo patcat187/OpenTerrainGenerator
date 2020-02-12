@@ -67,7 +67,8 @@ public abstract class EntityFunction<T extends CustomObjectConfigFile> extends C
     				try {
     					String line = reader.readLine();
 
-    				    while (line != null) {
+    				    while (line != null)
+    				    {
     				    	stringbuilder.append(line);
     				        //sb.append(System.lineSeparator());
     				        line = reader.readLine();
@@ -75,10 +76,13 @@ public abstract class EntityFunction<T extends CustomObjectConfigFile> extends C
     				} finally {
     					reader.close();
     				}
-    			} catch (FileNotFoundException e1) {
+    			}
+    			catch (FileNotFoundException e1)
+    			{
     				e1.printStackTrace();
     			}
-    			catch (IOException e1) {
+    			catch (IOException e1)
+    			{
     				e1.printStackTrace();
     			}
     	    }

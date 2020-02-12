@@ -224,7 +224,9 @@ public class BO4BranchFunction extends BranchFunction<BO4Config>
         
         try {
 			branchFunction.load(args);
-		} catch (InvalidConfigException e) {
+		}
+        catch (InvalidConfigException e)
+        {
 			e.printStackTrace();
 		}            	           
     	return branchFunction;

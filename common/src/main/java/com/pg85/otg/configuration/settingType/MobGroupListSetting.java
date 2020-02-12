@@ -14,7 +14,6 @@ import java.util.List;
  */
 class MobGroupListSetting extends Setting<List<WeightedMobSpawnGroup>>
 {
-
     MobGroupListSetting(String name)
     {
         super(name);
@@ -37,5 +36,4 @@ class MobGroupListSetting extends Setting<List<WeightedMobSpawnGroup>>
     {
         return WeightedMobSpawnGroup.toJson(groups);
     }
-
 }

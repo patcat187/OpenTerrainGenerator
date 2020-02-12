@@ -2,7 +2,6 @@ package com.pg85.otg.configuration;
 
 import com.pg85.otg.common.LocalMaterialData;
 import com.pg85.otg.exception.InvalidConfigException;
-import com.pg85.otg.generator.resource.ReedGen;
 import com.pg85.otg.util.helpers.StringHelper;
 import com.pg85.otg.util.materials.MaterialHelper;
 import com.pg85.otg.util.materials.MaterialSet;
@@ -157,5 +156,4 @@ public abstract class ConfigFunction<T>
     {
         return StringHelper.readDouble(string, 0.000001, 100);
     }
-
 }

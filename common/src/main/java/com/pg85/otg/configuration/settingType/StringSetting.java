@@ -28,5 +28,4 @@ class StringSetting extends Setting<String>
     {
         return string.trim();
     }
-
 }

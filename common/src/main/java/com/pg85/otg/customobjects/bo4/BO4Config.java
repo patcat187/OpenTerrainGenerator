@@ -6,10 +6,13 @@ import com.pg85.otg.configuration.customobjects.CustomObjectConfigFile;
 import com.pg85.otg.configuration.customobjects.CustomObjectConfigFunction;
 import com.pg85.otg.configuration.io.SettingsReaderOTGPlus;
 import com.pg85.otg.configuration.io.SettingsWriterOTGPlus;
+import com.pg85.otg.configuration.standard.DefaultStructurePart;
 import com.pg85.otg.configuration.standard.PluginStandardValues;
 import com.pg85.otg.configuration.standard.WorldStandardValues;
 import com.pg85.otg.configuration.world.WorldConfig.ConfigMode;
 import com.pg85.otg.customobjects.CustomObject;
+import com.pg85.otg.customobjects.bo3.BO3Settings;
+import com.pg85.otg.customobjects.bo3.BO3Settings.SpawnHeightEnum;
 import com.pg85.otg.customobjects.bo4.BO4Config;
 import com.pg85.otg.customobjects.bo4.BO4Settings;
 import com.pg85.otg.customobjects.bo4.bo4function.BO4BlockFunction;
@@ -21,15 +24,13 @@ import com.pg85.otg.customobjects.bo4.bo4function.BO4RandomBlockFunction;
 import com.pg85.otg.customobjects.bo4.bo4function.BO4SpawnerFunction;
 import com.pg85.otg.customobjects.bo4.bo4function.BO4WeightedBranchFunction;
 import com.pg85.otg.customobjects.structures.bo4.BO4CustomStructureCoordinate;
-import com.pg85.otg.customobjects.bo3.BO3Settings;
-import com.pg85.otg.customobjects.bo3.BO3Settings.SpawnHeightEnum;
 import com.pg85.otg.exception.InvalidConfigException;
 import com.pg85.otg.logging.LogMarker;
+import com.pg85.otg.util.CompressionUtils;
 import com.pg85.otg.util.bo3.NamedBinaryTag;
 import com.pg85.otg.util.bo3.Rotation;
 import com.pg85.otg.util.helpers.StreamHelper;
 import com.pg85.otg.util.materials.MaterialHelper;
-import com.pg85.otg.util.minecraft.defaults.DefaultStructurePart;
 
 import java.io.DataOutput;
 import java.io.File;
@@ -666,14 +667,7 @@ public class BO4Config extends CustomObjectConfigFile
             			{
 	                    	tempBlocksList.add((BO4BlockFunction)res);
 	                    	block = (BO4BlockFunction)res;
-	                    	try
-	                    	{
-	                    		columnSizes[block.x + (xSize / 2)][block.z + (zSize / 2) - 1]++;
-	                    	}
-	                    	catch(ArrayIndexOutOfBoundsException ex)
-	                    	{
-	                    		String breakpoint = "";
-	                    	}
+                    		columnSizes[block.x + (xSize / 2)][block.z + (zSize / 2) - 1]++;
             			}
             		}
             		
@@ -1718,7 +1712,7 @@ public class BO4Config extends CustomObjectConfigFile
 				byte[] compressedBytes = new byte[(int) fis.getChannel().size()];
 				buffer.get(compressedBytes);
 				try {
-					byte[] decompressedBytes = com.pg85.otg.util.CompressionUtils.decompress(compressedBytes);
+					byte[] decompressedBytes = CompressionUtils.decompress(compressedBytes);
 		    		buffer = ByteBuffer.wrap(decompressedBytes);
 				} catch (DataFormatException e1) {
 					// TODO Auto-generated catch block

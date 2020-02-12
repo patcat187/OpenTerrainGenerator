@@ -1,6 +1,5 @@
 package com.pg85.otg.customobjects.structures;
 
-import com.pg85.otg.customobjects.CustomObject;
 import com.pg85.otg.util.ChunkCoordinate;
 import java.util.*;
 

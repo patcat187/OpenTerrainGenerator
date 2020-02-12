@@ -1,7 +1,6 @@
 package com.pg85.otg.configuration.io;
 
 import com.pg85.otg.configuration.ConfigFunction;
-import com.pg85.otg.configuration.io.RawSettingValue.ValueType;
 import com.pg85.otg.configuration.settingType.Setting;
 
 import java.util.Collection;
@@ -152,5 +151,4 @@ public interface SettingsMap
      * @param comments Comments directly after the title.
      */
     void bigTitle(String title, String... comments);
-
 }

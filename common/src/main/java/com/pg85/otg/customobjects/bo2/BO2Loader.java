@@ -1,10 +1,10 @@
 package com.pg85.otg.customobjects.bo2;
 
+import java.io.File;
+
 import com.pg85.otg.configuration.io.FileSettingsReaderOTGPlus;
 import com.pg85.otg.customobjects.CustomObject;
 import com.pg85.otg.customobjects.CustomObjectLoader;
-
-import java.io.File;
 
 public class BO2Loader implements CustomObjectLoader
 {

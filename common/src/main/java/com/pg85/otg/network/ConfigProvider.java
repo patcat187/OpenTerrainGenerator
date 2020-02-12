@@ -16,7 +16,6 @@ import com.pg85.otg.configuration.world.WorldConfig;
  */
 public interface ConfigProvider
 {
-
     /**
      * Gets the world config, which holds settings that affect the whole world.
      * @return The world config.

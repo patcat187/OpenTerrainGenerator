@@ -5,16 +5,15 @@ import com.pg85.otg.common.LocalBiome;
 import com.pg85.otg.common.LocalWorld;
 import com.pg85.otg.configuration.biome.BiomeConfig;
 import com.pg85.otg.configuration.standard.PluginStandardValues;
-import com.pg85.otg.customobjects.CustomObject;
-import com.pg85.otg.customobjects.bo4.BO4;
 import com.pg85.otg.customobjects.bo3.BO3Settings.SpawnHeightEnum;
+import com.pg85.otg.customobjects.bo4.BO4;
+import com.pg85.otg.customobjects.bo4.BO4Config;
 import com.pg85.otg.customobjects.structures.CustomStructure;
 import com.pg85.otg.customobjects.structures.CustomStructureCoordinate;
 import com.pg85.otg.customobjects.structures.StructuredCustomObject;
-import com.pg85.otg.customobjects.bo4.BO4Config;
 import com.pg85.otg.exception.InvalidConfigException;
-import com.pg85.otg.generator.resource.CustomStructureGen;
 import com.pg85.otg.logging.LogMarker;
+import com.pg85.otg.terraingen.resource.CustomStructureGen;
 import com.pg85.otg.util.ChunkCoordinate;
 import com.pg85.otg.util.helpers.RandomHelper;
 
@@ -76,10 +75,7 @@ public class BO4CustomStructure extends CustomStructure
     	this.minY = minY;
     }
 
-    public BO4CustomStructure()
-    {
-    
-    }
+    public BO4CustomStructure() { }
     
     public BO4CustomStructure(LocalWorld world, BO4CustomStructureCoordinate start)
     {

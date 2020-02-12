@@ -4,10 +4,7 @@ import com.pg85.otg.configuration.biome.BiomeConfig.MineshaftType;
 import com.pg85.otg.configuration.biome.BiomeConfig.RareBuildingType;
 import com.pg85.otg.configuration.biome.BiomeConfig.VillageType;
 import com.pg85.otg.configuration.biome.settings.WeightedMobSpawnGroup;
-import com.pg85.otg.generator.surface.MesaSurfaceGenerator;
-import com.pg85.otg.util.minecraft.defaults.DefaultBiome;
-import com.pg85.otg.util.minecraft.defaults.DefaultMaterial;
-import com.pg85.otg.util.minecraft.defaults.TreeType;
+import com.pg85.otg.terraingen.surface.MesaSurfaceGenerator;
 
 import java.util.ArrayList;
 import java.util.Arrays;

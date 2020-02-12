@@ -2,7 +2,6 @@ package com.pg85.otg.util.helpers;
 
 public class LogicHelper
 {
-
     /**
      * Returns true if both objects are equal. If both objects are null, this
      * method returns true. If one of the objects is null, this method returns
@@ -25,5 +24,4 @@ public class LogicHelper
         }
         return o1.equals(o2);
     }
-
 }

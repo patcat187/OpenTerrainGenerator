@@ -2,9 +2,9 @@ package com.pg85.otg.customobjects.bo3;
 
 import com.pg85.otg.configuration.settingType.Setting;
 import com.pg85.otg.configuration.settingType.Settings;
+import com.pg85.otg.configuration.standard.DefaultMaterial;
 import com.pg85.otg.configuration.standard.PluginStandardValues;
 import com.pg85.otg.util.materials.MaterialSet;
-import com.pg85.otg.util.minecraft.defaults.DefaultMaterial;
 
 import java.util.List;
 
@@ -19,26 +19,26 @@ public class BO3Settings extends Settings
     static final Setting<Double> RARITY = doubleSetting("Rarity", 100, 0.000001, 100);
 
     static final Setting<Integer>
-            FREQUENCY = intSetting("Frequency", 0, 0, 9999),
-            MIN_HEIGHT = intSetting("MinHeight", 0, PluginStandardValues.WORLD_DEPTH, PluginStandardValues.WORLD_HEIGHT - 1),
-            MAX_HEIGHT = intSetting("MaxHeight", 256, PluginStandardValues.WORLD_DEPTH, PluginStandardValues.WORLD_HEIGHT - 1),
-            MAX_BRANCH_DEPTH = intSetting("MaxBranchDepth", 10, 1, 100),
-            MAX_PERCENTAGE_OUTSIDE_SOURCE_BLOCK = intSetting("MaxPercentageOutsideSourceBlock", 100, 0, 100),
-            SPAWN_HEIGHT_OFFSET = intSetting("SpawnHeightOffset", 0, -255, 255),
-            SPAWN_HEIGHT_VARIANCE = intSetting("SpawnHeightVariance", 0, -255, 255)
-            ;
+        FREQUENCY = intSetting("Frequency", 0, 0, 9999),
+        MIN_HEIGHT = intSetting("MinHeight", 0, PluginStandardValues.WORLD_DEPTH, PluginStandardValues.WORLD_HEIGHT - 1),
+        MAX_HEIGHT = intSetting("MaxHeight", 256, PluginStandardValues.WORLD_DEPTH, PluginStandardValues.WORLD_HEIGHT - 1),
+        MAX_BRANCH_DEPTH = intSetting("MaxBranchDepth", 10, 1, 100),
+        MAX_PERCENTAGE_OUTSIDE_SOURCE_BLOCK = intSetting("MaxPercentageOutsideSourceBlock", 100, 0, 100),
+        SPAWN_HEIGHT_OFFSET = intSetting("SpawnHeightOffset", 0, -255, 255),
+        SPAWN_HEIGHT_VARIANCE = intSetting("SpawnHeightVariance", 0, -255, 255)
+        ;
 
     static final Setting<String>
-            AUTHOR = stringSetting("Author", "Unknown"),
-            DESCRIPTION = stringSetting("Description", "No description given"),
-            VERSION = stringSetting("Version", "3")
-            ;
+        AUTHOR = stringSetting("Author", "Unknown"),
+        DESCRIPTION = stringSetting("Description", "No description given"),
+        VERSION = stringSetting("Version", "3")
+        ;
 
     static final Setting<List<String>> EXCLUDED_BIOMES = stringListSetting("ExcludedBiomes", "All");
 
     static final Setting<MaterialSet>
-            SOURCE_BLOCKS = materialSetSetting("SourceBlocks", DefaultMaterial.AIR),
-            EXTRUDE_THROUGH_BLOCKS = materialSetSetting("ExtrudeThroughBlocks", DefaultMaterial.AIR);
+        SOURCE_BLOCKS = materialSetSetting("SourceBlocks", DefaultMaterial.AIR),
+        EXTRUDE_THROUGH_BLOCKS = materialSetSetting("ExtrudeThroughBlocks", DefaultMaterial.AIR);
 
     // Enum settings
     static final Setting<OutsideSourceBlock> OUTSIDE_SOURCE_BLOCK = enumSetting("OutsideSourceBlock", OutsideSourceBlock.placeAnyway);
@@ -105,5 +105,4 @@ public class BO3Settings extends Settings
         dontPlace,
         placeAnyway
     }
-
 }

@@ -42,7 +42,6 @@ public class MaterialSet
     private boolean allMaterials = false;
     private boolean allSolidMaterials = false;
     private boolean allNonSolidMaterials = false;
-
     private int[] materialIntSet = new int[0];
     public Set<MaterialSetEntry> materials = new LinkedHashSet<MaterialSetEntry>();
     private boolean intSetUpToDate = true;
@@ -155,7 +154,8 @@ public class MaterialSet
         materials.add(entry);
     }
     
-    public void parseForWorld(LocalWorld world) {
+    public void parseForWorld(LocalWorld world)
+    {
         if (!parsed)
         {
             for (MaterialSetEntry material : materials)
@@ -302,5 +302,4 @@ public class MaterialSet
         }
         return rotated;
     }
-
 }

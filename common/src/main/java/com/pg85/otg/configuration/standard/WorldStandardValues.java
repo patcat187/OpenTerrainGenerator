@@ -10,7 +10,6 @@ import com.pg85.otg.configuration.world.WorldConfig.ConfigMode;
 import com.pg85.otg.configuration.world.WorldConfig.ImageMode;
 import com.pg85.otg.configuration.world.WorldConfig.ImageOrientation;
 import com.pg85.otg.configuration.world.WorldConfig.TerrainMode;
-import com.pg85.otg.util.minecraft.defaults.DefaultMaterial;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -259,5 +258,4 @@ public class WorldStandardValues extends Settings
     public static final Setting<List<String>> NORMAL_BIOMES = stringListSetting("NormalBiomes", "Desert", "Forest", "Extreme Hills",
             "Swampland", "Plains", "Taiga", "Jungle", "River");
     public static final Setting<List<String>> ICE_BIOMES = stringListSetting("IceBiomes", "Ice Plains");
-
 }

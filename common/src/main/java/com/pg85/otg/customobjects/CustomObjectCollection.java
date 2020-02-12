@@ -2,9 +2,9 @@ package com.pg85.otg.customobjects;
 
 import com.pg85.otg.OTG;
 import com.pg85.otg.configuration.standard.PluginStandardValues;
+import com.pg85.otg.configuration.standard.TreeType;
 import com.pg85.otg.customobjects.bo4.BO4;
 import com.pg85.otg.logging.LogMarker;
-import com.pg85.otg.util.minecraft.defaults.TreeType;
 
 import java.io.File;
 import java.util.*;

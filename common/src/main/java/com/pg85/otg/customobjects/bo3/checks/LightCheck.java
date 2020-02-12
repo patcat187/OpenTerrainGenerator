@@ -12,7 +12,6 @@ import java.util.List;
  */
 public class LightCheck extends BO3Check
 {
-
     /**
      * The minimum Light level, inclusive
      */

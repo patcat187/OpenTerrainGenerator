@@ -3,12 +3,12 @@ package com.pg85.otg.customobjects.bofunctions;
 import com.pg85.otg.common.LocalWorld;
 import com.pg85.otg.configuration.customobjects.CustomObjectConfigFile;
 import com.pg85.otg.configuration.customobjects.CustomObjectConfigFunction;
+import com.pg85.otg.configuration.standard.DefaultStructurePart;
 import com.pg85.otg.customobjects.SpawnableObject;
 import com.pg85.otg.customobjects.bo3.BO3Config;
 import com.pg85.otg.exception.InvalidConfigException;
 import com.pg85.otg.util.ChunkCoordinate;
 import com.pg85.otg.util.bo3.Rotation;
-import com.pg85.otg.util.minecraft.defaults.DefaultStructurePart;
 
 import java.util.List;
 import java.util.Random;

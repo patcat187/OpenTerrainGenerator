@@ -1,6 +1,7 @@
 package com.pg85.otg.common;
 
-import com.pg85.otg.util.minecraft.defaults.DefaultMaterial;
+import com.pg85.otg.OTGEngine;
+import com.pg85.otg.configuration.standard.DefaultMaterial;
 
 //TODO: Clean up ForgeMaterialData/BukkitMaterialData/LocalMaterialData/MaterialHelper/OTGEngine.readMaterial
 /**
@@ -195,5 +196,4 @@ public interface LocalMaterialData
      * @return
      */
 	public boolean isParsed();
-
 }

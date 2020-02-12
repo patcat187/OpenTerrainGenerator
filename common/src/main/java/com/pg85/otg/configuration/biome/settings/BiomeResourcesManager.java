@@ -10,9 +10,29 @@ import com.pg85.otg.configuration.ConfigFunction;
 import com.pg85.otg.configuration.ErroredFunction;
 import com.pg85.otg.configuration.biome.BiomeGroup;
 import com.pg85.otg.configuration.fallbacks.BlockFallback;
-import com.pg85.otg.configuration.world.WorldConfig;
 import com.pg85.otg.exception.InvalidConfigException;
-import com.pg85.otg.generator.resource.*;
+import com.pg85.otg.terraingen.resource.AboveWaterGen;
+import com.pg85.otg.terraingen.resource.BoulderGen;
+import com.pg85.otg.terraingen.resource.CactusGen;
+import com.pg85.otg.terraingen.resource.CustomObjectGen;
+import com.pg85.otg.terraingen.resource.CustomStructureGen;
+import com.pg85.otg.terraingen.resource.DungeonGen;
+import com.pg85.otg.terraingen.resource.FossilGen;
+import com.pg85.otg.terraingen.resource.GrassGen;
+import com.pg85.otg.terraingen.resource.IceSpikeGen;
+import com.pg85.otg.terraingen.resource.LiquidGen;
+import com.pg85.otg.terraingen.resource.OreGen;
+import com.pg85.otg.terraingen.resource.PlantGen;
+import com.pg85.otg.terraingen.resource.ReedGen;
+import com.pg85.otg.terraingen.resource.SaplingGen;
+import com.pg85.otg.terraingen.resource.SmallLakeGen;
+import com.pg85.otg.terraingen.resource.SurfacePatchGen;
+import com.pg85.otg.terraingen.resource.TreeGen;
+import com.pg85.otg.terraingen.resource.UnderWaterOreGen;
+import com.pg85.otg.terraingen.resource.UndergroundLakeGen;
+import com.pg85.otg.terraingen.resource.VeinGen;
+import com.pg85.otg.terraingen.resource.VinesGen;
+import com.pg85.otg.terraingen.resource.WellGen;
 
 public class BiomeResourcesManager
 {
@@ -24,8 +44,7 @@ public class BiomeResourcesManager
         this.configFunctions = new HashMap<String, Class<? extends ConfigFunction<?>>>();
 
         // Functions in WorldConfigs
-        registerConfigFunction("BiomeGroup", BiomeGroup.class);
-        
+        registerConfigFunction("BiomeGroup", BiomeGroup.class);        
         registerConfigFunction("BlockFallback", BlockFallback.class);
 
         // Functions in BiomeConfigs
@@ -86,17 +105,21 @@ public class BiomeResourcesManager
             Constructor<? extends ConfigFunction<?>> constructor = clazz.getConstructor(
                     holder.getClass(), List.class);
             return (ConfigFunction<T>) constructor.newInstance(holder, args);
-        } catch (NoSuchMethodException e1)
+        }
+        catch (NoSuchMethodException e1)
         {
             // Probably uses another holder type
             return null;
-        } catch (InstantiationException e)
+        }
+        catch (InstantiationException e)
         {
             throw new RuntimeException(e);
-        } catch (IllegalAccessException e)
+        }
+        catch (IllegalAccessException e)
         {
             throw new RuntimeException(e);
-        } catch (InvocationTargetException e)
+        }
+        catch (InvocationTargetException e)
         {
             Throwable cause = e.getCause();
             if (cause instanceof InvalidConfigException)
@@ -106,5 +129,4 @@ public class BiomeResourcesManager
             throw new RuntimeException(e);
         }
     }
-
 }

@@ -4,12 +4,12 @@ import com.pg85.otg.OTG;
 import com.pg85.otg.common.LocalBiome;
 import com.pg85.otg.common.LocalWorld;
 import com.pg85.otg.configuration.ConfigFunction;
+import com.pg85.otg.configuration.standard.DefaultBiome;
 import com.pg85.otg.configuration.standard.WorldStandardValues;
 import com.pg85.otg.configuration.world.WorldConfig;
 import com.pg85.otg.exception.InvalidConfigException;
 import com.pg85.otg.logging.LogMarker;
 import com.pg85.otg.util.helpers.StringHelper;
-import com.pg85.otg.util.minecraft.defaults.DefaultBiome;
 
 import java.util.*;
 import java.util.Map.Entry;

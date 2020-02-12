@@ -51,8 +51,7 @@ public class ReplacedBlocksMatrix
             {
                 minHeight = StringHelper.readInt(values[2], 0, maxAllowedY);
                 maxHeight = StringHelper.readInt(values[3], minHeight, maxAllowedY);
-            } else
-            {
+            } else {
                 minHeight = 0;
                 maxHeight = maxAllowedY;
             }
@@ -129,8 +128,7 @@ public class ReplacedBlocksMatrix
             {
                 String keyWithoutBraces = key.substring(start + 1, end);
                 instructions.add(new ReplacedBlocksInstruction(keyWithoutBraces, maxHeight));
-            } else
-            {
+            } else {
                 throw new InvalidConfigException("One of the parts is missing braces around it.");
             }
 
@@ -216,7 +214,8 @@ public class ReplacedBlocksMatrix
         try
         {
             return new ReplacedBlocksMatrix(NO_REPLACE, maxHeight);
-        } catch (InvalidConfigException e)
+        }
+        catch (InvalidConfigException e)
         {
             // Should never happen
             throw new AssertionError(e);

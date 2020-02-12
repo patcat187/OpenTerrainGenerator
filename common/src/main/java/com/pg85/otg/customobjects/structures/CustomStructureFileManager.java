@@ -231,7 +231,8 @@ public class CustomStructureFileManager
 	            {
 	                // Close the writer regardless of what happens...
 	                writer.close();
-	            } catch (Exception e) { }
+	            }
+	            catch (Exception e) { }
 	        }
     	}
     }
@@ -687,7 +688,8 @@ public class CustomStructureFileManager
 	            {
 	                // Close the writer regardless of what happens...
 	                writer.close();
-	            } catch (Exception e) { }
+	            }
+	            catch (Exception e) { }
 	        }
 		}
 	}

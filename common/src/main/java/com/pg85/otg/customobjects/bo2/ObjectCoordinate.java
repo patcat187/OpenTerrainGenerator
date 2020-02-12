@@ -56,7 +56,6 @@ class ObjectCoordinate
         }
 
         return newCoordinate;
-
     }
 
     static ObjectCoordinate getCoordinateFromString(String key, String value)
@@ -90,17 +89,14 @@ class ObjectCoordinate
             newCoordinate.material = MaterialHelper.readMaterial(workingDataString);
 
             return newCoordinate;
-
         }
         catch (NumberFormatException e)
         {
             return null;
-
         }
         catch (InvalidConfigException e)
         {
-            return null;
-            
+            return null;            
         }
     }
 }

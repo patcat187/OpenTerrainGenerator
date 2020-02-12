@@ -1,7 +1,7 @@
 package com.pg85.otg.util;
 
 /**
- * Immutable class to hold the biome ids of a biome.
+ * Class to hold the biome ids of a biome.
  * <p>
  * Most biomes have just one id: it is used during terrain generation and it
  * is used to save to the map files. Some biomes have two ids: one used during
@@ -74,8 +74,7 @@ public class BiomeIds
         if (isVirtual())
         {
             return otgBiomeId + " (otg), " + savedId + " (saved)";
-        } else
-        {
+        } else {
             return Integer.toString(savedId);
         }
     }
@@ -116,5 +115,4 @@ public class BiomeIds
         }
         return true;
     }
-
 }

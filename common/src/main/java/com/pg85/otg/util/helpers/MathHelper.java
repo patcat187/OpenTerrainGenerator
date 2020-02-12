@@ -4,9 +4,15 @@ public class MathHelper
 {
     private static float[] A = new float[65536];
 
-    private MathHelper()
+    static
     {
+        for (int i = 0; i < 65536; i++)
+        {
+            A[i] = (float) Math.sin(i * 3.141592653589793D * 2.0D / 65536.0D);
+        }
     }
+    
+    private MathHelper() { }
     
     public static float sqrt(float paramFloat)
     {
@@ -26,7 +32,6 @@ public class MathHelper
     public static int floor(double d0)
     {
         int i = (int) d0;
-
         return d0 < i ? i - 1 : i;
     }
 
@@ -41,16 +46,9 @@ public class MathHelper
         if (number > 0)
         {
             return number;
-        } else
-        {
+        } else {
             return -number;
         }
-    }
-
-    static
-    {
-        for (int i = 0; i < 65536; i++)
-            A[i] = (float) Math.sin(i * 3.141592653589793D * 2.0D / 65536.0D);
     }
 
     public static int ceil(float floatNumber)

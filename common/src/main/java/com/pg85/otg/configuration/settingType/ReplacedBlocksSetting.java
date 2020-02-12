@@ -10,7 +10,6 @@ import com.pg85.otg.exception.InvalidConfigException;
  */
 class ReplacedBlocksSetting extends Setting<ReplacedBlocksMatrix>
 {
-
     ReplacedBlocksSetting(String name)
     {
         super(name);
@@ -27,5 +26,4 @@ class ReplacedBlocksSetting extends Setting<ReplacedBlocksMatrix>
     {
         return new ReplacedBlocksMatrix(string, PluginStandardValues.WORLD_HEIGHT);
     }
-
 }

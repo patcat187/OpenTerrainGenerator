@@ -85,5 +85,4 @@ public class BranchNode implements Comparable<BranchNode>
     {
         return (int) (this.chance - that.chance);
     }
-
 }

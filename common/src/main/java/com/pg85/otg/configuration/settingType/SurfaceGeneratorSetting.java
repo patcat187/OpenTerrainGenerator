@@ -1,10 +1,10 @@
 package com.pg85.otg.configuration.settingType;
 
 import com.pg85.otg.exception.InvalidConfigException;
-import com.pg85.otg.generator.surface.MesaSurfaceGenerator;
-import com.pg85.otg.generator.surface.MultipleLayersSurfaceGenerator;
-import com.pg85.otg.generator.surface.SimpleSurfaceGenerator;
-import com.pg85.otg.generator.surface.SurfaceGenerator;
+import com.pg85.otg.terraingen.surface.MesaSurfaceGenerator;
+import com.pg85.otg.terraingen.surface.MultipleLayersSurfaceGenerator;
+import com.pg85.otg.terraingen.surface.SimpleSurfaceGenerator;
+import com.pg85.otg.terraingen.surface.SurfaceGenerator;
 import com.pg85.otg.util.helpers.StringHelper;
 
 /**
@@ -13,7 +13,6 @@ import com.pg85.otg.util.helpers.StringHelper;
  */
 class SurfaceGeneratorSetting extends Setting<SurfaceGenerator>
 {
-
     SurfaceGeneratorSetting(String name)
     {
         super(name);
@@ -40,5 +39,4 @@ class SurfaceGeneratorSetting extends Setting<SurfaceGenerator>
         }
         return new SimpleSurfaceGenerator();
     }
-
 }

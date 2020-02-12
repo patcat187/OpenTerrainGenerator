@@ -55,5 +55,4 @@ public class DoubleArraySetting extends Setting<double[]>
         }
         return builder.toString();
     }
-
 }

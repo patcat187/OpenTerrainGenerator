@@ -1,11 +1,11 @@
 package com.pg85.otg.util.materials;
 
 import com.pg85.otg.OTG;
+import com.pg85.otg.OTGEngine;
 import com.pg85.otg.common.LocalMaterialData;
-import com.pg85.otg.common.OTGEngine;
+import com.pg85.otg.configuration.standard.DefaultMaterial;
 import com.pg85.otg.exception.InvalidConfigException;
 import com.pg85.otg.util.FifoMap;
-import com.pg85.otg.util.minecraft.defaults.DefaultMaterial;
 
 //TODO: Clean up and optimise ForgeMaterialData/BukkitMaterialData/LocalMaterialData/MaterialHelper/OTGEngine.readMaterial
 public class MaterialHelper

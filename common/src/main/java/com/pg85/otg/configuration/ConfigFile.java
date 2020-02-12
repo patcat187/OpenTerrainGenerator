@@ -1,11 +1,11 @@
 package com.pg85.otg.configuration;
 
-import com.pg85.otg.configuration.io.SettingsMap;
-import com.pg85.otg.configuration.io.SimpleSettingsMap;
-import com.pg85.otg.util.minecraft.defaults.DefaultBiome;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import com.pg85.otg.configuration.io.SettingsMap;
+import com.pg85.otg.configuration.io.SimpleSettingsMap;
+import com.pg85.otg.configuration.standard.DefaultBiome;
 
 /**
  * Abstract base class for all configuration files. Configuration files read
@@ -143,5 +143,4 @@ public abstract class ConfigFile
     {
         return configName;
     }
-
 }

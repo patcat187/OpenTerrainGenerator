@@ -63,7 +63,8 @@ class ObjectExtrusionHelper
             {
                 blocksToExtrude.clear();
                 blockExtrusionY = block.y;
-            } else if (extrudeMode == BO3Settings.ExtrudeMode.TopUp && block.y > blockExtrusionY)
+            }
+            else if (extrudeMode == BO3Settings.ExtrudeMode.TopUp && block.y > blockExtrusionY)
             {
                 blocksToExtrude.clear();
                 blockExtrusionY = block.y;
@@ -97,7 +98,8 @@ class ObjectExtrusionHelper
                 {
                 	world.setBlock(x + block.x, yi, z + block.z, block.material.parseForWorld(world), block.metaDataTag, chunkBeingPopulated);
                 }
-            } else if (extrudeMode == BO3Settings.ExtrudeMode.TopUp)
+            }
+            else if (extrudeMode == BO3Settings.ExtrudeMode.TopUp)
             {
                 for (int yi = y + block.y + 1;
                      yi < extrudeMode.getEndingHeight() && extrudeThroughBlocks.contains(world.getMaterial(x + block.x, yi, z + block.z, chunkBeingPopulated));

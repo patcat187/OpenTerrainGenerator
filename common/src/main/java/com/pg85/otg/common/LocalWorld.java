@@ -1,18 +1,18 @@
 package com.pg85.otg.common;
 
 import com.pg85.otg.configuration.biome.BiomeConfig;
+import com.pg85.otg.configuration.standard.TreeType;
 import com.pg85.otg.customobjects.SpawnableObject;
 import com.pg85.otg.customobjects.bofunctions.EntityFunction;
 import com.pg85.otg.customobjects.structures.CustomStructureCache;
 import com.pg85.otg.exception.BiomeNotFoundException;
-import com.pg85.otg.generator.ChunkBuffer;
-import com.pg85.otg.generator.ObjectSpawner;
-import com.pg85.otg.generator.biome.BiomeGenerator;
 import com.pg85.otg.network.ConfigProvider;
+import com.pg85.otg.terraingen.ChunkBuffer;
+import com.pg85.otg.terraingen.ObjectSpawner;
+import com.pg85.otg.terraingen.biome.BiomeGenerator;
 import com.pg85.otg.util.BiomeIds;
 import com.pg85.otg.util.ChunkCoordinate;
 import com.pg85.otg.util.bo3.NamedBinaryTag;
-import com.pg85.otg.util.minecraft.defaults.TreeType;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -35,7 +35,7 @@ public interface LocalWorld
 	public ObjectSpawner getObjectSpawner();
 	
     public CustomStructureCache getStructureCache();
-    	
+
 	public WorldSession getWorldSession();
 
 	public void deleteWorldSessionData();

@@ -43,8 +43,7 @@ public class MaterialSetEntry
         if (includesBlockData)
         {
             return material.hashCode();
-        } else
-        {
+        } else {
             return material.hashCodeWithoutBlockData();
         }
     }
@@ -80,8 +79,7 @@ public class MaterialSetEntry
         {
             // Don't rotate block data
             return new MaterialSetEntry(material, false);
-        } else
-        {
+        } else {
             // Actually rotate block data, to maintain check correctness
             return new MaterialSetEntry(material.rotate(), true);
         }

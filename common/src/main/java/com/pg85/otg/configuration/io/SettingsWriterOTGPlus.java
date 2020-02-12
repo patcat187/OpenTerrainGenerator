@@ -90,5 +90,4 @@ public interface SettingsWriterOTGPlus
      * {@link #open()}.
      */
     void smallTitle(String title) throws IOException, IllegalStateException;
-
 }

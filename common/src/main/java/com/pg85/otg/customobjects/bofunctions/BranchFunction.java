@@ -79,7 +79,8 @@ public abstract class BranchFunction<T extends CustomObjectConfigFile> extends C
     @Override
     public boolean isAnalogousTo(CustomObjectConfigFunction<T> other)
     {
-        if(!getClass().equals(other.getClass())) {
+        if(!getClass().equals(other.getClass()))
+        {
             return false;
         }
         BranchFunction<T> branch = (BranchFunction<T>) other;

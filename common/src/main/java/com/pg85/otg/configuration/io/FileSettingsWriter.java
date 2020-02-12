@@ -79,8 +79,7 @@ public final class FileSettingsWriter
             {
                 writeEntry(writer, entry);
             }
-        } finally
-        {
+        } finally {
             if (writer != null)
             {
                 writer.close();
@@ -145,7 +144,9 @@ public final class FileSettingsWriter
     private void comments(BufferedWriter writer, Collection<String> comments) throws IOException
     {
         if (!this.writeComments)
+        {
             return;
+        }
 
         for (String comment : comments)
         {
@@ -156,9 +157,13 @@ public final class FileSettingsWriter
     private void comment(BufferedWriter writer, String comment) throws IOException
     {
         if (!this.writeComments)
+        {
             return;
+        }
         if (comment.length() > 0)
+        {
             writer.write("# " + comment);
+        }
         writer.newLine();
     }
 

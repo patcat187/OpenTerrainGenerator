@@ -235,5 +235,4 @@ public final class SimpleSettingsMap implements SettingsMap
     {
         return "SimpleSettingsMap [name=" + name + ", fallback=" + fallback + "]";
     }
-
 }

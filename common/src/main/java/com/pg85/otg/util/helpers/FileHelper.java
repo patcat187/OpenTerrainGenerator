@@ -12,6 +12,8 @@ import java.util.Collection;
  */
 public final class FileHelper
 {
+    private FileHelper() { }
+	
     /**
      * Makes sure all the folders in the collection exist. Folders that don't
      * exist yet are created. Logs a message for each folder that could not be
@@ -54,9 +56,4 @@ public final class FileHelper
         }
         return true;
     }
-
-    private FileHelper()
-    {
-    }
-
 }

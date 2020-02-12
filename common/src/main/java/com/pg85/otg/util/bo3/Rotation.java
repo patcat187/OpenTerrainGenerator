@@ -121,9 +121,8 @@ public enum Rotation
         try
         {
             rotation = Rotation.valueOf(string.toUpperCase());
-        } catch (IllegalArgumentException e)
-        {
         }
+        catch (IllegalArgumentException e) { }
 
         if (rotation != null)
         {

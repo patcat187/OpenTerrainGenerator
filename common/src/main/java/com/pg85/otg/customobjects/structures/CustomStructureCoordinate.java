@@ -1,10 +1,10 @@
 package com.pg85.otg.customobjects.structures;
 
 import com.pg85.otg.OTG;
+import com.pg85.otg.customobjects.CustomObject;
 import com.pg85.otg.logging.LogMarker;
 import com.pg85.otg.util.bo3.Rotation;
 import com.pg85.otg.util.helpers.MathHelper;
-import com.pg85.otg.customobjects.CustomObject;
 
 /**
  * Represents an object along with its location in the world.

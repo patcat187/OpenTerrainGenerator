@@ -38,7 +38,8 @@ class ColorSetting extends Setting<Integer>
                 throw new InvalidConfigException("Color must have 6 hexadecimal digits");
             }
             return integer;
-        } catch (NumberFormatException e)
+        }
+        catch (NumberFormatException e)
         {
             throw new InvalidConfigException("Invalid color " + string);
         }
@@ -49,5 +50,4 @@ class ColorSetting extends Setting<Integer>
     {
         return "#" + Integer.toHexString(value.intValue() | 0x1000000).substring(1).toUpperCase();
     }
-
 }

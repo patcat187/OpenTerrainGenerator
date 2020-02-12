@@ -9,10 +9,7 @@ import java.lang.reflect.Field;
  */
 public final class ReflectionHelper
 {
-    private ReflectionHelper()
-    {
-        // No instances
-    }
+    private ReflectionHelper() { }
 
     /**
      * Sets the field on the given object of the given field type to the given
@@ -33,7 +30,8 @@ public final class ReflectionHelper
         {
             field.setAccessible(true);
             field.set(on, newValue);
-        } catch (IllegalAccessException e)
+        }
+        catch (IllegalAccessException e)
         {
             // Cannot happen, we just made the field accessible
             throw new AssertionError(e);
@@ -63,7 +61,8 @@ public final class ReflectionHelper
             @SuppressWarnings("unchecked")
             T fieldValue = (T) field.get(on);
             return fieldValue;
-        } catch (IllegalAccessException e)
+        }
+        catch (IllegalAccessException e)
         {
             // Cannot happen, we just made the field accessible
             throw new AssertionError(e);

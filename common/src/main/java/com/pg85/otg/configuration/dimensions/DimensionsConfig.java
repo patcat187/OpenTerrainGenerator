@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -88,11 +89,17 @@ public class DimensionsConfig
         
        	try {
 			presetsConfig = mapper.readValue(file, DimensionsConfig.class);
-		} catch (JsonParseException e) {
+		}
+       	catch (JsonParseException e)
+       	{
 			e.printStackTrace();
-		} catch (JsonMappingException e) {
+		}
+       	catch (JsonMappingException e)
+       	{
 			e.printStackTrace();
-		} catch (IOException e) {
+		}
+       	catch (IOException e)
+       	{
 			e.printStackTrace();
 		}
        	       	
@@ -117,11 +124,17 @@ public class DimensionsConfig
 	        
 	       	try {
 				presetsConfig = mapper.readValue(forgeWorldConfigFile, DimensionsConfig.class);
-			} catch (JsonParseException e) {
+			}
+	       	catch (JsonParseException e)
+	       	{
 				e.printStackTrace();
-			} catch (JsonMappingException e) {
+			}
+	       	catch (JsonMappingException e)
+	       	{
 				e.printStackTrace();
-			} catch (IOException e) {
+			}
+	       	catch (IOException e)
+	       	{
 				e.printStackTrace();
 			}
 	       	
@@ -171,7 +184,9 @@ public class DimensionsConfig
 		ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 		try {
 			return mapper.writeValueAsString(this);
-		} catch (JsonProcessingException e) {
+		}
+		catch (JsonProcessingException e)
+		{
 			e.printStackTrace();
 		}
 		return null;
@@ -202,12 +217,16 @@ public class DimensionsConfig
 			try
 			{
 				try {
-					this.version = this.currentVersion;
+					this.version = DimensionsConfig.currentVersion;
 					mapper.writeValue(forgeWorldConfigFile, this);
-				} catch (JsonGenerationException e) {
+				}
+				catch (JsonGenerationException e)
+				{
 					e.printStackTrace();
 					throw new RuntimeException("OTG encountered a critical error, exiting.");
-				} catch (JsonMappingException e) {
+				}
+				catch (JsonMappingException e)
+				{
 					e.printStackTrace();
 					throw new RuntimeException("OTG encountered a critical error, exiting.");
 				}
@@ -218,7 +237,8 @@ public class DimensionsConfig
 				ArrayList<String> list = new ArrayList<String>();
 	
 				String dataRow = read.readLine(); 
-				while (dataRow != null){
+				while (dataRow != null)
+				{
 				    list.add(dataRow);
 				    dataRow = read.readLine(); 
 				}
@@ -228,7 +248,8 @@ public class DimensionsConfig
 				String headerComments = "#TODO: Provide instructions for modpack devs.";
 				writer.append(headerComments);
 	
-				for (int i = 0; i < list.size(); i++){
+				for (int i = 0; i < list.size(); i++)
+				{
 				    writer.append(System.getProperty("line.separator"));
 				    writer.append(list.get(i));
 				}
@@ -269,11 +290,17 @@ public class DimensionsConfig
         DimensionsConfig presetsConfig = null;
        	try {
 			presetsConfig = mapper.readValue(readStringFromStream, DimensionsConfig.class);
-		} catch (JsonParseException e) {
+		}
+   		catch (JsonParseException e)
+       	{
 			e.printStackTrace();
-		} catch (JsonMappingException e) {
+		}
+       	catch (JsonMappingException e)
+       	{
 			e.printStackTrace();
-		} catch (IOException e) {
+		}
+       	catch (IOException e)
+       	{
 			e.printStackTrace();
 		}
        	

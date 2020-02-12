@@ -12,8 +12,8 @@ import com.pg85.otg.customobjects.structures.bo3.BO3CustomStructure;
 import com.pg85.otg.customobjects.structures.bo3.BO3CustomStructureCoordinate;
 import com.pg85.otg.customobjects.structures.bo4.BO4CustomStructure;
 import com.pg85.otg.customobjects.structures.bo4.CustomStructurePlotter;
-import com.pg85.otg.generator.resource.CustomStructureGen;
 import com.pg85.otg.logging.LogMarker;
+import com.pg85.otg.terraingen.resource.CustomStructureGen;
 import com.pg85.otg.util.ChunkCoordinate;
 import com.pg85.otg.util.helpers.RandomHelper;
 
@@ -326,7 +326,7 @@ public class CustomStructureCache
 				world.getObjectSpawner().StructurePlottedAtSpawn = true;
 			}
 		}
-
+		
 		OTG.log(LogMarker.DEBUG, "Loading done");
 	}
 }

@@ -4,10 +4,10 @@ import java.util.ArrayList;
 
 import com.pg85.otg.OTG;
 import com.pg85.otg.common.LocalMaterialData;
+import com.pg85.otg.configuration.standard.DefaultMaterial;
 import com.pg85.otg.exception.InvalidConfigException;
 import com.pg85.otg.util.helpers.StringHelper;
 import com.pg85.otg.util.materials.MaterialHelper;
-import com.pg85.otg.util.minecraft.defaults.DefaultMaterial;
 
 /**
  * Reads and writes a material. Materials are read using

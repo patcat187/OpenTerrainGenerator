@@ -120,7 +120,9 @@ public abstract class DimensionConfigBase
 		ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 		try {
 			return mapper.writeValueAsString(this);
-		} catch (JsonProcessingException e) {
+		}
+		catch (JsonProcessingException e)
+		{
 			e.printStackTrace();
 		}
 		return null;

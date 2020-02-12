@@ -195,7 +195,9 @@ public class BO4WeightedBranchFunction extends BO4BranchFunction
         
         try {
 			branchFunction.load(args);
-		} catch (InvalidConfigException e) {
+		}
+        catch (InvalidConfigException e)
+        {
 			e.printStackTrace();
 		}            	           
     	return branchFunction;

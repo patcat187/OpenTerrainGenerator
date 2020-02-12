@@ -6,6 +6,7 @@ import com.pg85.otg.configuration.standard.BiomeStandardValues;
 import com.pg85.otg.configuration.standard.PluginStandardValues;
 import com.pg85.otg.configuration.standard.WorldStandardValues;
 import com.pg85.otg.configuration.world.WorldConfig.ConfigMode;
+import com.pg85.otg.logging.LogLevels;
 import com.pg85.otg.logging.LogMarker;
 
 /**
@@ -33,31 +34,9 @@ public final class PluginConfig extends ConfigFile
 	 * Higher values make pre-generation faster but can cause lag and increased memory usage.
 	 */
 	public int pregeneratorMaxChunksPerTick = PluginStandardValues.PREGENERATOR_MAX_CHUNKS_PER_TICK.getDefaultValue();
-    
-    public enum LogLevels
-    {
-        Off(LogMarker.ERROR),
-        Quiet(LogMarker.WARN),
-        Standard(LogMarker.INFO),
-        Debug(LogMarker.DEBUG),
-        Trace(LogMarker.TRACE);
-        private final LogMarker marker;
-
-        LogLevels(LogMarker marker)
-        {
-            this.marker = marker;
-        }
-
-        public LogMarker getLevel()
-        {
-            return marker;
-        }
-
-    }
 
     public PluginConfig(SettingsMap settingsReader)
     {
-
         super(settingsReader.getName());
 
         this.renameOldSettings(settingsReader);

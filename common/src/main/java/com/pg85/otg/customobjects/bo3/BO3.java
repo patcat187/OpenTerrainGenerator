@@ -10,6 +10,7 @@ import com.pg85.otg.common.LocalMaterialData;
 import com.pg85.otg.common.LocalWorld;
 import com.pg85.otg.configuration.io.FileSettingsReaderOTGPlus;
 import com.pg85.otg.configuration.io.FileSettingsWriterOTGPlus;
+import com.pg85.otg.configuration.standard.DefaultMaterial;
 import com.pg85.otg.configuration.standard.PluginStandardValues;
 import com.pg85.otg.configuration.world.WorldConfig.ConfigMode;
 import com.pg85.otg.customobjects.bo3.BO3Settings.OutsideSourceBlock;
@@ -32,7 +33,6 @@ import com.pg85.otg.util.bo3.BoundingBox;
 import com.pg85.otg.util.bo3.Rotation;
 import com.pg85.otg.util.helpers.MathHelper;
 import com.pg85.otg.util.helpers.RandomHelper;
-import com.pg85.otg.util.minecraft.defaults.DefaultMaterial;
 
 public class BO3 implements StructuredCustomObject
 {

@@ -12,6 +12,8 @@ import java.util.List;
  */
 public abstract class StringHelper
 {
+    private StringHelper() { }
+	
     public static String join(final Collection<?> coll, final String glue)
     {
         return join(coll.toArray(new Object[coll.size()]), glue);
@@ -40,12 +42,12 @@ public abstract class StringHelper
     public static String toComputerFriendlyName(String name)
     {
         char[] charArray = name.toCharArray();
-        for (int i = 0; i < charArray.length; i++) {
+        for (int i = 0; i < charArray.length; i++)
+        {
             if (!Character.isJavaIdentifierPart(charArray[i]))
             {
                 charArray[i] = '_';
-            } else
-            {
+            } else {
                 charArray[i] = Character.toLowerCase(charArray[i]);
             }
         }
@@ -79,7 +81,8 @@ public abstract class StringHelper
                 return maxValue;
             }
             return number;
-        } catch (NumberFormatException e)
+        }
+        catch (NumberFormatException e)
         {
             throw new InvalidConfigException("Incorrect number: " + string);
         }
@@ -112,7 +115,8 @@ public abstract class StringHelper
                 return maxValue;
             }
             return number;
-        } catch (NumberFormatException e)
+        }
+        catch (NumberFormatException e)
         {
             throw new InvalidConfigException("Incorrect number: " + string);
         }
@@ -161,9 +165,13 @@ public abstract class StringHelper
             }
 
             if (c == '(')
+            {
                 inBracer++;
+            }
             if (c == ')')
+            {
                 inBracer--;
+            }
 
             index++;
         }
@@ -172,7 +180,9 @@ public abstract class StringHelper
         String[] output = new String[0];
 
         if (inBracer == 0)
+        {
             output = buffer.toArray(output);
+        }
 
         return output;
     }
@@ -189,24 +199,22 @@ public abstract class StringHelper
      *            The input.
      * @return True if the input specifies block data, false otherwise.
      */
-    public static boolean specifiesBlockData(String materialString) {
+    public static boolean specifiesBlockData(String materialString)
+    {
         int indexOfColon = materialString.lastIndexOf(":");
         if (indexOfColon > 0)
         {
             String blockDataString = materialString.substring(indexOfColon + 1);
-            try {
+            try
+            {
                 Integer.parseInt(blockDataString);
                 // If we have reached this point, the text after the last colon
                 // was numeric, so it was indeed block data
                 return true;
-            } catch (NumberFormatException e) {
             }
+            catch (NumberFormatException e) { }
         }
         return false;
-    }
-
-    private StringHelper()
-    {
     }
 
     /**
@@ -236,7 +244,8 @@ public abstract class StringHelper
                 return maxValue;
             }
             return number;
-        } catch (NumberFormatException e)
+        }
+        catch (NumberFormatException e)
         {
             throw new InvalidConfigException("Incorrect number: " + string);
         }

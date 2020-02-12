@@ -1,175 +1,111 @@
 package com.pg85.otg.forge;
 
-import com.pg85.otg.OTG;
-import com.pg85.otg.configuration.standard.PluginStandardValues;
-import com.pg85.otg.events.EventPriority;
-import com.pg85.otg.forge.events.*;
-import com.pg85.otg.forge.events.client.ClientConnectionEventListener;
-import com.pg85.otg.forge.events.client.ClientFogHandler;
-import com.pg85.otg.forge.events.client.ClientTickHandler;
-import com.pg85.otg.forge.events.client.KeyBoardEventListener;
-import com.pg85.otg.forge.events.dimensions.BlockTracker;
-import com.pg85.otg.forge.events.dimensions.EntityTravelToDimensionListener;
-import com.pg85.otg.forge.events.dimensions.RightClickListener;
-import com.pg85.otg.forge.events.server.SaveServerHandler;
-import com.pg85.otg.forge.events.server.ServerEventListener;
-import com.pg85.otg.forge.events.server.ServerTickHandler;
-import com.pg85.otg.forge.events.server.UnloadServerHandler;
-import com.pg85.otg.forge.generator.ForgeVanillaBiomeGenerator;
-import com.pg85.otg.forge.generator.structure.OTGRareBuildingStart;
-import com.pg85.otg.forge.generator.structure.OTGVillageStart;
-import com.pg85.otg.forge.gui.GuiHandler;
-import com.pg85.otg.forge.network.CommonProxy;
-import com.pg85.otg.forge.network.PacketDispatcher;
-import com.pg85.otg.forge.network.client.BukkitClientNetworkEventListener;
-import com.pg85.otg.forge.world.OTGWorldType;
-import com.pg85.otg.generator.biome.VanillaBiomeGenerator;
-import com.pg85.otg.util.minecraft.defaults.StructureNames;
+import java.util.stream.Collectors;
 
-import net.minecraft.init.Blocks;
-import net.minecraft.world.gen.structure.MapGenStructureIO;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
+import net.minecraft.world.gen.ChunkGeneratorType;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.Mod.Instance;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLFingerprintViolationEvent;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerAboutToStartEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.network.FMLEventChannel;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
+import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
+import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import com.pg85.otg.OTG;
+import com.pg85.otg.forge.generator.OTGChunkGenerator;
+import com.pg85.otg.forge.generator.OTGGenSettings;
+import com.pg85.otg.forge.world.OTGWorldType;
+import com.pg85.otg.logging.LogMarker;
 
-@Mod(modid = "openterraingenerator", name = "Open Terrain Generator", version = "v9.0_r6", dependencies="required-after:otgcore@[1.12.2 - v9.0_r6]")
+// The value here should match an entry in the META-INF/mods.toml file
+@Mod("openterraingenerator")
 public class OTGPlugin
 {	
-	@SidedProxy(clientSide="com.pg85.otg.forge.network.client.ClientProxy", serverSide="com.pg85.otg.forge.network.server.ServerProxy")
-	public static CommonProxy Proxy;
-
-	@Instance("OTG")
-    public static OTGPlugin Instance;
-
     public static OTGWorldType OtgWorldType;
-        
-    @EventHandler
-    public void load(FMLInitializationEvent event)
-    {    	       
-        // Register World listener for tracking world unloads and loads.
-        MinecraftForge.EVENT_BUS.register(new WorldListener());
-
+    //public static BiomeProviderType<OTGBiomeProviderSettings, OTGBiomeProvider> OtgBiomeProviderType;
+    public static ChunkGeneratorType<OTGGenSettings, OTGChunkGenerator> OtgChunkGeneratorType;
+    
+    public OTGPlugin()
+    {
         // Create the world type. WorldType registers itself in the constructor
-        // - that is Mojang code, so don't blame me
         OtgWorldType = new OTGWorldType();
 
         // Start OpenTerrainGenerator engine
         OTG.setEngine(new ForgeEngine());
-
-        // Register Default biome generator to OpenTerrainGenerator
-        OTG.getEngine().getBiomeModeManager().register(VanillaBiomeGenerator.GENERATOR_NAME, ForgeVanillaBiomeGenerator.class);
-
-        // Register village and rare building starts
-        MapGenStructureIO.registerStructure(OTGRareBuildingStart.class, StructureNames.RARE_BUILDING);
-        MapGenStructureIO.registerStructure(OTGVillageStart.class, StructureNames.VILLAGE);
-       
-        // Register listening channel for listening to received configs. <- Spigot only?
-        if (event.getSide() == Side.CLIENT)
-        {
-            BukkitClientNetworkEventListener networkHandler = new BukkitClientNetworkEventListener();
-            FMLEventChannel eventDrivenChannel = NetworkRegistry.INSTANCE.newEventDrivenChannel(PluginStandardValues.ChannelName);
-            eventDrivenChannel.register(networkHandler);
-            MinecraftForge.EVENT_BUS.register(networkHandler);
-        }
-
-        // Register packets
-        PacketDispatcher.registerPackets();
-
-        // Register player tracker, for detecting player login/logoff/teleport etc.
-        MinecraftForge.EVENT_BUS.register(new PlayerTracker());
-
-        // Register block tracker, for block protect etc.
-        MinecraftForge.EVENT_BUS.register(new BlockTracker());
-
-        // Register sapling tracker, for custom tree growth.
-        SaplingListener saplingListener = new SaplingListener();
-        MinecraftForge.TERRAIN_GEN_BUS.register(saplingListener);
-        MinecraftForge.EVENT_BUS.register(saplingListener);
-
-        // Register save and unload handlers for saving data and unloading BO3's.
-        MinecraftForge.EVENT_BUS.register(new SaveServerHandler());
-        MinecraftForge.EVENT_BUS.register(new UnloadServerHandler());
-
-        // Register biome colors listener, which listens to color events to apply custom colors.
-        MinecraftForge.EVENT_BUS.register(new BiomeColorsListener());
-
-        // Register server tick handler which is used for the pre-generator, dimAbove/dimBelow, mob/entity spawning etc.
-        MinecraftForge.EVENT_BUS.register(new ServerTickHandler());
-
-        // Register client tick handler for handling particles.
-        MinecraftForge.EVENT_BUS.register(new ClientTickHandler());
+               
+        //OtgBiomeProviderType = new BiomeProviderType<OTGBiomeProviderSettings,OTGBiomeProvider>(OTGBiomeProvider::new, OTGBiomeProviderSettings::new);        
+		//ForgeRegistries.BIOME_PROVIDER_TYPES.register(OtgBiomeProviderType);
         
-        // Register fog event handler for biome-specific fog color
-        MinecraftForge.EVENT_BUS.register(new ClientFogHandler());
+        OtgChunkGeneratorType = new ChunkGeneratorType<>(OTGChunkGenerator::new, true, OTGGenSettings::new);
+		//ForgeRegistries.CHUNK_GENERATOR_TYPES.register(OtgChunkGeneratorType);
+        
+        // Register the setup method for modloading
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
+        // Register the enqueueIMC method for modloading
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
+        // Register the processIMC method for modloading
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);
+        // Register the doClientStuff method for modloading
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
 
-        // Register gui handler for replacing MC's gui with OTG's
-        MinecraftForge.EVENT_BUS.register(new GuiHandler());
-
-        // Register KeyBoardEventListener for OTG's O menu.
-        MinecraftForge.EVENT_BUS.register(new KeyBoardEventListener());
-
-        // Register to our own events, so that they can be fired again as Forge events.
-        OTG.getEngine().registerEventHandler(new ForgeEventHandler(), EventPriority.CANCELABLE);
-
-        // Register RightClickBlockListener for detecting flint and tinder and creating portals
-        MinecraftForge.EVENT_BUS.register(new RightClickListener());
-
-    	// Register EntityTravelToDimensionListener for OTG portals that tp to other dimensions
-    	MinecraftForge.EVENT_BUS.register(new EntityTravelToDimensionListener());
-
-        // Register ClientConnectionEventListener for detecting disconnects on the client side and unloading worlds. 
-        MinecraftForge.EVENT_BUS.register(new ClientConnectionEventListener());
-
-        // Fix lava as light source not working when spawning lava as resource
-        // TODO: This is a hack fix, lighting still needs to be fixed properly..
-        Blocks.LAVA.setLightOpacity(255);
+        // Register ourselves for server and other game events we are interested in
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
-    // TODO: Is this handler really necessary to make signing work?
-    @Mod.EventHandler
-    public void onFingerprintViolation(FMLFingerprintViolationEvent event)
+    private void setup(final FMLCommonSetupEvent event)
     {
-        //logger.warning("Invalid fingerprint detected!");
+        // some preinit code
+        OTG.log(LogMarker.INFO, "HELLO FROM PREINIT");
+        OTG.log(LogMarker.INFO, "DIRT BLOCK >> {}", Blocks.DIRT.getRegistryName());
+    }
+
+    private void doClientStuff(final FMLClientSetupEvent event)
+    {
+        // do something that can only be done on the client
+    	OTG.log(LogMarker.INFO, "Got game settings {}", event.getMinecraftSupplier().get().gameSettings);
+    }
+
+    private void enqueueIMC(final InterModEnqueueEvent event)
+    {
+        // some example code to dispatch IMC to another mod
+        InterModComms.sendTo("examplemod", "helloworld", () -> 
+        { 
+        	OTG.log(LogMarker.INFO, "Hello world from the MDK"); 
+        	return "Hello world";
+    	});
+    }
+
+    private void processIMC(final InterModProcessEvent event)
+    {
+        // some example code to receive and process InterModComms from other mods
+    	OTG.log(LogMarker.INFO, "Got IMC {}", event.getIMCStream().
+                map(m->m.getMessageSupplier().get()).
+                collect(Collectors.toList()));
     }
     
-    @EventHandler
-    public void serverAboutToStart(FMLServerAboutToStartEvent event)
+    // You can use SubscribeEvent and let the Event Bus discover methods to call
+    @SubscribeEvent
+    public void onServerStarting(FMLServerStartingEvent event)
     {
-    	ServerEventListener.serverAboutToStart(event);
+        // do something when the server starts
+    	OTG.log(LogMarker.INFO, "HELLO from server starting");
     }
 
-    @EventHandler
-    public void serverLoad(FMLServerStartingEvent event)
+    // You can use EventBusSubscriber to automatically subscribe events on the contained class (this is subscribing to the MOD
+    // Event bus for receiving Registry Events)
+    @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD)
+    public static class RegistryEvents
     {
-    	ServerEventListener.serverLoad(event);
-    }
-    
-    @EventHandler
-    public void preInit(FMLPreInitializationEvent e)
-    {
-        Proxy.preInit(e);
-    }
-
-    @EventHandler
-    public void init(FMLInitializationEvent e)
-    {
-        Proxy.init(e);
-    }
-
-    @EventHandler
-    public void postInit(FMLPostInitializationEvent e)
-    {
-        Proxy.postInit(e);
+        @SubscribeEvent
+        public static void onBlocksRegistry(final RegistryEvent.Register<Block> blockRegistryEvent)
+        {
+            // register a new block here
+        	OTG.log(LogMarker.INFO, "HELLO from Register Block");
+        }
     }
 }

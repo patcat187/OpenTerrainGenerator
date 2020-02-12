@@ -21,7 +21,6 @@ import java.util.Map.Entry;
  */
 public interface SettingsReaderOTGPlus
 {
-
     /**
      * Adds a ConfigFunction to this reader, so that it can be read back
      * using {@link #getConfigFunctions(Object, boolean)}. If this reader doesn't

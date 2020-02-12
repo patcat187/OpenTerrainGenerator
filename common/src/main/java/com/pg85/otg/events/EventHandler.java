@@ -2,7 +2,7 @@ package com.pg85.otg.events;
 
 import com.pg85.otg.common.LocalWorld;
 import com.pg85.otg.customobjects.CustomObject;
-import com.pg85.otg.generator.resource.Resource;
+import com.pg85.otg.terraingen.resource.Resource;
 
 import java.util.Random;
 
@@ -16,10 +16,7 @@ public abstract class EventHandler
     /**
      * Called when it's time to register the custom resources and objects.
      */
-    public void onStart()
-    {
-
-    }
+    public void onStart() { }
 
     /**
      * Called whenever a check needs to be run to spawn an object. Always 
@@ -77,10 +74,7 @@ public abstract class EventHandler
      * @param chunkX         The x coordinate of the chunk that is being populated.
      * @param chunkZ         The z coordinate of the chunk that is being populated.
      */
-    public void onPopulateStart(LocalWorld world, Random random, boolean villageInChunk, int chunkX, int chunkZ)
-    {
-
-    }
+    public void onPopulateStart(LocalWorld world, Random random, boolean villageInChunk, int chunkX, int chunkZ) { }
 
     /**
      * Called whenever Open Terrain Generator is done populating a chunk. Cannot be
@@ -92,8 +86,5 @@ public abstract class EventHandler
      * @param chunkX         The x coordinate of the chunk that is being populated.
      * @param chunkZ         The z coordinate of the chunk that is being populated.
      */
-    public void onPopulateEnd(LocalWorld world, Random random, boolean villageInChunk, int chunkX, int chunkZ)
-    {
-
-    }
+    public void onPopulateEnd(LocalWorld world, Random random, boolean villageInChunk, int chunkX, int chunkZ) { }
 }

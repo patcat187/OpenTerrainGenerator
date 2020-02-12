@@ -10,8 +10,8 @@ import java.util.Collection;
  * bugged code.
  *
  */
-public class BiomeNotFoundException extends RuntimeException {
-
+public class BiomeNotFoundException extends RuntimeException
+{
     /**
      * Generated serial version id, to prevent compiler warnings.
      */
@@ -28,7 +28,8 @@ public class BiomeNotFoundException extends RuntimeException {
      *            All biomes in the list. {@link Object#toString()} is used to
      *            print the biomes.
      */
-    public BiomeNotFoundException(String biomeName, Collection<?> biomes) {
+    public BiomeNotFoundException(String biomeName, Collection<?> biomes)
+    {
         super("Biome " + biomeName + " not found; available biomes: " + StringHelper.join(biomes, ", "));
         this.biomeName = biomeName;
     }
@@ -42,7 +43,8 @@ public class BiomeNotFoundException extends RuntimeException {
      *            All biomes in the list. {@link Object#toString()} is used to
      *            print the biomes.
      */
-    public BiomeNotFoundException(int biomeId, Collection<?> biomes) {
+    public BiomeNotFoundException(int biomeId, Collection<?> biomes)
+    {
         super("Biome with id " + biomeId + " not found; available biomes: " + StringHelper.join(biomes, ", "));
         this.biomeName = "biome-" + biomeId;
     }
@@ -52,8 +54,8 @@ public class BiomeNotFoundException extends RuntimeException {
      *
      * @return The name of the biome.
      */
-    public String getBiomeName() {
+    public String getBiomeName()
+    {
         return biomeName;
     }
-
 }

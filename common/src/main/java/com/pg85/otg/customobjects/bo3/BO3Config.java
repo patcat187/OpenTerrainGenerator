@@ -11,6 +11,7 @@ import com.pg85.otg.configuration.customobjects.CustomObjectConfigFile;
 import com.pg85.otg.configuration.customobjects.CustomObjectConfigFunction;
 import com.pg85.otg.configuration.io.SettingsReaderOTGPlus;
 import com.pg85.otg.configuration.io.SettingsWriterOTGPlus;
+import com.pg85.otg.configuration.standard.DefaultStructurePart;
 import com.pg85.otg.configuration.standard.WorldStandardValues;
 import com.pg85.otg.configuration.world.WorldConfig.ConfigMode;
 import com.pg85.otg.customobjects.bo3.BO3Settings.OutsideSourceBlock;
@@ -30,7 +31,6 @@ import com.pg85.otg.exception.InvalidConfigException;
 import com.pg85.otg.util.bo3.BoundingBox;
 import com.pg85.otg.util.bo3.NamedBinaryTag;
 import com.pg85.otg.util.materials.MaterialSet;
-import com.pg85.otg.util.minecraft.defaults.DefaultStructurePart;
 
 public class BO3Config extends CustomObjectConfigFile
 {

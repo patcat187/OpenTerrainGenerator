@@ -193,14 +193,17 @@ public abstract class SpawnerFunction<T extends CustomObjectConfigFile> extends 
     				try {
     					String line = reader.readLine();
 
-    				    while (line != null) {
+    				    while (line != null)
+    				    {
     				    	stringbuilder.append(line);
     				        line = reader.readLine();
     				    }
     				} finally {
     					reader.close();
     				}
-    			} catch (FileNotFoundException e1) {
+    			}
+    			catch (FileNotFoundException e1)
+    			{
     				// TODO Auto-generated catch block
     				e1.printStackTrace();
     			}

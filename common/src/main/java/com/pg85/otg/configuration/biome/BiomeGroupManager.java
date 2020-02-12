@@ -18,10 +18,7 @@ public final class BiomeGroupManager
     private Map<String, BiomeGroup> nameToGroup = new LinkedHashMap<String, BiomeGroup>(4);
     private Map<Integer, BiomeGroup> idToGroup = new LinkedHashMap<Integer, BiomeGroup>(4);
 
-    public BiomeGroupManager()
-    {
-
-    }
+    public BiomeGroupManager() { }
 
     /**
      * Registers a new group. If the group could not be added (for example

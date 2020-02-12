@@ -10,6 +10,7 @@ import com.pg85.otg.common.LocalBiome;
 import com.pg85.otg.common.LocalMaterialData;
 import com.pg85.otg.common.LocalWorld;
 import com.pg85.otg.configuration.biome.BiomeConfig;
+import com.pg85.otg.configuration.standard.DefaultMaterial;
 import com.pg85.otg.configuration.standard.PluginStandardValues;
 import com.pg85.otg.customobjects.bo4.BO4;
 import com.pg85.otg.customobjects.bo4.bo4function.BO4BlockFunction;
@@ -17,12 +18,11 @@ import com.pg85.otg.customobjects.bo4.bo4function.BO4RandomBlockFunction;
 import com.pg85.otg.customobjects.structures.CustomStructureCoordinate;
 import com.pg85.otg.customobjects.structures.bo4.BO4CustomStructureCoordinate;
 import com.pg85.otg.exception.InvalidConfigException;
-import com.pg85.otg.generator.surface.MesaSurfaceGenerator;
+import com.pg85.otg.terraingen.surface.MesaSurfaceGenerator;
 import com.pg85.otg.util.ChunkCoordinate;
 import com.pg85.otg.util.bo3.NamedBinaryTag;
 import com.pg85.otg.util.bo3.Rotation;
 import com.pg85.otg.util.materials.MaterialHelper;
-import com.pg85.otg.util.minecraft.defaults.DefaultMaterial;
 
 public class SmoothingAreaGenerator
 {   

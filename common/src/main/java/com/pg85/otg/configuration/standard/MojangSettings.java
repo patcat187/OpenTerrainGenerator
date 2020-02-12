@@ -1,9 +1,9 @@
 package com.pg85.otg.configuration.standard;
 
+import java.util.List;
+
 import com.pg85.otg.common.LocalMaterialData;
 import com.pg85.otg.configuration.biome.settings.WeightedMobSpawnGroup;
-
-import java.util.List;
 
 /**
  * Some default settings are provided by Mojang, so that they don't have to be
@@ -72,5 +72,4 @@ public interface MojangSettings
      * @return The mob spawn list.
      */
     List<WeightedMobSpawnGroup> getMobSpawnGroup(EntityCategory entityCategory);
-
 }

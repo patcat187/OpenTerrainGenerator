@@ -30,10 +30,7 @@ public final class BoundingBox implements Cloneable
     private int maxY;
     private int maxZ;
 
-    private BoundingBox()
-    {
-        // Private constructor
-    }
+    private BoundingBox() { }
 
     /**
      * Gets a new bounding box that is initially empty.

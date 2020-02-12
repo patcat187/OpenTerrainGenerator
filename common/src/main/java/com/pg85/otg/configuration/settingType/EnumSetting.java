@@ -42,5 +42,4 @@ class EnumSetting<T extends Enum<T>> extends Setting<T>
         }
         throw new InvalidConfigException(string + " is not an acceptable value");
     }
-
 }

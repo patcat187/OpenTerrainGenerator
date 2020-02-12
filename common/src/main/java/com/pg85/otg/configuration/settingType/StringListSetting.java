@@ -39,5 +39,4 @@ class StringListSetting extends Setting<List<String>>
     {
         return StringHelper.join(value, ", ");
     }
-
 }

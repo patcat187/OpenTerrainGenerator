@@ -1,8 +1,8 @@
 package com.pg85.otg.configuration.biome.settings;
 
+import com.pg85.otg.configuration.standard.MobNames;
 import com.pg85.otg.exception.InvalidConfigException;
 import com.pg85.otg.util.helpers.StringHelper;
-import com.pg85.otg.util.minecraft.defaults.MobNames;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -227,7 +227,8 @@ public class WeightedMobSpawnGroup
         return string.substring(1, string.length() - 1);
     }
 
-	public String getMob() {
+	public String getMob()
+	{
 		return mob;
 	}
 }

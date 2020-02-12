@@ -1,7 +1,6 @@
 package com.pg85.otg.customobjects.bo3;
 
 import com.pg85.otg.common.LocalWorld;
-import com.pg85.otg.customobjects.CustomObject;
 import com.pg85.otg.util.ChunkCoordinate;
 
 /**

@@ -100,8 +100,7 @@ public class FileSettingsReader
         } catch (IOException e)
         {
             OTG.printStackTrace(LogMarker.FATAL, e);
-        } finally
-        {
+        } finally {
             if (settingsReader != null)
             {
                 try
@@ -113,6 +112,5 @@ public class FileSettingsReader
                 }
             }
         }
-
     }
 }

@@ -84,5 +84,5 @@ public final class WorldLoader
             FileSettingsWriter.writeToFile(biomeConfig.getSettingsAsMap(), writeFile, defaultWorldConfig.settingsMode);
         }
         */
-    }   
+    }
 }

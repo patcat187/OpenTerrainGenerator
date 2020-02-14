@@ -16,10 +16,7 @@ public class ArraysCache
 
     public OutputType outputType = OutputType.FULL;
 
-    public ArraysCache()
-    {
-
-    }
+    public ArraysCache() { }
 
     void release()
     {

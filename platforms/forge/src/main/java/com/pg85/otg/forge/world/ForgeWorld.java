@@ -2,16 +2,19 @@ package com.pg85.otg.forge.world;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
 import com.pg85.otg.OTG;
+import com.pg85.otg.forge.biomes.ForgeBiome;
+import com.pg85.otg.forge.biomes.ForgeBiomeRegistryManager;
 import com.pg85.otg.forge.generator.OTGChunkGenerator;
 import com.pg85.otg.logging.LogMarker;
 import com.pg85.otg.network.ConfigProvider;
+import com.pg85.otg.network.ServerConfigProvider;
 import com.pg85.otg.terraingen.ChunkBuffer;
 import com.pg85.otg.terraingen.ObjectSpawner;
 import com.pg85.otg.terraingen.biome.BiomeGenerator;
-import com.pg85.otg.util.BiomeIds;
 import com.pg85.otg.util.ChunkCoordinate;
 import com.pg85.otg.util.bo3.NamedBinaryTag;
 import com.pg85.otg.common.LocalBiome;
@@ -25,13 +28,20 @@ import com.pg85.otg.customobjects.bofunctions.EntityFunction;
 import com.pg85.otg.customobjects.structures.CustomStructureCache;
 import com.pg85.otg.exception.BiomeNotFoundException;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 
-public class ForgeWorld implements LocalWorld
+public class ForgeWorld extends LocalWorld
 {
     public static final int STANDARD_WORLD_HEIGHT = 128; // TODO: Why is this 128, should be 255?
 	
     private OTGChunkGenerator generator;
+    private BiomeGenerator biomeGenerator;
+    private ConfigProvider settings;
+    
+    public HashMap<String, LocalBiome> biomeNames = new HashMap<String, LocalBiome>();
+    
     public World world;
     private String name;
     private long seed;
@@ -41,7 +51,9 @@ public class ForgeWorld implements LocalWorld
 		OTG.log(LogMarker.INFO, "Creating world \"" + _name + "\"");
         this.name = _name;
     }
-       
+
+    // Getters / setters
+    
     public World getWorld()
     {
         return this.world;
@@ -51,47 +63,53 @@ public class ForgeWorld implements LocalWorld
     {
         return this.generator;
     }
+    
+    public void setBiomeGenerator(BiomeGenerator generator)
+    {
+        this.biomeGenerator = generator;
+    }
 
 	@Override
 	public String getName()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return this.name;
 	}
 
 	@Override
 	public String getWorldSettingsName()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return this.getWorld().getWorldInfo().getWorldName();
 	}
 
 	@Override
 	public int getDimensionId()
 	{
-		// TODO Auto-generated method stub
-		return 0;
+		return this.world.getDimension().getType().getId();
 	}
 
 	@Override
 	public long getSeed()
 	{
-		// TODO Auto-generated method stub
-		return 0;
+		return this.seed;
 	}
 
 	@Override
 	public File getWorldSaveDir()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		File worldDir;
+		if(((ServerWorld)this.world).getSaveHandler() != null)
+		{
+			worldDir = ((ServerWorld)this.world).getSaveHandler().getWorldDirectory();
+		} else {
+			worldDir = new File(Minecraft.getInstance().gameDir + File.separator + "saves" + File.separator + this.world.getWorldInfo().getWorldName());
+		}
+		return worldDir;
 	}
 
 	@Override
 	public ConfigProvider getConfigs()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return this.settings;
 	}
 
 	@Override
@@ -124,102 +142,93 @@ public class ForgeWorld implements LocalWorld
 	@Override
 	public int getHeightCap()
 	{
-		// TODO Auto-generated method stub
-		return 0;
+		return this.settings.getWorldConfig().worldHeightCap;
 	}
 
 	@Override
 	public int getHeightScale()
 	{
-		// TODO Auto-generated method stub
-		return 0;
+		return this.settings.getWorldConfig().worldHeightScale;
 	}
 
 	@Override
 	public BiomeGenerator getBiomeGenerator()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return this.biomeGenerator;
 	}
 
-	@Override
-	public LocalBiome createBiomeFor(BiomeConfig biomeConfig, BiomeIds biomeIds, ConfigProvider configProvider,
-			boolean isReload)
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
+	// Configs
+	// TODO: Use a configmanager object
+	
+    public void provideConfigs(ServerConfigProvider configs)
+    {
+        this.settings = configs;
+    }
+    
+    /**
+     * Call this method when the Minecraft world is loaded. Call this method
+     * after {@link #provideConfigs(ServerConfigProvider)} has been called.
+     * @param world The Minecraft world.
+     */
+    public void provideWorldInstance(ServerWorld world)
+    {
+        //ServerConfigProvider configs = (ServerConfigProvider) this.settings;
+        //DimensionConfig dimConfig = OTG.getDimensionsConfig().getDimensionConfig(world.getDimension().getType().getRegistryName().getPath());        
 
+        this.world = world;
+        this.seed = world.getWorldInfo().getSeed();
+        //world.setSeaLevel(configs.getWorldConfig().waterLevelMax);
+        //this.generator = new OTGChunkGenerator(this);
+    }
+	
+	// Biomes
+	
 	@Override
-	public int getMaxBiomesCount()
+	public LocalBiome createBiomeFor(BiomeConfig biomeConfig, int otgBiomeId, ConfigProvider configProvider, boolean isReload)
 	{
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int getMaxSavedBiomesCount()
-	{
-		// TODO Auto-generated method stub
-		return 0;
+    	ForgeBiome forgeBiome = ForgeBiomeRegistryManager.getOrCreateBiome(biomeConfig, otgBiomeId, this.getName(), configProvider);
+        this.biomeNames.put(forgeBiome.getName(), forgeBiome);
+        return forgeBiome;
 	}
 
 	@Override
 	public ArrayList<LocalBiome> getAllBiomes()
 	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public LocalBiome getBiomeByOTGIdOrNull(int id)
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public LocalBiome getFirstBiomeOrNull()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public LocalBiome getBiomeByNameOrNull(String name)
-	{
-		// TODO Auto-generated method stub
-		return null;
+    	ArrayList<LocalBiome> biomes = new ArrayList<LocalBiome>();
+		for(LocalBiome biome : this.settings.getBiomeArrayByOTGId())
+		{
+			if(biome != null)
+			{
+				biomes.add(biome);
+			}
+		}
+    	return biomes;
 	}
 
 	@Override
 	public LocalBiome getBiome(int x, int z) throws BiomeNotFoundException
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return getBiomeByOTGIdOrNull(this.biomeGenerator.getBiome(x, z));
 	}
 
 	@Override
-	public String getSavedBiomeName(int x, int z)
+	public LocalBiome getBiomeByOTGIdOrNull(int id)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return (ForgeBiome) this.settings.getBiomeByOTGIdOrNull(id);
 	}
 
 	@Override
-	public LocalBiome getCalculatedBiome(int x, int z)
+	public LocalBiome getFirstBiomeOrNull()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return this.biomeNames.size() > 0 ? (LocalBiome) this.biomeNames.values().toArray()[0] : null;
 	}
 
 	@Override
-	public int getRegisteredBiomeId(String resourceLocation)
+	public LocalBiome getBiomeByNameOrNull(String name)
 	{
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
+		return this.biomeNames.get(name);
+	}	
+	
 	@Override
 	public void prepareDefaultStructures(int chunkX, int chunkZ, boolean dry)
 	{
@@ -385,13 +394,6 @@ public class ForgeWorld implements LocalWorld
 
 	@Override
 	public boolean isInsideWorldBorder(ChunkCoordinate chunkCoordinate)
-	{
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean isOTGPlus()
 	{
 		// TODO Auto-generated method stub
 		return false;

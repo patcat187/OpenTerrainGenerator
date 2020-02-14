@@ -39,23 +39,6 @@ public interface LocalMaterialData
     String toString();
 
     /**
-     * Gets the internal block id. At the moment, all of Minecraft's vanilla
-     * materials have a static id, but this can change in the future. Mods
-     * already have dynamic ids.
-     * 
-     * @return The internal block id.
-     */
-    int getBlockId();
-
-    /**
-     * Gets the internal block data. Block data represents things like growth
-     * stage and rotation.
-     * 
-     * @return The internal block data.
-     */
-    byte getBlockData();
-
-    /**
      * Gets whether this material is a liquid, like water or lava.
      * 
      * @return True if this material is a liquid, false otherwise.
@@ -111,24 +94,6 @@ public interface LocalMaterialData
     boolean isMaterial(DefaultMaterial material);
 
     /**
-     * Gets an instance with the same material as this object, but with the
-     * given block data. This instance is not modified.
-     *
-     * @param newData
-     *            The new block data.
-     * @return An instance with the given block data.
-     */
-    LocalMaterialData withBlockData(int newData);
-
-    /**
-     * Gets an instance with the same material as this object, but the default
-     * block data of the material. This instance is not modified.
-     *
-     * @return An instance with the default block data.
-     */
-    LocalMaterialData withDefaultBlockData();
-
-    /**
      * Gets whether this material equals another material. The block data is
      * taken into account.
      * 
@@ -138,25 +103,6 @@ public interface LocalMaterialData
      */
     @Override
     boolean equals(Object other);
-
-    /**
-     * Gets the hashCode of the material, based on the block id and block data.
-     * The hashCode must be unique, which is possible considering that there are
-     * only 4096 * 16 possible materials.
-     * 
-     * @return The unique hashCode.
-     */
-    @Override
-    int hashCode();
-
-    /**
-     * Gets the hashCode of the material, based on only the block id. No
-     * hashCode returned by this method may be the same as any hashCode returned
-     * by {@link #hashCode()}.
-     * 
-     * @return The unique hashCode.
-     */
-    int hashCodeWithoutBlockData();
 
     /**
      * Gets a new material that is rotated 90 degrees. North -> west -> south ->

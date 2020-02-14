@@ -59,11 +59,11 @@ public class WorldStandardValues extends Settings
     public static final Setting<TerrainMode> TERRAIN_MODE = enumSetting("TerrainMode", TerrainMode.Normal);
     public static final Setting<ImageMode> IMAGE_MODE = enumSetting("ImageMode", ImageMode.Mirror);
     public static final Setting<ImageOrientation> IMAGE_ORIENTATION = enumSetting("ImageOrientation", ImageOrientation.West);
-
+       
     public static final Setting<String>
         BIOME_MODE = stringSetting("BiomeMode", "Normal"),
         IMAGE_FILE = stringSetting("ImageFile", "map.png"),
-        IMAGE_FILL_BIOME = stringSetting("ImageFillBiome", "Ocean"),
+        IMAGE_FILL_BIOME = stringSetting("ImageFillBiome", DefaultBiome.OCEAN.Name),
         AUTHOR = stringSetting("Author", "Unknown"),
         DESCRIPTION = stringSetting("Description", "No description given"),
 		WORLDPACKER_MODNAME = stringSetting("WorldPackerModName", ""),
@@ -80,8 +80,8 @@ public class WorldStandardValues extends Settings
 		ITEMS_TO_REMOVE_ON_LEAVE_DIMENSION = stringSetting("ItemsToRemoveOnLeaveDimension", ""),
 		ITEMS_TO_ADD_ON_RESPAWN = stringSetting("ItemsToAddOnRespawn", ""),
 		
-    	DEFAULT_OCEAN_BIOME = stringSetting("DefaultOceanBiome", "Ocean"),
-    	DEFAULT_FROZEN_OCEAN_BIOME = stringSetting("DefaultFrozenOceanBiome", "FrozenOcean")
+    	DEFAULT_OCEAN_BIOME = stringSetting("DefaultOceanBiome", DefaultBiome.OCEAN.Name),
+    	DEFAULT_FROZEN_OCEAN_BIOME = stringSetting("DefaultFrozenOceanBiome", DefaultBiome.FROZEN_OCEAN.Name)
 	;
 
     public static final Setting<Integer>
@@ -208,9 +208,9 @@ public class WorldStandardValues extends Settings
     ;
 
     public static final Setting<LocalMaterialData>
-    	WATER_BLOCK = new MaterialSetting("WaterBlock", DefaultMaterial.STATIONARY_WATER),
+    	WATER_BLOCK = new MaterialSetting("WaterBlock", DefaultMaterial.WATER),
         ICE_BLOCK = new MaterialSetting("IceBlock", DefaultMaterial.ICE),
-        COOLED_LAVA_BLOCK = new MaterialSetting("CooledLavaBlock", DefaultMaterial.STATIONARY_LAVA),
+        COOLED_LAVA_BLOCK = new MaterialSetting("CooledLavaBlock", DefaultMaterial.LAVA),
         BEDROCK_BLOCK = new MaterialSetting("BedrockobBlock", DefaultMaterial.BEDROCK);
 
     public static final Setting<ArrayList<LocalMaterialData>>
@@ -220,16 +220,36 @@ public class WorldStandardValues extends Settings
 		REPLACE_BLOCKS_LIST = replaceBlocksListSetting("ReplaceBlocksList");
 
     public static final Setting<List<String>>
-        ISLE_BIOMES = stringListSetting("IsleBiomes", "Deep Ocean", "MushroomIsland",
-                "Ice Mountains", "DesertHills", "ForestHills", "Forest", "TaigaHills",
-                "JungleHills", "Cold Taiga Hills", "Birch Forest Hills", "Extreme Hills+",
-                "Mesa Plateau", "Mesa Plateau F", "Mesa Plateau M", "Mesa Plateau F M",
-                "Mesa (Bryce)", "Mega Taiga Hills", "Mega Spruce Taiga Hills"),
-        BORDER_BIOMES = stringListSetting("BorderBiomes",
-                "JungleEdge", "JungleEdge M", "MushroomIslandShore", "Beach", "Extreme Hills Edge", "Desert", "Taiga"),
-    	CUSTOM_BIOMES = stringListSetting("CustomBiomes"),
-		DIMENSIONS = stringListSetting("Dimensions")
-	;
+        ISLE_BIOMES = stringListSetting(
+    		"IsleBiomes", 
+    		DefaultBiome.DEEP_OCEAN.Name, 
+    		DefaultBiome.MUSHROOM_FIELDS.Name,
+    		DefaultBiome.SNOWY_MOUNTAINS.Name,
+            DefaultBiome.DESERT_HILLS.Name, 
+            DefaultBiome.WOODED_HILLS.Name, 
+            DefaultBiome.FOREST.Name, 
+            DefaultBiome.TAIGA_HILLS.Name, 
+            DefaultBiome.JUNGLE_HILLS.Name, 
+            DefaultBiome.SNOWY_TAIGA_HILLS.Name,
+            DefaultBiome.BIRCH_FOREST_HILLS.Name,
+            DefaultBiome.GRAVELLY_MOUNTAINS.Name, 
+            DefaultBiome.BADLANDS_PLATEAU.Name,
+            DefaultBiome.WOODED_BADLANDS_PLATEAU.Name,
+            DefaultBiome.MODIFIED_BADLANDS_PLATEAU.Name,
+            DefaultBiome.MODIFIED_WOODED_BADLANDS_PLATEAU.Name,
+            DefaultBiome.ERODED_BADLANDS.Name,
+            DefaultBiome.GIANT_TREE_TAIGA_HILLS.Name,
+            DefaultBiome.GIANT_SPRUCE_TAIGA_HILLS.Name),
+        BORDER_BIOMES = stringListSetting(
+    		"BorderBiomes",
+    		DefaultBiome.JUNGLE_EDGE.Name, 
+            DefaultBiome.MODIFIED_JUNGLE_EDGE.Name,
+            DefaultBiome.MUSHROOM_FIELD_SHORE.Name, 
+            DefaultBiome.BEACH.Name,
+            DefaultBiome.MOUNTAIN_EDGE.Name, 
+            DefaultBiome.DESERT.Name, 
+            DefaultBiome.TAIGA.Name),
+		DIMENSIONS = stringListSetting("Dimensions");
 
     public static final Setting<Double>
         FROZEN_OCEAN_TEMPERATURE = doubleSetting("OceanFreezingTemperature", 0.15, 0, 2),
@@ -253,9 +273,80 @@ public class WorldStandardValues extends Settings
 
     public static final Setting<Long> RESOURCES_SEED = longSetting("ResourcesSeed", 0, Long.MIN_VALUE, Long.MAX_VALUE);
 
+    public static final Setting<List<String>> BEFORE_GROUPS_NORMAL_BIOMES = stringListSetting(
+		"NormalBiomes", 
+		DefaultBiome.DESERT.Name, 
+		DefaultBiome.FOREST.Name, 
+		DefaultBiome.MOUNTAINS.Name,
+		DefaultBiome.SWAMP.Name,
+		DefaultBiome.PLAINS.Name,
+		DefaultBiome.TAIGA.Name,
+		DefaultBiome.JUNGLE.Name,
+		DefaultBiome.RIVER.Name
+    );
+    public static final Setting<List<String>> BEFORE_GROUPS_ICE_BIOMES = stringListSetting(
+		"IceBiomes", 
+		DefaultBiome.SNOWY_TUNDRA.Name
+	);
+    
+    // BiomeGroups mode default groups
+    public static final String[] GROUP_NORMAL_BIOMES = {
+		DefaultBiome.FOREST.Name, 
+		DefaultBiome.DARK_FOREST.Name,
+		DefaultBiome.MOUNTAINS.Name, 
+		DefaultBiome.PLAINS.Name,
+		DefaultBiome.BIRCH_FOREST.Name,
+        DefaultBiome.SWAMP.Name, 
+        DefaultBiome.FLOWER_FOREST.Name,
+        DefaultBiome.DARK_FOREST_HILLS.Name,
+        DefaultBiome.GRAVELLY_MOUNTAINS.Name,
+        DefaultBiome.SUNFLOWER_PLAINS.Name,
+        DefaultBiome.TALL_BIRCH_FOREST.Name,
+        DefaultBiome.SWAMP_HILLS.Name
+    };
+
+    public static final String[] GROUP_ICE_BIOMES = {
+		DefaultBiome.SNOWY_TUNDRA.Name,
+		DefaultBiome.SNOWY_TAIGA.Name,
+		DefaultBiome.ICE_SPIKES.Name,
+		DefaultBiome.SNOWY_TAIGA_MOUNTAINS.Name		
+    };
+
+    public static final String[] GROUP_HOT_BIOMES = {
+		DefaultBiome.DESERT.Name,
+		DefaultBiome.SAVANNA.Name,
+		DefaultBiome.PLAINS.Name, 
+		DefaultBiome.DESERT_LAKES.Name,
+		DefaultBiome.SHATTERED_SAVANNA.Name,
+		DefaultBiome.SUNFLOWER_PLAINS.Name
+    };
+
+    public static final String[] GROUP_COLD_BIOMES = {
+		DefaultBiome.FOREST.Name, 
+		DefaultBiome.MOUNTAINS.Name, 
+		DefaultBiome.TAIGA.Name, 
+		DefaultBiome.PLAINS.Name,
+		DefaultBiome.FLOWER_FOREST.Name,
+		DefaultBiome.GRAVELLY_MOUNTAINS.Name,
+		DefaultBiome.TAIGA_MOUNTAINS.Name,
+		DefaultBiome.SUNFLOWER_PLAINS.Name
+    };
+
+    public static final String[] GROUP_MESA_BIOMES = {
+		DefaultBiome.BADLANDS.Name
+    };
+
+    public static final String[] GROUP_JUNGLE_BIOMES = {
+		DefaultBiome.JUNGLE.Name,
+		DefaultBiome.MODIFIED_JUNGLE.Name
+    };
+    
+    public static final String[] GROUP_MEGA_TAIGA_BIOMES = {
+		DefaultBiome.GIANT_TREE_TAIGA.Name,
+		DefaultBiome.GIANT_SPRUCE_TAIGA.Name
+    };
+    
     // Deprecated settings
     public static final Setting<Boolean> FROZEN_RIVERS = booleanSetting("FrozenRivers", true);
-    public static final Setting<List<String>> NORMAL_BIOMES = stringListSetting("NormalBiomes", "Desert", "Forest", "Extreme Hills",
-            "Swampland", "Plains", "Taiga", "Jungle", "River");
-    public static final Setting<List<String>> ICE_BIOMES = stringListSetting("IceBiomes", "Ice Plains");
+    
 }

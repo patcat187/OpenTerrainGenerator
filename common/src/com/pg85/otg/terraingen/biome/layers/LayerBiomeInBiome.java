@@ -2,7 +2,6 @@ package com.pg85.otg.terraingen.biome.layers;
 
 import com.pg85.otg.common.LocalBiome;
 import com.pg85.otg.common.LocalWorld;
-import com.pg85.otg.configuration.standard.DefaultBiome;
 import com.pg85.otg.terraingen.biome.ArraysCache;
 
 import java.util.ArrayList;
@@ -38,7 +37,7 @@ public class LayerBiomeInBiome extends Layer
     void addIsle(LocalBiome biome, int chance, boolean[] biomeCanSpawnIn, boolean inOcean)
     {
         Isle isle = new Isle();
-        isle.biomeId = (short) biome.getIds().getOTGBiomeId();
+        isle.biomeId = (short) biome.getOTGBiomeId();
         isle.chance = chance;
         isle.canSpawnIn = biomeCanSpawnIn;
         isle.inOcean = inOcean;
@@ -52,10 +51,6 @@ public class LayerBiomeInBiome extends Layer
         // 2 is taken care of by using custombiomes id data from the worldconfig in ServerConfigProvider. 1 We'll have to do here.
         
         int rngSeed = isle.biomeId;        
-        if(DefaultBiome.getId(biome.getName()) != null)
-        {
-        	rngSeed = (short) biome.getIds().getSavedId();        	
-        }
         
         isle.scrambledWorldSeed = getScrambledWorldSeed(4000 + rngSeed, this.worldSeed);
 

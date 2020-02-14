@@ -108,7 +108,6 @@ public class StandardBiomeTemplate
     public double defaultFossilRarity = 0;
     public String defaultBiomeDictId = "";
     public String defaultInheritMobsBiomeName = "";
-    public String defaultReplaceToBiomeName = "";
     public boolean inheritSaplingResource = false;
     
     public List<WeightedMobSpawnGroup> defaultCreatures = Arrays.asList(
@@ -143,6 +142,8 @@ public class StandardBiomeTemplate
      */
     public List<Resource> createDefaultResources(BiomeConfig config)
     {
+    	// TODO: Add new plants etc.
+    	
         List<Resource> resources = new ArrayList<Resource>(32);
 
         // Small water lakes
@@ -283,14 +284,14 @@ public class StandardBiomeTemplate
         // Melons (need to be spawned before trees)
         if (this.defaultMelons > 0)
         {
-            resources.add(Resource.createResource(config, PlantGen.class, DefaultMaterial.MELON_BLOCK, this.defaultMelons,
+            resources.add(Resource.createResource(config, PlantGen.class, DefaultMaterial.MELON, this.defaultMelons,
                     FlowerDepositRarity, FlowerDepositMinAltitude, this.worldHeight, DefaultMaterial.GRASS, DefaultMaterial.DIRT));
         }
 
         // Melons (need to be spawned before trees)
         if (this.defaultSwampPatches > 0)
         {
-            resources.add(Resource.createResource(config, SurfacePatchGen.class, DefaultMaterial.STATIONARY_WATER, DefaultMaterial.WATER_LILY,
+            resources.add(Resource.createResource(config, SurfacePatchGen.class, DefaultMaterial.WATER, DefaultMaterial.LILY_PAD,
                     62, 62, MaterialSet.SOLID_MATERIALS));
         }
 
@@ -302,7 +303,7 @@ public class StandardBiomeTemplate
 
         if (this.defaultWaterLily > 0)
         {
-            resources.add(Resource.createResource(config, AboveWaterGen.class, DefaultMaterial.WATER_LILY, this.defaultWaterLily, 100));
+            resources.add(Resource.createResource(config, AboveWaterGen.class, DefaultMaterial.LILY_PAD, this.defaultWaterLily, 100));
         }
 
         if (this.defaultPoppies > 0)
@@ -442,8 +443,8 @@ public class StandardBiomeTemplate
         {
             // Dead Bush
             resources.add(Resource.createResource(config, GrassGen.class, PlantType.DeadBush, 0, this.defaultDeadBush,
-                    DeadBushDepositRarity, DefaultMaterial.SAND, DefaultMaterial.HARD_CLAY,
-                    DefaultMaterial.STAINED_CLAY, DefaultMaterial.DIRT));
+                    DeadBushDepositRarity, DefaultMaterial.SAND, DefaultMaterial.TERRACOTTA,
+                    DefaultMaterial.WHITE_TERRACOTTA, DefaultMaterial.DIRT));
         }
 
         // Pumpkin
@@ -453,7 +454,7 @@ public class StandardBiomeTemplate
         if (this.defaultReed > 0)
         {
             // Reed
-            resources.add(Resource.createResource(config, ReedGen.class, DefaultMaterial.SUGAR_CANE_BLOCK, this.defaultReed,
+            resources.add(Resource.createResource(config, ReedGen.class, DefaultMaterial.SUGAR_CANE, this.defaultReed,
                     ReedDepositRarity, ReedDepositMinAltitude, this.worldHeight,
                     DefaultMaterial.GRASS, DefaultMaterial.DIRT, DefaultMaterial.SAND));
         }

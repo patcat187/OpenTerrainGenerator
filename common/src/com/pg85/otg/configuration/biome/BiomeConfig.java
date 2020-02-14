@@ -9,7 +9,6 @@ import com.pg85.otg.configuration.biome.settings.ReplacedBlocksMatrix.ReplacedBl
 import com.pg85.otg.configuration.biome.settings.WeightedMobSpawnGroup;
 import com.pg85.otg.configuration.io.SettingsMap;
 import com.pg85.otg.configuration.settingType.Setting;
-import com.pg85.otg.configuration.standard.BiomeRegistryNames;
 import com.pg85.otg.configuration.standard.BiomeStandardValues;
 import com.pg85.otg.configuration.standard.DefaultMaterial;
 import com.pg85.otg.configuration.standard.PlantType;
@@ -73,9 +72,6 @@ public class BiomeConfig extends ConfigFile
     public LocalMaterialData groundBlock;
     public ReplacedBlocksMatrix replacedBlocks;
     public SurfaceGenerator surfaceAndGroundControl;
-
-    public String replaceToBiomeName;
-
     public boolean useWorldWaterLevel;
     public int waterLevelMax;
     public int waterLevelMin;
@@ -318,17 +314,15 @@ public class BiomeConfig extends ConfigFile
         this.biomeTemperature = settings.getSetting(BiomeStandardValues.BIOME_TEMPERATURE, defaultSettings.defaultBiomeTemperature);
         this.biomeWetness = settings.getSetting(BiomeStandardValues.BIOME_WETNESS, defaultSettings.defaultBiomeWetness);
 
-        this.replaceToBiomeName = settings.getSetting(BiomeStandardValues.REPLACE_TO_BIOME_NAME, defaultSettings.defaultReplaceToBiomeName);
-
         this.biomeHeight = settings.getSetting(BiomeStandardValues.BIOME_HEIGHT, defaultSettings.defaultBiomeSurface);
         this.biomeVolatility = settings.getSetting(BiomeStandardValues.BIOME_VOLATILITY, defaultSettings.defaultBiomeVolatility);
         this.smoothRadius = settings.getSetting(BiomeStandardValues.SMOOTH_RADIUS);
 
         this.stoneBlock = settings.getSetting(BiomeStandardValues.STONE_BLOCK);
         this.surfaceBlock = settings.getSetting(BiomeStandardValues.SURFACE_BLOCK,
-                MaterialHelper.toLocalMaterialData(defaultSettings.defaultSurfaceBlock, 0));
+                MaterialHelper.toLocalMaterialData(defaultSettings.defaultSurfaceBlock));
         this.groundBlock = settings.getSetting(BiomeStandardValues.GROUND_BLOCK,
-                MaterialHelper.toLocalMaterialData(defaultSettings.defaultGroundBlock, 0));
+                MaterialHelper.toLocalMaterialData(defaultSettings.defaultGroundBlock));
         this.replacedBlocks = settings.getSetting(BiomeStandardValues.REPLACED_BLOCKS);
         this.surfaceAndGroundControl = readSurfaceAndGroundControlSettings(settings);
 
@@ -500,16 +494,6 @@ public class BiomeConfig extends ConfigFile
         writer.putSetting(BiomeStandardValues.BIOME_COLOR, this.biomeColor,
             "The hexadecimal color value of this biome. Used in the output of the /otg map command,",
             "and used in the input of BiomeMode: FromImage.");
-
-        //if (this.defaultSettings.isCustomBiome)
-        //{
-
-            writer.putSetting(BiomeStandardValues.REPLACE_TO_BIOME_NAME, this.replaceToBiomeName,
-                "Replace this biome to specified after the terrain is generated.",
-                "This will make the world files contain the id of the specified biome, instead of the id of this biome.",
-                "This will cause saplings, colors and mob spawning work as in specified biome." +
-                "To replace to minecraft biomes use resourcelocation notation, for instance: minecraft:plains." + "");
-        //}
 
         writer.smallTitle("Isle biomes only",
             "To spawn a biome as an isle, you need to add it first to the",
@@ -960,27 +944,6 @@ public class BiomeConfig extends ConfigFile
         this.volatilityWeight2 = (0.5D - this.volatilityWeightRaw2) * 24.0D;
 
         this.waterLevelMax = higherThanOrEqualTo(waterLevelMax, this.waterLevelMin);
-
-        // Update configs for worlds with no saved biome id data (OTG 1.12.2 v7, dynamic biome ids update)
-    	// Update biomes for legacy worlds, default biomes should be referred to as minecraft:<biomename>
-    	if(
-			this.replaceToBiomeName != null && 
-			this.replaceToBiomeName.trim().length() > 0	        			
-		)
-    	{
-    		String defaultBiomeResourceLocation = BiomeRegistryNames.getRegistryNameForDefaultBiome(this.replaceToBiomeName);
-    		if(defaultBiomeResourceLocation != null)
-    		{
-    			this.replaceToBiomeName = defaultBiomeResourceLocation;
-    		}
-    	} else {
-    		// Default biomes must replacetobiomename themselves
-    		String defaultBiomeResourceLocation = BiomeRegistryNames.getRegistryNameForDefaultBiome(this.getName());
-    		if(defaultBiomeResourceLocation != null)
-    		{
-    			this.replaceToBiomeName = defaultBiomeResourceLocation;
-    		}
-    	}
     }
 
     @Override
@@ -1123,8 +1086,7 @@ public class BiomeConfig extends ConfigFile
         stream.writeBoolean(this.grassColorIsMultiplier);
         stream.writeInt(this.foliageColor);
         stream.writeBoolean(this.foliageColorIsMultiplier);
-
-        StreamHelper.writeStringToStream(stream, this.replaceToBiomeName);        
+        
         StreamHelper.writeStringToStream(stream, this.biomeDictId);
     }
 }

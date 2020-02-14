@@ -67,8 +67,8 @@ public class MaterialHelper
     /**
      * @see OTGEngine#toLocalMaterialData(DefaultMaterial, int)
      */
-    public static LocalMaterialData toLocalMaterialData(DefaultMaterial defaultMaterial, int blockData)
+    public static LocalMaterialData toLocalMaterialData(DefaultMaterial defaultMaterial)
     {
-        return OTG.getEngine().toLocalMaterialData(defaultMaterial, blockData);
+        return OTG.getEngine().toLocalMaterialData(defaultMaterial);
     }
 }

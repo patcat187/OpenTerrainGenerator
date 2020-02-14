@@ -2,6 +2,7 @@ package com.pg85.otg.terraingen.biome.layers;
 
 import com.pg85.otg.common.LocalBiome;
 import com.pg85.otg.common.LocalWorld;
+import com.pg85.otg.configuration.standard.PluginStandardValues;
 import com.pg85.otg.terraingen.biome.ArraysCache;
 
 public class LayerBiomeBorder extends Layer
@@ -12,20 +13,20 @@ public class LayerBiomeBorder extends Layer
     LayerBiomeBorder(long seed, LocalWorld world, int defaultOceanId)
     {
         super(seed, defaultOceanId);
-        this.bordersFrom = new boolean[world.getMaxBiomesCount()][];
-        this.bordersTo = new int[world.getMaxBiomesCount()];
+        this.bordersFrom = new boolean[PluginStandardValues.MAX_BORDER_BIOMES][];
+        this.bordersTo = new int[PluginStandardValues.MAX_BORDER_BIOMES];
     }
 
     void addBiome(LocalBiome replaceTo, int replaceFrom, LocalWorld world)
     {
-        this.bordersFrom[replaceFrom] = new boolean[world.getMaxBiomesCount()];
+        this.bordersFrom[replaceFrom] = new boolean[PluginStandardValues.MAX_BORDER_BIOMES];
 
         for (int i = 0; i < this.bordersFrom[replaceFrom].length; i++)
         {
         	LocalBiome biome = world.getBiomeByOTGIdOrNull(i);            
             this.bordersFrom[replaceFrom][i] = biome == null || !replaceTo.getBiomeConfig().notBorderNear.contains(biome.getName());
         }
-        this.bordersTo[replaceFrom] = replaceTo.getIds().getOTGBiomeId();
+        this.bordersTo[replaceFrom] = replaceTo.getOTGBiomeId();
     }
 
     @Override
@@ -40,6 +41,7 @@ public class LayerBiomeBorder extends Layer
         int eastCheck;
         int westCheck;
         boolean[] biomeFrom;
+        int biomeId;
         for (int zi = 0; zi < zSize; zi++)
         {
             for (int xi = 0; xi < xSize; xi++)
@@ -47,7 +49,7 @@ public class LayerBiomeBorder extends Layer
                 initChunkSeed(xi + x, zi + z);
                 selection = childInts[(xi + 1 + (zi + 1) * (xSize + 2))];
 
-                int biomeId = getBiomeFromLayer(selection);
+                biomeId = getBiomeFromLayer(selection);
                 if (bordersFrom[biomeId] != null)
                 {
                     northCheck = getBiomeFromLayer(childInts[(xi + 1 + (zi) * (xSize + 2))]);

@@ -1,7 +1,6 @@
 package com.pg85.otg.common;
 
 import com.pg85.otg.configuration.biome.BiomeConfig;
-import com.pg85.otg.util.BiomeIds;
 
 /**
  * Class to access the properties of a biome.
@@ -32,7 +31,7 @@ public interface LocalBiome
      * @see BiomeIds
      * @return The id.
      */
-    BiomeIds getIds();
+    int getOTGBiomeId();
 
     /**
      * Gets the temperature at the given position, if this biome would be

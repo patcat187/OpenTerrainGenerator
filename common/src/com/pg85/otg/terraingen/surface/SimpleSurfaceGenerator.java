@@ -18,9 +18,9 @@ import com.pg85.otg.util.materials.MaterialHelper;
  */
 public class SimpleSurfaceGenerator implements SurfaceGenerator
 {
-    private final LocalMaterialData air = MaterialHelper.toLocalMaterialData(DefaultMaterial.AIR, 0);
-    private final LocalMaterialData sandstone = MaterialHelper.toLocalMaterialData(DefaultMaterial.SANDSTONE, 0);
-    private final LocalMaterialData red_sandstone = MaterialHelper.toLocalMaterialData(DefaultMaterial.RED_SANDSTONE, 0);
+    private final LocalMaterialData air = MaterialHelper.toLocalMaterialData(DefaultMaterial.AIR);
+    private final LocalMaterialData sandstone = MaterialHelper.toLocalMaterialData(DefaultMaterial.SANDSTONE);
+    private final LocalMaterialData red_sandstone = MaterialHelper.toLocalMaterialData(DefaultMaterial.RED_SANDSTONE);
 
     @Override
     public LocalMaterialData getCustomBlockData(LocalWorld world, BiomeConfig biomeConfig, int xInWorld, int yInWorld, int zInWorld)
@@ -122,10 +122,10 @@ public class SimpleSurfaceGenerator implements SurfaceGenerator
                         chunkBuffer.setBlock(x, y, z, currentGroundBlock);
 
                         // Place sandstone under stand
-                        if ((surfaceBlocksCount == 0) && (currentGroundBlock.isMaterial(DefaultMaterial.SAND)) && surfaceBlocksNoise > 1)
+                        if ((surfaceBlocksCount == 0) && (currentGroundBlock.isMaterial(DefaultMaterial.SAND) || currentGroundBlock.isMaterial(DefaultMaterial.RED_SAND)) && surfaceBlocksNoise > 1)
                         {
                             surfaceBlocksCount = generatingChunk.random.nextInt(4) + Math.max(0, y - generatingChunk.getWaterLevel(x, z));
-                            currentGroundBlock = currentGroundBlock.getBlockData() == 1 ? red_sandstone : sandstone;
+                            currentGroundBlock = currentGroundBlock.isMaterial(DefaultMaterial.RED_SAND) ? red_sandstone : sandstone;
                         }
                     }
                 }

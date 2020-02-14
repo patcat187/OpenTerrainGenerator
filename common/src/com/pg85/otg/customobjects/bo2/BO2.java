@@ -78,7 +78,7 @@ public class BO2 extends CustomObjectConfigFile implements CustomObject
             DefaultMaterial material = world.getMaterial(x + point.x, y + point.y, z + point.z, null).toDefaultMaterial();
 
             // Do not spawn if non-tree blocks are in the way
-            if (!material.isAir() && material != DefaultMaterial.LOG && material != DefaultMaterial.LOG_2 && material != DefaultMaterial.LEAVES && material != DefaultMaterial.LEAVES_2)
+            if (!material.isAir() && !material.isLog() && !material.isLeaves())
             {
                 return false;
             }
@@ -155,14 +155,14 @@ public class BO2 extends CustomObjectConfigFile implements CustomObject
         }
         if (!spawnWater)
         {
-            if (checkBlockDefaultMaterial.equals(DefaultMaterial.WATER) || checkBlockDefaultMaterial.equals(DefaultMaterial.STATIONARY_WATER))
+            if (checkBlockDefaultMaterial.equals(DefaultMaterial.WATER))
             {
                 return false;
             }
         }
         if (!spawnLava)
         {
-            if (checkBlockDefaultMaterial.equals(DefaultMaterial.LAVA) || checkBlockDefaultMaterial.equals(DefaultMaterial.STATIONARY_LAVA))
+            if (checkBlockDefaultMaterial.equals(DefaultMaterial.LAVA))
             {
                 return false;
             }

@@ -37,7 +37,7 @@ public final class LayerFactory
         	OTG.log(LogMarker.WARN, "Could not find DefaultOceanBiome \"" + world.getConfigs().getWorldConfig().defaultOceanBiome + "\", substituting \"" + defaultOceanBiome.getName() + "\".");
         }
        
-        return defaultOceanBiome.getIds().getOTGBiomeId();
+        return defaultOceanBiome.getOTGBiomeId();
     }
     
     /**
@@ -113,13 +113,13 @@ public final class LayerFactory
         	OTG.log(LogMarker.WARN, "Could not find DefaultFrozenOceanBiome \"" + worldConfig.defaultFrozenOceanBiome + "\", substituting \"" + defaultOceanBiome.getName() + "\".");
         }
         
-        int defaultOceanId = defaultOceanBiome.getIds().getOTGBiomeId();        
-        int defaultFrozenOceanId = defaultFrozenOceanBiome.getIds().getOTGBiomeId();      
+        int defaultOceanId = defaultOceanBiome.getOTGBiomeId();        
+        int defaultFrozenOceanId = defaultFrozenOceanBiome.getOTGBiomeId();      
         
         BiomeGroupManager worldGroupManager = worldConfig.biomeGroupManager;
 
-        BiomeGroup normalGroup = worldGroupManager.getGroupByName(WorldStandardValues.NORMAL_BIOMES.getName());
-        BiomeGroup iceGroup = worldGroupManager.getGroupByName(WorldStandardValues.ICE_BIOMES.getName());
+        BiomeGroup normalGroup = worldGroupManager.getGroupByName(WorldStandardValues.BEFORE_GROUPS_NORMAL_BIOMES.getName());
+        BiomeGroup iceGroup = worldGroupManager.getGroupByName(WorldStandardValues.BEFORE_GROUPS_ICE_BIOMES.getName());
         if (normalGroup == null)
         {
             // Create an empty group to avoid having to check for null
@@ -136,12 +136,19 @@ public final class LayerFactory
         LocalBiome[][] normalBiomeMap = new LocalBiome[worldConfig.generationDepth + 1][];
         LocalBiome[][] iceBiomeMap = new LocalBiome[worldConfig.generationDepth + 1][];
 
+        List<LocalBiome> normalBiomes;
+        List<LocalBiome> iceBiomes;        
+        LocalBiome[] biomes;
+        BiomeConfig biomeConfig;
+        Layer mainLayer;
+        Layer RiverLayer;
+        boolean riversStarted;
+        
         for (int i = 0; i < worldConfig.generationDepth + 1; i++)
         {
-            List<LocalBiome> normalBiomes = new ArrayList<LocalBiome>();
-            List<LocalBiome> iceBiomes = new ArrayList<LocalBiome>();
-            
-            List<LocalBiome> biomes = configs.getBiomeArrayLegacy();
+            normalBiomes = new ArrayList<LocalBiome>();
+            iceBiomes = new ArrayList<LocalBiome>();            
+            biomes = configs.getBiomeArrayByOTGId();
             for (LocalBiome biome : biomes)
             {
                 if (biome == null)
@@ -149,7 +156,7 @@ public final class LayerFactory
                     continue;
                 }
 
-                BiomeConfig biomeConfig = biome.getBiomeConfig();
+                biomeConfig = biome.getBiomeConfig();
 
                 if (biomeConfig.biomeSize != i)
                 {
@@ -191,14 +198,24 @@ public final class LayerFactory
 
         }
 
-        Layer mainLayer = new LayerEmpty(1L, defaultOceanId);
+        mainLayer = new LayerEmpty(1L, defaultOceanId);
 
-        Layer RiverLayer = new LayerEmpty(1L, defaultOceanId);
-        boolean riversStarted = false;
+        RiverLayer = new LayerEmpty(1L, defaultOceanId);
+        riversStarted = false;
 
+        LayerBiomeBorder layerBiomeBorder;
+        LayerBiomeInBiome layerBiomeIsle;
+        boolean haveBorder;
+        boolean haveIsle;       
+        boolean[] biomeCanSpawnIn;
+        boolean inOcean;
+    	LocalBiome islandInBiome;
+    	int chance;
+    	int replaceFrom;
+    	LocalBiome replaceFromBiome;
+    	
         for (int depth = 0; depth <= worldConfig.generationDepth; depth++)
         {
-
             mainLayer = new LayerZoom(2001 + depth, defaultOceanId, mainLayer);
 
             if (worldConfig.randomRivers && riversStarted)
@@ -247,12 +264,12 @@ public final class LayerFactory
                 }
             }
 
-            LayerBiomeBorder layerBiomeBorder = new LayerBiomeBorder(3000 + depth, world, defaultOceanId);
-            LayerBiomeInBiome layerBiomeIsle = new LayerBiomeInBiome(mainLayer, world.getSeed(), defaultOceanId);
-            boolean haveBorder = false;
-            boolean haveIsle = false;
+            layerBiomeBorder = new LayerBiomeBorder(3000 + depth, world, defaultOceanId);
+            layerBiomeIsle = new LayerBiomeInBiome(mainLayer, world.getSeed(), defaultOceanId);
+            haveBorder = false;
+            haveIsle = false;
             
-            List<LocalBiome> biomes = configs.getBiomeArrayLegacy();
+            biomes = configs.getBiomeArrayByOTGId();
             for (LocalBiome biome : biomes)            
             {
                 if (biome == null)
@@ -260,7 +277,7 @@ public final class LayerFactory
                     continue;
                 }
 
-                BiomeConfig biomeConfig = biome.getBiomeConfig();
+                biomeConfig = biome.getBiomeConfig();
 
                 if (
             		biomeConfig.biomeSize == depth
@@ -269,20 +286,20 @@ public final class LayerFactory
                 )
                 {
                     haveIsle = true;
-                    boolean[] biomeCanSpawnIn = new boolean[1024];
-                    boolean inOcean = false;
+                    biomeCanSpawnIn = new boolean[1024];
+                    inOcean = false;
                     for (String islandInName : biomeConfig.isleInBiome)
                     {
-                    	LocalBiome islandInBiome = world.getBiomeByNameOrNull(islandInName);
+                    	islandInBiome = world.getBiomeByNameOrNull(islandInName);
 
                         if (islandInBiome.getName().equals(worldConfig.defaultOceanBiome))
                         {
                         	inOcean = true;
                         } else {
-                        	biomeCanSpawnIn[islandInBiome.getIds().getOTGBiomeId()] = true;
+                        	biomeCanSpawnIn[islandInBiome.getOTGBiomeId()] = true;
                         }
                     }
-                    int chance = (worldConfig.biomeRarityScale + 1) - biomeConfig.biomeRarity;
+                    chance = (worldConfig.biomeRarityScale + 1) - biomeConfig.biomeRarity;
                     layerBiomeIsle.addIsle(biome, chance, biomeCanSpawnIn, inOcean);
                 }
 
@@ -295,11 +312,11 @@ public final class LayerFactory
                     haveBorder = true;
                     for (String replaceFromName : biomeConfig.biomeIsBorder)
                     {
-                    	int replaceFrom = 0;
+                    	replaceFrom = 0;
 
                     	// TODO: this works for forge but not for bukkit, does that make sense?...
-                    	LocalBiome replaceFromBiome = world.getBiomeByNameOrNull(replaceFromName);
-            			replaceFrom = replaceFromBiome.getIds().getOTGBiomeId();
+                    	replaceFromBiome = world.getBiomeByNameOrNull(replaceFromName);
+            			replaceFrom = replaceFromBiome.getOTGBiomeId();
 
                         //int replaceFrom = world.getBiomeByName(replaceFromName).getIds().getGenerationId();
                         layerBiomeBorder.addBiome(biome, replaceFrom, world);
@@ -374,8 +391,8 @@ public final class LayerFactory
         	OTG.log(LogMarker.WARN, "Could not find DefaultFrozenOceanBiome \"" + worldConfig.defaultFrozenOceanBiome + "\", substituting \"" + defaultOceanBiome.getName() + "\".");
         }
         
-        int defaultOceanId = defaultOceanBiome.getIds().getOTGBiomeId();        
-        int defaultFrozenOceanId = defaultFrozenOceanBiome.getIds().getOTGBiomeId(); 
+        int defaultOceanId = defaultOceanBiome.getOTGBiomeId();        
+        int defaultFrozenOceanId = defaultFrozenOceanBiome.getOTGBiomeId(); 
         
         BiomeGroupManager groupManager = worldConfig.biomeGroupManager;
 
@@ -389,7 +406,7 @@ public final class LayerFactory
         LayerBiomeInBiome layerBiomeIsle;
         boolean haveBorder;
         boolean haveIsle;
-        List<LocalBiome> biomes;
+        LocalBiome[] biomes;
         BiomeConfig biomeConfig;
         boolean[] biomeCanSpawnIn;
     	LocalBiome islandInBiome;
@@ -458,7 +475,7 @@ public final class LayerFactory
             haveBorder = false;
             haveIsle = false;
                         
-            biomes = configs.getBiomeArrayLegacy();
+            biomes = configs.getBiomeArrayByOTGId();
             for (LocalBiome biome : biomes)
             {
                 if (biome == null)
@@ -485,7 +502,7 @@ public final class LayerFactory
                         {
                         	inOcean = true;
                         } else {
-                        	biomeCanSpawnIn[islandInBiome.getIds().getOTGBiomeId()] = true;
+                        	biomeCanSpawnIn[islandInBiome.getOTGBiomeId()] = true;
                         }
                     }
 
@@ -514,7 +531,7 @@ public final class LayerFactory
                     		OTG.log(LogMarker.WARN, "Could not find BorderBiome \"" + replaceFromName + "\" for biome \"" + biomeConfig.getName() + "\", ignoring.");
                     		continue;
                     	}
-            			replaceFrom = replaceFromBiome.getIds().getOTGBiomeId();
+            			replaceFrom = replaceFromBiome.getOTGBiomeId();
                         layerBiomeBorder.addBiome(biome, replaceFrom, world);
                     }
                 }

@@ -8,11 +8,13 @@ import com.pg85.otg.configuration.biome.BiomeConfigFinder.BiomeConfigStub;
 import com.pg85.otg.configuration.biome.BiomeLoadInstruction;
 import com.pg85.otg.configuration.biome.settings.BiomeResourcesManager;
 import com.pg85.otg.configuration.customobjects.CustomObjectResourcesManager;
+import com.pg85.otg.configuration.dimensions.DimensionConfigGui;
 import com.pg85.otg.configuration.dimensions.DimensionsConfig;
 import com.pg85.otg.configuration.io.FileSettingsReader;
 import com.pg85.otg.configuration.io.FileSettingsWriter;
 import com.pg85.otg.configuration.standard.DefaultMaterial;
 import com.pg85.otg.configuration.standard.PluginStandardValues;
+import com.pg85.otg.configuration.world.WorldConfig;
 import com.pg85.otg.customobjects.CustomObject;
 import com.pg85.otg.customobjects.CustomObjectManager;
 import com.pg85.otg.events.EventHandler;
@@ -28,11 +30,13 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Random;
 
 public abstract class OTGEngine
 {
+	public LinkedHashMap<String, DimensionConfigGui> Presets = new LinkedHashMap<String, DimensionConfigGui>();
 	private HashMap<String, BiomeConfig[]> otgBiomeIdsByWorld = new HashMap<String, BiomeConfig[]>();
     private BiomeModeManager biomeManagers;
     private List<EventHandler> cancelableEventHandlers = new ArrayList<EventHandler>(5);
@@ -294,6 +298,36 @@ public abstract class OTGEngine
     		return worldName;
     	}
 	}
+	
+	// Presets
+	
+	// Presets
+	
+	public void loadPresets()
+	{
+		Presets.clear();		
+	    ArrayList<String> worldNames = new ArrayList<String>();
+	    File OTGWorldsDirectory = new File(OTG.getEngine().getOTGRootFolder().getAbsolutePath() + File.separator + PluginStandardValues.PresetsDirectoryName);
+	    if(OTGWorldsDirectory.exists() && OTGWorldsDirectory.isDirectory())
+	    {
+	    	for(File worldDir : OTGWorldsDirectory.listFiles())
+	    	{
+	    		if(worldDir.isDirectory() && !worldDir.getName().toLowerCase().trim().startsWith("dim-"))
+	    		{
+	    			for(File file : worldDir.listFiles())
+	    			{
+	    				if(file.getName().equals("WorldConfig.ini"))
+	    				{
+			    			worldNames.add(worldDir.getName());
+			    			WorldConfig worldConfig = OTG.loadWorldConfigFromDisk(worldDir);
+					        Presets.put(worldDir.getName(), new DimensionConfigGui(worldDir.getName(), worldConfig));
+					        break;
+	    				}
+	    			}
+	    		}
+	    	}
+		}
+	}
 
 	// Worlds
 	
@@ -332,7 +366,12 @@ public abstract class OTGEngine
 	public void unregisterOTGBiomeId(String worldName, int i)
 	{
 		otgBiomeIdsByWorld.get(worldName)[i] = null;
-	}    
+	}
+
+	public void unregisterOTGBiomeIdsForWorld(String worldName)
+	{
+		otgBiomeIdsByWorld.remove(worldName);
+	}
     
     // Materials
 
@@ -365,7 +404,7 @@ public abstract class OTGEngine
      */
     public abstract LocalMaterialData readMaterial(String name) throws InvalidConfigException;
 
-    public abstract LocalMaterialData toLocalMaterialData(DefaultMaterial defaultMaterial, int blockData);
+    public abstract LocalMaterialData toLocalMaterialData(DefaultMaterial defaultMaterial);
 	
 	// Logging
 	
@@ -375,8 +414,6 @@ public abstract class OTGEngine
     }
 
 	public abstract boolean isModLoaded(String mod);
-
-	public abstract boolean areEnoughBiomeIdsAvailableForPresets(ArrayList<String> presetNames);
 
 	public abstract Collection<BiomeLoadInstruction> getDefaultBiomes();
 

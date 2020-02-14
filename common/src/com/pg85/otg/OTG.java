@@ -150,7 +150,7 @@ public class OTG
     	   return null;
        }       
        
-       return world.getSavedBiomeName(x, z);
+       return world.getBiome(x, z).getName();
    	}
 
    	public static LocalBiome getBiomeByOTGId(int id)

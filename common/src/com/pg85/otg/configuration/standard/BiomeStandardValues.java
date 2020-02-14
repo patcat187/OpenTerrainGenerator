@@ -37,7 +37,7 @@ public class BiomeStandardValues extends Settings
     public static final Setting<String>
             BIOME_CONFIG_EXTENSION = stringSetting("BiomeConfigExtension", ".bc"),
             BIOME_EXTENDS = stringSetting("BiomeExtends", ""),
-            RIVER_BIOME = stringSetting("RiverBiome", "River"),
+            RIVER_BIOME = stringSetting("RiverBiome", DefaultBiome.RIVER.Name),
             REPLACE_TO_BIOME_NAME = stringSetting("ReplaceToBiomeName", ""),
     		BIOME_DICT_ID = stringSetting("BiomeDictId", ""),
 			INHERIT_MOBS_BIOME_NAME = stringSetting("InheritMobsBiomeName", "");
@@ -62,7 +62,7 @@ public class BiomeStandardValues extends Settings
             FOG_COLOR = colorSetting("FogColor", "#000000");
 
     public static final Setting<List<String>>
-            ISLE_IN_BIOME = stringListSetting("IsleInBiome", "Ocean"),
+            ISLE_IN_BIOME = stringListSetting("IsleInBiome", DefaultBiome.OCEAN.Name),
             BIOME_IS_BORDER = stringListSetting("BiomeIsBorder"),
             NOT_BORDER_NEAR = stringListSetting("NotBorderNear"),
             BIOME_OBJECTS = stringListSetting("BiomeObjects");

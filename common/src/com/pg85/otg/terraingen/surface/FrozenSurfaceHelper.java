@@ -33,12 +33,14 @@ public class FrozenSurfaceHelper
     {
         int x = chunkCoord.getBlockXCenter();
         int z = chunkCoord.getBlockZCenter();
+        int blockToFreezeX;
+        int blockToFreezeZ;
         for (int i = 0; i < ChunkCoordinate.CHUNK_X_SIZE; i++)
         {
             for (int j = 0; j < ChunkCoordinate.CHUNK_Z_SIZE; j++)
             {
-                int blockToFreezeX = x + i;
-                int blockToFreezeZ = z + j;
+                blockToFreezeX = x + i;
+                blockToFreezeZ = z + j;
                 freezeColumn(blockToFreezeX, blockToFreezeZ, chunkCoord);
             }
         }
@@ -85,9 +87,9 @@ public class FrozenSurfaceHelper
             if (materialToFreeze.isLiquid())
             {
                 // Water & Stationary Water => IceBlock
-                freezeType(x, y, z, materialToFreeze, biome.getBiomeConfig().iceBlock, DefaultMaterial.WATER, DefaultMaterial.STATIONARY_WATER, chunkBeingPopulated);
+                freezeType(x, y, z, materialToFreeze, biome.getBiomeConfig().iceBlock, DefaultMaterial.WATER, chunkBeingPopulated);
                 // Lava & Stationary Lava => CooledLavaBlock
-                freezeType(x, y, z, materialToFreeze, biome.getBiomeConfig().cooledLavaBlock, DefaultMaterial.LAVA, DefaultMaterial.STATIONARY_LAVA, chunkBeingPopulated);
+                freezeType(x, y, z, materialToFreeze, biome.getBiomeConfig().cooledLavaBlock, DefaultMaterial.LAVA, chunkBeingPopulated);
                 return true;
             }
         }
@@ -106,9 +108,9 @@ public class FrozenSurfaceHelper
      * @param check1 The first material to check for
      * @param check2 The second meterial to check for
      */
-    private void freezeType(int x, int y, int z, LocalMaterialData thawedMaterial, LocalMaterialData frozenMaterial, DefaultMaterial check1, DefaultMaterial check2, ChunkCoordinate chunkBeingPopulated)
+    private void freezeType(int x, int y, int z, LocalMaterialData thawedMaterial, LocalMaterialData frozenMaterial, DefaultMaterial check1, ChunkCoordinate chunkBeingPopulated)
     {
-        if ((thawedMaterial.isMaterial(check1) || thawedMaterial.isMaterial(check2)) && !frozenMaterial.isMaterial(check1) && !frozenMaterial.isMaterial(check2))
+        if (thawedMaterial.isMaterial(check1) && !frozenMaterial.isMaterial(check1))
         {
             world.setBlock(x, y, z, frozenMaterial, null, chunkBeingPopulated);
             if (worldConfig.fullyFreezeLakes && this.currentPropagationSize < this.maxPropagationSize)
@@ -117,7 +119,6 @@ public class FrozenSurfaceHelper
                 propagateFreeze(x, y, z, chunkBeingPopulated);
             }
         }
-
     }
 
     /**
@@ -187,17 +188,21 @@ public class FrozenSurfaceHelper
     private boolean setSnowFallAtLocation(int x, int y, int z, int baseSnowHeight, LocalMaterialData materialToSnowOn, ChunkCoordinate chunkBeingPopulated)
     {
         LocalMaterialData snowMass;
-        if (materialToSnowOn.isMaterial(DefaultMaterial.LEAVES) || materialToSnowOn.isMaterial(DefaultMaterial.LEAVES_2))
+        if (materialToSnowOn.toDefaultMaterial().isLeaves())
         {
             // Snow Layer(s) for trees, let each leaf carry maxLayersOnLeaves or less layers of snow,
         	// any remaining layers will fall through.
-        	snowMass = MaterialHelper.toLocalMaterialData(DefaultMaterial.SNOW, baseSnowHeight <= maxLayersOnLeaves - 1 ? baseSnowHeight : maxLayersOnLeaves - 1);
+        	// TODO: Reimplement this
+        	//snowMass = MaterialHelper.toLocalMaterialData(DefaultMaterial.SNOW, baseSnowHeight <= maxLayersOnLeaves - 1 ? baseSnowHeight : maxLayersOnLeaves - 1);
+        	snowMass = MaterialHelper.toLocalMaterialData(DefaultMaterial.SNOW);
             world.setBlock(x, y, z, snowMass, null, chunkBeingPopulated);
             return baseSnowHeight <= maxLayersOnLeaves - 1;
         }
         
         // Basic Snow Layer(s)
-        snowMass = MaterialHelper.toLocalMaterialData(DefaultMaterial.SNOW, baseSnowHeight);
+        // TODO: Reimplement this
+        //snowMass = MaterialHelper.toLocalMaterialData(DefaultMaterial.SNOW, baseSnowHeight);
+        snowMass = MaterialHelper.toLocalMaterialData(DefaultMaterial.SNOW);
         world.setBlock(x, y, z, snowMass, null, chunkBeingPopulated);
         return true;
     }

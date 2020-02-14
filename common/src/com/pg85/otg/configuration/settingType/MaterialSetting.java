@@ -25,7 +25,7 @@ public class MaterialSetting extends Setting<LocalMaterialData>
     @Override
     public LocalMaterialData getDefaultValue()
     {
-        return MaterialHelper.toLocalMaterialData(defaultValue, 0);
+        return MaterialHelper.toLocalMaterialData(defaultValue);
     }
 
     @Override

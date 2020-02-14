@@ -28,7 +28,7 @@ public class VinesGen extends Resource
     public VinesGen(BiomeConfig biomeConfig, List<String> args) throws InvalidConfigException
     {
         super(biomeConfig);
-        material = MaterialHelper.toLocalMaterialData(DefaultMaterial.VINE, 0);
+        material = MaterialHelper.toLocalMaterialData(DefaultMaterial.VINE);
 
         assureSize(4, args);
         frequency = readInt(args.get(0), 1, 100);
@@ -122,7 +122,9 @@ public class VinesGen extends Resource
                 {
                     if (canPlace(world, _x, y, _z, direction, chunkBeingPopulated))
                     {
-                        world.setBlock(_x, y, _z, MaterialHelper.toLocalMaterialData(DefaultMaterial.VINE, 1 << D[OPPOSITE_FACING[direction]]), null, chunkBeingPopulated);
+                    	// TODO: Reimplement this
+                        //world.setBlock(_x, y, _z, MaterialHelper.toLocalMaterialData(DefaultMaterial.VINE, 1 << D[OPPOSITE_FACING[direction]]), null, chunkBeingPopulated);
+                    	world.setBlock(_x, y, _z, MaterialHelper.toLocalMaterialData(DefaultMaterial.VINE), null, chunkBeingPopulated);
                         break;
                     }
                 }

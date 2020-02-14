@@ -88,8 +88,7 @@ public abstract class BiomeGenerator
         {
             // Implementation has a bug
             throw new AssertionError("isCached() == true, but getBiome is not overridden");
-        } else
-        {
+        } else {
             throw new UnsupportedOperationException("isCached() == false, so no single biome lookups");
         }
     }

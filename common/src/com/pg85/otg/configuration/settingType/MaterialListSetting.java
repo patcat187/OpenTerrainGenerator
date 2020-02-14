@@ -31,7 +31,7 @@ public class MaterialListSetting extends Setting<ArrayList<LocalMaterialData>>
     	ArrayList<LocalMaterialData> materials = new ArrayList<LocalMaterialData>();
     	for(DefaultMaterial defaultMaterial : defaultValue)
     	{
-    		materials.add(MaterialHelper.toLocalMaterialData(defaultMaterial, 0));
+    		materials.add(MaterialHelper.toLocalMaterialData(defaultMaterial));
     	}
         return materials;
     }

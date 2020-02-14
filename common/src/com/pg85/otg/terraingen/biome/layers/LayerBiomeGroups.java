@@ -44,20 +44,20 @@ public class LayerBiomeGroups extends Layer
 
                     possibleGroups = biomeGroupManager.getGroupDepthMap(depth);
                     newGroupRarity = nextGroupInt(BiomeGroupManager.getMaxRarityFromPossibles(possibleGroups)*Entropy);
-                        //>>	Spawn the biome based on the rarity spectrum
-                        for (Entry<Integer, BiomeGroup> group : possibleGroups.entrySet())
+                    //>>	Spawn the biome based on the rarity spectrum
+                    for (Entry<Integer, BiomeGroup> group : possibleGroups.entrySet())
+                    {
+                        if (newGroupRarity/Entropy < group.getKey())
                         {
-                            if (newGroupRarity/Entropy < group.getKey())
+                            if (group.getValue() != null)
                             {
-                                if (group.getValue() != null)
-                                {
-                                    currentPiece |= (group.getValue().getGroupId() << BiomeGroupShift) |
-                                    //>>	If the average temp of the group is cold
-                                    ((group.getValue().isColdGroup() && freezeGroups) ? IceBit : 0);
-                                }
-                                break;
+                                currentPiece |= (group.getValue().getGroupId() << BiomeGroupShift) |
+                                //>>	If the average temp of the group is cold
+                                ((group.getValue().isColdGroup() && freezeGroups) ? IceBit : 0);
                             }
+                            break;
                         }
+                    }
                 }
                 thisInts[(j + i * x_size)] = currentPiece;
             }

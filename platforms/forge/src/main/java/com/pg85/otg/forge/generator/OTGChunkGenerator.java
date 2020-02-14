@@ -1,5 +1,6 @@
 package com.pg85.otg.forge.generator;
 
+import java.io.File;
 import java.util.BitSet;
 import java.util.List;
 import java.util.ListIterator;
@@ -32,23 +33,40 @@ import net.minecraft.world.gen.WorldGenRegion;
 import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.IFeatureConfig;
+import net.minecraft.world.gen.feature.jigsaw.JigsawJunction;
+import net.minecraft.world.gen.feature.jigsaw.JigsawPattern;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.spawner.CatSpawner;
 import net.minecraft.world.spawner.PatrolSpawner;
 import net.minecraft.world.spawner.PhantomSpawner;
 import net.minecraft.world.spawner.WorldEntitySpawner;
 
-import it.unimi.dsi.fastutil.longs.LongIterator;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectList;
-import it.unimi.dsi.fastutil.objects.ObjectListIterator;
 import java.util.Random;
 import java.util.Map.Entry;
 
 import javax.annotation.Nullable;
 
+import com.pg85.otg.OTG;
+import com.pg85.otg.configuration.dimensions.DimensionConfig;
+import com.pg85.otg.configuration.dimensions.DimensionsConfig;
+import com.pg85.otg.configuration.standard.PluginStandardValues;
+import com.pg85.otg.configuration.standard.WorldStandardValues;
+import com.pg85.otg.configuration.world.WorldConfig;
+import com.pg85.otg.forge.ForgeEngine;
+import com.pg85.otg.forge.biomes.OTGBiomeProvider;
+import com.pg85.otg.forge.world.ForgeWorld;
+import com.pg85.otg.logging.LogMarker;
+import com.pg85.otg.terraingen.ChunkProviderOTG;
+import com.pg85.otg.terraingen.biome.BiomeGenerator;
+import com.pg85.otg.util.ChunkCoordinate;
+
+import it.unimi.dsi.fastutil.longs.LongIterator;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectList;
+import it.unimi.dsi.fastutil.objects.ObjectListIterator;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.Minecraft;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.ReportedException;
 import net.minecraft.util.math.MutableBoundingBox;
@@ -56,8 +74,6 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.chunk.ChunkPrimer;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.IChunk;
-import net.minecraft.world.gen.feature.jigsaw.JigsawJunction;
-import net.minecraft.world.gen.feature.jigsaw.JigsawPattern;
 import net.minecraft.world.gen.feature.structure.AbstractVillagePiece;
 import net.minecraft.world.gen.feature.structure.Structure;
 import net.minecraft.world.gen.feature.structure.StructurePiece;
@@ -69,7 +85,8 @@ public class OTGChunkGenerator extends NoiseChunkGenerator<OTGGenSettings>
 	// ChunkGenerator
 	protected final IWorld world;
 	protected final long seed;
-	protected final BiomeProvider biomeProvider;
+	protected final OTGBiomeProvider biomeProvider;
+	private ChunkProviderOTG generator;
 	protected final OTGGenSettings settings;
 	
 	// NoiseChunkGenerator
@@ -132,20 +149,18 @@ public class OTGChunkGenerator extends NoiseChunkGenerator<OTGGenSettings>
 	public OTGChunkGenerator(IWorld worldIn, BiomeProvider provider, OTGGenSettings settingsIn)
 	{
 		super(worldIn, provider, 4, 8, 256, settingsIn, true);
-		int horizontalNoiseGranularity = 4;
-		int verticalNoiseGranularity = 8;
-		int p_i49931_5_ = 256;
+		
 		boolean usePerlin = true;
 		this.world = worldIn;
 		this.seed = worldIn.getSeed();
-		this.biomeProvider = provider;
+		this.biomeProvider = (OTGBiomeProvider)provider;
 		this.settings = settingsIn;
-		this.verticalNoiseGranularity = verticalNoiseGranularity;
-		this.horizontalNoiseGranularity = horizontalNoiseGranularity;
+		this.verticalNoiseGranularity = 8;
+		this.horizontalNoiseGranularity = 4;
 		this.defaultBlock = settingsIn.getDefaultBlock();
 		this.defaultFluid = settingsIn.getDefaultFluid();
 		this.noiseSizeX = 16 / this.horizontalNoiseGranularity;
-		this.noiseSizeY = p_i49931_5_ / this.verticalNoiseGranularity;
+		this.noiseSizeY = 256 / this.verticalNoiseGranularity;
 		this.noiseSizeZ = 16 / this.horizontalNoiseGranularity;
 		this.randomSeed = new SharedSeedRandom(this.seed);
 		this.field_222568_o = new OctavesNoiseGenerator(this.randomSeed, 15, 0);
@@ -155,8 +170,119 @@ public class OTGChunkGenerator extends NoiseChunkGenerator<OTGGenSettings>
 		this.randomSeed.skip(2620);
 		this.depthNoise = new OctavesNoiseGenerator(this.randomSeed, 15, 0);
 		this.field_222577_j = worldIn.getWorldInfo().getGenerator() == WorldType.AMPLIFIED;
-	}
+		
+        // Create dirs for a new world if necessary (only needed for overworld, when creating a new OTG world)
+        if(worldIn.getDimension().getType().getId() == 0)
+        {
+        	// Happens when the MP server is started
+        	if(OTG.getDimensionsConfig() == null)
+        	{
+        		File worldDir;
+        		if(((ServerWorld)worldIn).getSaveHandler() != null)
+        		{
+        			worldDir = ((ServerWorld)worldIn).getSaveHandler().getWorldDirectory();
+        		} else {
+        			worldDir = new File(Minecraft.getInstance().gameDir + File.separator + "saves" + File.separator + worldIn.getWorldInfo().getWorldName());
+        		}
+        		
+        		// Check if a dimsconfig is saved for the world
+        		DimensionsConfig savedConfig = DimensionsConfig.loadFromFile(worldDir);
+        		if(savedConfig != null)
+        		{
+        			OTG.setDimensionsConfig(savedConfig);
+        		} else {
+            		// This is a new world, create a DimensionsConfig for it based on modpack config or worldconfig.
+        			DimensionsConfig modPackConfig = DimensionsConfig.getModPackConfig(worldDir.getName());
+        	        if(modPackConfig != null)
+        	        {
+        	        	DimensionsConfig dimsConfig = new DimensionsConfig(worldDir);
+        	        	dimsConfig.Overworld = modPackConfig.Overworld;
+        	        	dimsConfig.Dimensions = modPackConfig.Dimensions;
+        	        	OTG.setDimensionsConfig(dimsConfig);
+        	        	OTG.getDimensionsConfig().save();
+        	        } else {
+        	        	// Create dimensionsconfig from the preset's worldconfig, only works if worldname is the same as preset name (which is the case for OTG overworlds on MP servers)
+        	        	WorldConfig worldConfig = OTG.loadWorldConfigFromDisk(new File(OTG.getEngine().getOTGRootFolder(), PluginStandardValues.PresetsDirectoryName + File.separator + worldDir.getName()));
+        	        	if(worldConfig == null)
+        	        	{
+        	        		// The world dir / world config is missing, this can be either an error or an MP server being started and creating an OTG overworld, in which case default configs should be generated.
+        	        		// Create a new world dir with default configs.
+        					((ForgeEngine)OTG.getEngine()).getWorldLoader().createDefaultOTGWorld(worldDir.getName()); // For MP servers, world name == preset name.
+        					OTG.getEngine().loadPresets();
+        					worldConfig = OTG.loadWorldConfigFromDisk(new File(OTG.getEngine().getOTGRootFolder(), PluginStandardValues.PresetsDirectoryName + File.separator + worldDir.getName()));
+        	        	}
+        	        	
+    	        		DimensionsConfig dimsConfig = new DimensionsConfig(worldDir);
+    	        		dimsConfig.Overworld = new DimensionConfig(worldDir.getName(), worldConfig);
+    	        		for(String dimToAdd : worldConfig.dimensions)
+    	        		{
+    	        			WorldConfig dimWorldConfig = OTG.loadWorldConfigFromDisk(new File(OTG.getEngine().getOTGRootFolder(), PluginStandardValues.PresetsDirectoryName + File.separator + dimToAdd));
+    	        			if(dimWorldConfig != null)
+    	        			{
+    	        				dimsConfig.Dimensions.add(new DimensionConfig(dimToAdd, dimWorldConfig));
+    	        			}
+    	        		}
+    	        		OTG.setDimensionsConfig(dimsConfig);
+    	        		OTG.getDimensionsConfig().save();
+        	        }
+        		}
+        	}
+	        File worldDirectory = new File(OTG.getEngine().getOTGRootFolder(), PluginStandardValues.PresetsDirectoryName + File.separator + OTG.getDimensionsConfig().Overworld.PresetName);
+	
+	        if (!worldDirectory.exists())
+	        {
+	            System.out.println("OpenTerrainGenerator: settings does not exist, creating defaults");
 
+	            if (!worldDirectory.mkdirs())
+	            {
+	                System.out.println("OpenTerrainGenerator: cant create folder " + worldDirectory.getAbsolutePath());
+	            }
+	        }
+
+	        File worldObjectsDir = new File(OTG.getEngine().getOTGRootFolder(), PluginStandardValues.PresetsDirectoryName + File.separator + OTG.getDimensionsConfig().Overworld.PresetName + File.separator + WorldStandardValues.WORLD_OBJECTS_DIRECTORY_NAME);
+	        worldObjectsDir.mkdirs();
+
+	        File worldBiomesDir = new File(OTG.getEngine().getOTGRootFolder(), PluginStandardValues.PresetsDirectoryName + File.separator + OTG.getDimensionsConfig().Overworld.PresetName + File.separator + WorldStandardValues.WORLD_BIOMES_DIRECTORY_NAME);
+	        worldBiomesDir.mkdirs();
+	        
+	        // For MP server
+	        /*
+	        if(!worldIn.getMinecraftServer().isSinglePlayer())
+	        {
+			    // TODO: Why does MC add \\.? Removing.. 
+			    File worldSaveDir = new File(mcWorld.getSaveHandler().getWorldDirectory().getAbsolutePath().replace("\\.",  ""));			    
+			    OTG.IsNewWorldBeingCreated = !new File(worldSaveDir, File.separator + "region").exists();
+	        }
+	        */
+        }
+
+    	// For MP server
+        /*
+        if(!mcWorld.getMinecraftServer().isSinglePlayer())
+        {
+	        WorldSettings worldSettings = new WorldSettings(mcWorld.getWorldInfo().getSeed(), mcWorld.getWorldInfo().getGameType(), mcWorld.getWorldInfo().isMapFeaturesEnabled(), mcWorld.getWorldInfo().isHardcoreModeEnabled(), OTGPlugin.OtgWorldType);
+	        worldSettings.setGeneratorOptions("OpenTerrainGenerator");
+	        mcWorld.getWorldInfo().setAllowCommands(mcWorld.getWorldInfo().areCommandsAllowed());
+	        mcWorld.getWorldInfo().populateFromWorldSettings(worldSettings);
+    	}
+    	*/
+        //
+
+        // TODO: This allows only overworld, need OTGDimensionManager
+        ForgeWorld world = ((ForgeEngine)OTG.getEngine()).getWorldLoader().getOrCreateForgeWorld((ServerWorld)worldIn, OTG.getDimensionsConfig().Overworld.PresetName);
+        if (world == null) // TODO: When does this happen, if the world is not an OTG world?
+        {
+            throw new RuntimeException("This shouldn't happen, please contact team OTG about this crash.");
+            //return super.getBiomeProvider(mcWorld);
+        }
+        ((OTGBiomeProvider) this.biomeProvider).provideWorldInstance(world);
+        this.generator = new ChunkProviderOTG(world.getConfigs(), world);
+        
+        Class<? extends BiomeGenerator> biomeGenClass = world.getConfigs().getWorldConfig().biomeMode;
+        BiomeGenerator biomeGenerator = OTG.getBiomeModeManager().createCached(biomeGenClass, world);
+        world.setBiomeGenerator(biomeGenerator);
+	}
+	
 	// Getters
 	
 	@Override
@@ -302,6 +428,8 @@ public class OTGChunkGenerator extends NoiseChunkGenerator<OTGGenSettings>
 	@Override
 	public void generateBiomes(IChunk chunkIn)
 	{
+		// 1.12.2 fillBiomesArray?
+		// Chunk internal array is filled with biomes instead of saved ids.
 		ChunkPos chunkpos = chunkIn.getPos();
 		((ChunkPrimer)chunkIn).func_225548_a_(new BiomeContainer(chunkpos, this.biomeProvider));
 	}
@@ -316,6 +444,13 @@ public class OTGChunkGenerator extends NoiseChunkGenerator<OTGGenSettings>
 	
 	@Override
 	public void makeBase(IWorld worldIn, IChunk chunkIn)
+	{
+		ChunkCoordinate chunkCoord = ChunkCoordinate.fromChunkCoords(chunkIn.getPos().x, chunkIn.getPos().z);
+		this.generator.generate(new ForgeChunkBuffer(chunkCoord, (ChunkPrimer)chunkIn));
+		//vanillaMakeBase(worldIn, chunkIn);
+	}
+	
+	private void vanillaMakeBase(IWorld worldIn, IChunk chunkIn)
 	{
 		int i = this.getSeaLevel();
 		ObjectList<AbstractVillagePiece> objectlist = new ObjectArrayList<>(10);
@@ -483,6 +618,8 @@ public class OTGChunkGenerator extends NoiseChunkGenerator<OTGGenSettings>
 										chunkprimer.addLightPosition(blockpos$mutable);
 									}
 
+									//OTG.log(LogMarker.INFO, "DERP: " + k3 + " " + k2 + " " + j4);
+									//OTG.log(LogMarker.INFO, "DER2: " + k3 + " " + j2 + " " + j4);
 									chunksection.setBlockState(k3, k2, j4, blockstate, false);
 									heightmap.update(k3, j2, j4, blockstate);
 									heightmap1.update(k3, j2, j4, blockstate);

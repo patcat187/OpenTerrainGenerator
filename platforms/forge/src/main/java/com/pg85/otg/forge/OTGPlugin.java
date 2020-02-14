@@ -1,9 +1,11 @@
 package com.pg85.otg.forge;
 
+import java.io.File;
 import java.util.stream.Collectors;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.ChunkGeneratorType;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
@@ -17,6 +19,7 @@ import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import com.pg85.otg.OTG;
+import com.pg85.otg.configuration.standard.PluginStandardValues;
 import com.pg85.otg.forge.generator.OTGChunkGenerator;
 import com.pg85.otg.forge.generator.OTGGenSettings;
 import com.pg85.otg.forge.world.OTGWorldType;
@@ -25,7 +28,7 @@ import com.pg85.otg.logging.LogMarker;
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod("openterraingenerator")
 public class OTGPlugin
-{	
+{
     public static OTGWorldType OtgWorldType;
     //public static BiomeProviderType<OTGBiomeProviderSettings, OTGBiomeProvider> OtgBiomeProviderType;
     public static ChunkGeneratorType<OTGGenSettings, OTGChunkGenerator> OtgChunkGeneratorType;
@@ -107,5 +110,29 @@ public class OTGPlugin
             // register a new block here
         	OTG.log(LogMarker.INFO, "HELLO from Register Block");
         }
-    }
+        
+        @SubscribeEvent
+        public static void onBiomesRegistry(final RegistryEvent.Register<Biome> biomeRegistryEvent)
+        {
+    	    File OTGWorldsDirectory = new File(OTG.getEngine().getOTGRootFolder().getAbsolutePath() + File.separator + PluginStandardValues.PresetsDirectoryName);
+    	    if(OTGWorldsDirectory.exists() && OTGWorldsDirectory.isDirectory())
+    	    {
+    	    	((ForgeEngine)OTG.getEngine()).getWorldLoader().createDefaultOTGWorld("Default"); // For MP servers, world name == preset name.
+    	    	for(File worldDir : OTGWorldsDirectory.listFiles())
+    	    	{
+    	    		if(worldDir.isDirectory() && !worldDir.getName().toLowerCase().trim().startsWith("dim-"))
+    	    		{
+    	    			for(File file : worldDir.listFiles())
+    	    			{
+    	    				if(file.getName().equals("WorldConfig.ini"))
+    	    				{
+    	    					((ForgeEngine)OTG.getEngine()).getWorldLoader().registerBiomesForPreset(worldDir);
+    					        break;
+    	    				}
+    	    			}
+    	    		}
+    	    	}
+    		}
+        }
+    }   
 }

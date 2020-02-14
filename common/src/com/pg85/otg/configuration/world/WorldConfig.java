@@ -3,10 +3,8 @@ package com.pg85.otg.configuration.world;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -38,7 +36,6 @@ public class WorldConfig extends ConfigFile
 {
     public final File settingsDir;
     public ArrayList<String> worldBiomes = new ArrayList<String>();
-    public Map<String, Integer> customBiomeGenerationIds = new HashMap<String, Integer>();
 
     // Biome Groups and special biome lists
     public BiomeGroupManager biomeGroupManager;
@@ -454,7 +451,7 @@ public class WorldConfig extends ConfigFile
 
         // Put BiomeMode in compatibility mode when the old setting
         // NormalBiomes is found, and create default groups
-        if (reader.hasSetting(WorldStandardValues.NORMAL_BIOMES))
+        if (reader.hasSetting(WorldStandardValues.BEFORE_GROUPS_NORMAL_BIOMES))
         {
             if (reader.getSetting(WorldStandardValues.BIOME_MODE).equals("Normal"))
             {
@@ -463,13 +460,13 @@ public class WorldConfig extends ConfigFile
 
             int landSize = reader.getSetting(WorldStandardValues.LAND_SIZE);
             int landRarity = reader.getSetting(WorldStandardValues.LAND_RARITY);
-            List<String> normalBiomes = reader.getSetting(WorldStandardValues.NORMAL_BIOMES);
+            List<String> normalBiomes = reader.getSetting(WorldStandardValues.BEFORE_GROUPS_NORMAL_BIOMES);
             BiomeGroup normalGroup = new BiomeGroup(this, WorldStandardValues.BiomeGroupNames.NORMAL,
                     landSize, landRarity, normalBiomes);
 
             int iceSize = reader.getSetting(WorldStandardValues.ICE_SIZE);
             int iceRarity = reader.getSetting(WorldStandardValues.ICE_RARITY);
-            List<String> iceBiomes = reader.getSetting(WorldStandardValues.ICE_BIOMES);
+            List<String> iceBiomes = reader.getSetting(WorldStandardValues.BEFORE_GROUPS_ICE_BIOMES);
             BiomeGroup iceGroup = new BiomeGroup(this, WorldStandardValues.BiomeGroupNames.ICE,
                     iceSize, iceRarity, iceBiomes);
 
@@ -595,7 +592,6 @@ public class WorldConfig extends ConfigFile
         // Specialized Biomes
         this.isleBiomes = reader.getSetting(WorldStandardValues.ISLE_BIOMES);
         this.borderBiomes = reader.getSetting(WorldStandardValues.BORDER_BIOMES);
-        readCustomBiomes(reader);
 
         // Images
         this.imageMode = reader.getSetting(WorldStandardValues.IMAGE_MODE);
@@ -806,64 +802,32 @@ public class WorldConfig extends ConfigFile
     private void createDefaultBiomeGroups()
     {
         BiomeGroup normalGroup = new BiomeGroup(this, WorldStandardValues.BiomeGroupNames.NORMAL, 0, 98,
-                Arrays.asList("Forest", "Roofed Forest", "Extreme Hills", "Plains",
-                        "Birch Forest", "Swampland", "Flower Forest", "Roofed Forest M",
-                        "Extreme Hills+", "Sunflower Plains", "Birch Forest M", "Swampland M"));
+                Arrays.asList(WorldStandardValues.GROUP_NORMAL_BIOMES));
         this.biomeGroupManager.registerGroup(normalGroup);
 
         BiomeGroup iceGroup = new BiomeGroup(this, WorldStandardValues.BiomeGroupNames.ICE, 2, 40,
-                Arrays.asList("Ice Plains", "Cold Taiga", "Ice Plains Spikes", "Cold Taiga M"));
+                Arrays.asList(WorldStandardValues.GROUP_ICE_BIOMES));
         this.biomeGroupManager.registerGroup(iceGroup);
 
         BiomeGroup hotGroup = new BiomeGroup(this, WorldStandardValues.BiomeGroupNames.HOT, 1, 98,
-                Arrays.asList("Desert", "Savanna", "Plains", "Desert M", "Savanna M", "Sunflower Plains"));
+                Arrays.asList(WorldStandardValues.GROUP_HOT_BIOMES));
         this.biomeGroupManager.registerGroup(hotGroup);
 
         BiomeGroup coldGroup = new BiomeGroup(this, WorldStandardValues.BiomeGroupNames.COLD, 0, 98,
-                Arrays.asList("Forest", "Extreme Hills", "Taiga", "Plains",
-                        "Flower Forest", "Extreme Hills+", "Taiga M", "Sunflower Plains"));
+                Arrays.asList(WorldStandardValues.GROUP_COLD_BIOMES));
         this.biomeGroupManager.registerGroup(coldGroup);
 
         BiomeGroup mesaGroup = new BiomeGroup(this, WorldStandardValues.BiomeGroupNames.MESA, 2, 40,
-                Arrays.asList("Mesa"));
+                Arrays.asList(WorldStandardValues.GROUP_MESA_BIOMES));
         this.biomeGroupManager.registerGroup(mesaGroup);
 
         BiomeGroup jungleGroup = new BiomeGroup(this, WorldStandardValues.BiomeGroupNames.JUNGLE, 1, 40,
-                Arrays.asList("Jungle", "Jungle M"));
+                Arrays.asList(WorldStandardValues.GROUP_JUNGLE_BIOMES));
         this.biomeGroupManager.registerGroup(jungleGroup);
 
         BiomeGroup megaTaigaGroup = new BiomeGroup(this, WorldStandardValues.BiomeGroupNames.MEGA_TAIGA, 1, 40,
-                Arrays.asList("Mega Taiga", "Mega Spruce Taiga"));
+                Arrays.asList(WorldStandardValues.GROUP_MEGA_TAIGA_BIOMES));
         this.biomeGroupManager.registerGroup(megaTaigaGroup);
-    }
-
-    private void readCustomBiomes(SettingsMap reader)
-    {
-        List<String> biomes = reader.getSetting(WorldStandardValues.CUSTOM_BIOMES);
-
-        for (String biome : biomes)
-        {
-            try
-            {
-                String[] keys = biome.split(":");
-                if (keys[0].isEmpty())
-                {
-                    // Don't allow biomes with empty names
-                    continue;
-                }
-                if (keys.length == 2)
-                {
-                    int otgBiomeId = Integer.parseInt(keys[1]);
-                    customBiomeGenerationIds.put(keys[0], otgBiomeId);
-                } else {
-                    customBiomeGenerationIds.put(keys[0], -1);
-                }
-
-            } catch (NumberFormatException e)
-            {
-                System.out.println("Wrong custom biome id settings: '" + biome + "'");
-            }
-        }
     }
     
     @Override
@@ -906,11 +870,6 @@ public class WorldConfig extends ConfigFile
             "For old maps two more modes are available:",
             "   BeforeGroups - Minecraft 1.0 - 1.6.4 biome generator, only supports the biome groups NormalBiomes and IceBiomes");//,
             //"   OldGenerator - Minecraft Beta 1.7.3 biome generator");
-
-        // Custom biomes
-        writer.bigTitle("Custom biomes");
-
-        writeCustomBiomes(writer);
 
         // Settings for BiomeMode:Normal
         writer.bigTitle("Settings for BiomeMode: Normal",
@@ -1509,48 +1468,5 @@ public class WorldConfig extends ConfigFile
         {
             return o1.getValue() - o2.getValue();
         }
-    };    
-    
-    private void writeCustomBiomes(SettingsMap writer)
-    {
-        List<String> output = new ArrayList<String>();
-        // Custom biome id
-        List<Entry<String, Integer>> cbi = new ArrayList<Entry<String, Integer>>(this.customBiomeGenerationIds.entrySet());
-        Collections.sort(cbi, CBV);
-        // Print all custom biomes
-        for (Iterator<Entry<String, Integer>> it = cbi.iterator(); it.hasNext();)
-        {
-            Entry<String, Integer> entry = it.next();
-    		if(!((entry.getValue() > 39 && entry.getValue() < 127) || (entry.getValue() > 167)))
-        	{
-    			// Skip custom biomes with vanilla id's.
-    			// Forge adds these to the custom biomes list
-    			// to make vanilla biomes fully customisable
-    			// but the vanilla biome id's shouldn't actually
-    			// be written to the WorldConfig.ini file
-    			continue;
-        	}
-            output.add(entry.getKey() + ":" + entry.getValue());
-        }
-        writer.putSetting(WorldStandardValues.CUSTOM_BIOMES, output,
-    		"NOTE: This is a legacy setting and is only used for OTG worlds created with 1.12.2 v6 or lower.",
-    		"For 1.12.2 v6 or higher, OTG reads all biomes in the BiomeConfigs directory and assigns biome id's.",
-            "You need to register your custom biomes here. This setting will make Open Terrain Generator",
-            "generate setting files for them. However, it won't place them in the world automatically.",
-            "See the settings for your BiomeMode below on how to add them to the world.",
-            "",
-            "Syntax: CustomBiomes:BiomeName:id[,AnotherBiomeName:id[,...]]",
-            "Example: CustomBiomes:TestBiome1:30,BiomeTest2:31",
-            "This will add two biomes and generate the BiomeConfigs for them.",
-            "All changes here need a server restart.",
-            "",
-            "Due to the way Mojang's loading code works, all biome ids need to be unique",
-            "on the server. If you don't do this, the client will display the biomes just fine,",
-            "but the server can think it is another biome with the same id. This will cause saplings,",
-            "snowfall and mobs to work as in the other biome.",
-            "",
-            "The available ids range from 0 to 1023 and the ids 0-39 and 127-167 are taken by vanilla.",
-            "The ids 256-1023 cannot be saved to the map files, so use ReplaceToBiomeName in that biome."
-		);
-    }
+    };
 }

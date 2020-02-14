@@ -24,8 +24,7 @@ public class UndergroundLakeGen extends Resource
     public UndergroundLakeGen(BiomeConfig biomeConfig, List<String> args) throws InvalidConfigException
     {
         super(biomeConfig);
-        material = MaterialHelper.toLocalMaterialData(
-                DefaultMaterial.STATIONARY_WATER, 0);
+        material = MaterialHelper.toLocalMaterialData(DefaultMaterial.WATER);
 
         assureSize(6, args);
         minSize = readInt(args.get(0), 1, 25);

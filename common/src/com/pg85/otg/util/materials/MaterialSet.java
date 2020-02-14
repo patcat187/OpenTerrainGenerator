@@ -222,10 +222,6 @@ public class MaterialSet
         updateIntSet();
 
         // Check if the material is included
-        if (Arrays.binarySearch(materialIntSet, material.hashCodeWithoutBlockData()) >= 0)
-        {
-            return true;
-        }
         if (Arrays.binarySearch(materialIntSet, material.hashCode()) >= 0)
         {
             return true;

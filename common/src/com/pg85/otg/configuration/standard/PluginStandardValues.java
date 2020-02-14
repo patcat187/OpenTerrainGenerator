@@ -26,7 +26,8 @@ public class PluginStandardValues extends Settings
     // Plugin Defaults
     
     public static final Setting<LogLevels> LogLevel = enumSetting("LogLevel", LogLevels.Standard);
-    public static final String PLUGIN_NAME = "OpenTerrainGenerator";   
+    public static final String PLUGIN_NAME = "OpenTerrainGenerator";
+    public static final String PLUGIN_NAME_LOWER_CASE = PLUGIN_NAME.toLowerCase();
     public static final String PLUGIN_NAME_SHORT = "OTG";           
     public static final Setting<Boolean> SPAWN_LOG = booleanSetting("SpawnLog", false);    
     public static final Setting<Boolean> DEVELOPER_MODE = booleanSetting("DeveloperMode", false);
@@ -39,4 +40,8 @@ public class PluginStandardValues extends Settings
     
 	public static final int WORLD_DEPTH = 0;
 	public static final int WORLD_HEIGHT = 256;
+	
+	public static final int MAX_BORDER_BIOMES = 256;
+	public static final int MAX_RIVER_BIOMES = 256;
+	public static final int MAX_BIOMES_PER_WORLD = 1024;
 }

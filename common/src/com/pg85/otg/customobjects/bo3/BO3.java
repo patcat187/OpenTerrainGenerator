@@ -127,7 +127,7 @@ public class BO3 implements StructuredCustomObject
             if (block.y >= 0)
             {
                 // Do not spawn if non-tree blocks are in the way
-                if (!localMaterial.isAir() && material != DefaultMaterial.LOG && material != DefaultMaterial.LOG_2 && material != DefaultMaterial.LEAVES && material != DefaultMaterial.LEAVES_2 && material != DefaultMaterial.SAPLING)
+                if (!localMaterial.isAir() && !material.isLog() && !material.isLeaves() && !material.isSapling())
                 {
                     return false;
                 }

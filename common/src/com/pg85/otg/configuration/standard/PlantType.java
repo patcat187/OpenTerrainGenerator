@@ -17,30 +17,32 @@ import com.pg85.otg.util.materials.MaterialSet;
  */
 public class PlantType
 {
+    // TODO: Update these and add new plants (underwater)
+	
     // Builds lookup map
     private static final Map<String, PlantType> LOOKUP_MAP = new TreeMap<String, PlantType>(String.CASE_INSENSITIVE_ORDER);
 
-    public static final PlantType Allium = register(new PlantType("Allium", DefaultMaterial.RED_ROSE, 2));
-    public static final PlantType AzureBluet = register(new PlantType("AzureBluet", DefaultMaterial.RED_ROSE, 3));
-    public static final PlantType BlueOrchid = register(new PlantType("BlueOrchid", DefaultMaterial.RED_ROSE, 1));
-    public static final PlantType BrownMushroom = register(new PlantType("BrownMushroom", DefaultMaterial.BROWN_MUSHROOM, 0));
-    public static final PlantType Dandelion = register(new PlantType("Dandelion", DefaultMaterial.YELLOW_FLOWER, 0));
-    public static final PlantType DeadBush = register(new PlantType("DeadBush", DefaultMaterial.DEAD_BUSH, 0));
-    public static final PlantType DoubleTallgrass = register(new PlantType("DoubleTallgrass", DefaultMaterial.DOUBLE_PLANT, 2, 8));
-    public static final PlantType Fern = register(new PlantType("Fern", DefaultMaterial.LONG_GRASS, 2));
-    public static final PlantType LargeFern = register(new PlantType("LargeFern", DefaultMaterial.DOUBLE_PLANT, 3, 8));
-    public static final PlantType Lilac = register(new PlantType("Lilac", DefaultMaterial.DOUBLE_PLANT, 1, 8));
-    public static final PlantType OrangeTulip = register(new PlantType("OrangeTulip", DefaultMaterial.RED_ROSE, 5));
-    public static final PlantType OxeyeDaisy = register(new PlantType("OxeyeDaisy", DefaultMaterial.RED_ROSE, 8));
-    public static final PlantType Peony = register(new PlantType("Peony", DefaultMaterial.DOUBLE_PLANT, 5, 8));
-    public static final PlantType PinkTulip = register(new PlantType("PinkTulip", DefaultMaterial.RED_ROSE, 7));
-    public static final PlantType Poppy = register(new PlantType("Poppy", DefaultMaterial.RED_ROSE, 0));
-    public static final PlantType RedMushroom = register(new PlantType("RedMushroom", DefaultMaterial.RED_MUSHROOM, 0));
-    public static final PlantType RedTulip = register(new PlantType("RedTulip", DefaultMaterial.RED_ROSE, 4));
-    public static final PlantType RoseBush = register(new PlantType("RoseBush", DefaultMaterial.DOUBLE_PLANT, 4, 8));
-    public static final PlantType Sunflower = register(new PlantType("Sunflower", DefaultMaterial.DOUBLE_PLANT, 0, 8));
-    public static final PlantType Tallgrass = register(new PlantType("Tallgrass", DefaultMaterial.LONG_GRASS, 1));
-    public static final PlantType WhiteTulip = register(new PlantType("WhiteTulip", DefaultMaterial.RED_ROSE, 6));
+    public static final PlantType Allium = register(new PlantType("Allium", DefaultMaterial.ALLIUM));
+    public static final PlantType AzureBluet = register(new PlantType("AzureBluet", DefaultMaterial.AZURE_BLUET));
+    public static final PlantType BlueOrchid = register(new PlantType("BlueOrchid", DefaultMaterial.BLUE_ORCHID));
+    public static final PlantType BrownMushroom = register(new PlantType("BrownMushroom", DefaultMaterial.BROWN_MUSHROOM));
+    public static final PlantType Dandelion = register(new PlantType("Dandelion", DefaultMaterial.DANDELION));
+    public static final PlantType DeadBush = register(new PlantType("DeadBush", DefaultMaterial.DEAD_BUSH));
+    public static final PlantType DoubleTallgrass = register(new PlantType("DoubleTallgrass", DefaultMaterial.GRASS, DefaultMaterial.TALL_GRASS)); // TODO: Make sure this works
+    public static final PlantType Fern = register(new PlantType("Fern", DefaultMaterial.FERN));
+    public static final PlantType LargeFern = register(new PlantType("LargeFern", DefaultMaterial.FERN, DefaultMaterial.LARGE_FERN));
+    public static final PlantType Lilac = register(new PlantType("Lilac", DefaultMaterial.LILAC));
+    public static final PlantType OrangeTulip = register(new PlantType("OrangeTulip", DefaultMaterial.ORANGE_TULIP));
+    public static final PlantType OxeyeDaisy = register(new PlantType("OxeyeDaisy", DefaultMaterial.OXEYE_DAISY));
+    public static final PlantType Peony = register(new PlantType("Peony", DefaultMaterial.PEONY));
+    public static final PlantType PinkTulip = register(new PlantType("PinkTulip", DefaultMaterial.PINK_TULIP));
+    public static final PlantType Poppy = register(new PlantType("Poppy", DefaultMaterial.POPPY));
+    public static final PlantType RedMushroom = register(new PlantType("RedMushroom", DefaultMaterial.RED_MUSHROOM));
+    public static final PlantType RedTulip = register(new PlantType("RedTulip", DefaultMaterial.RED_TULIP));
+    public static final PlantType RoseBush = register(new PlantType("RoseBush", DefaultMaterial.ROSE_BUSH));
+    public static final PlantType Sunflower = register(new PlantType("Sunflower", DefaultMaterial.SUNFLOWER));
+    public static final PlantType Tallgrass = register(new PlantType("Tallgrass", DefaultMaterial.TALL_GRASS));
+    public static final PlantType WhiteTulip = register(new PlantType("WhiteTulip", DefaultMaterial.WHITE_TULIP));   
 
     /**
      * Gets the plant with the given name. The name can be one of the premade
@@ -96,11 +98,11 @@ public class PlantType
      * @param material The material of the block.
      * @param data The data value of the block.
      */
-    private PlantType(String name, DefaultMaterial material, int data)
+    private PlantType(String name, DefaultMaterial material)
     {
         this.name = name;
         this.topBlock = null;
-        this.bottomBlock = MaterialHelper.toLocalMaterialData(material, data);
+        this.bottomBlock = MaterialHelper.toLocalMaterialData(material);
     }
 
     /**
@@ -123,11 +125,11 @@ public class PlantType
      * @param bottomData Data value for the bottom.
      * @param topData Data value for the top.
      */
-    private PlantType(String name, DefaultMaterial material, int bottomData, int topData)
+    private PlantType(String name, DefaultMaterial materialTop, DefaultMaterial materialBottom)
     {
         this.name = name;
-        this.topBlock = MaterialHelper.toLocalMaterialData(material, topData);
-        this.bottomBlock = MaterialHelper.toLocalMaterialData(material, bottomData);
+        this.topBlock = MaterialHelper.toLocalMaterialData(materialTop);
+        this.bottomBlock = MaterialHelper.toLocalMaterialData(materialBottom);
     }
 
     /**

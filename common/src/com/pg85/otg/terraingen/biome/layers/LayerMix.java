@@ -3,6 +3,7 @@ package com.pg85.otg.terraingen.biome.layers;
 import com.pg85.otg.OTG;
 import com.pg85.otg.common.LocalBiome;
 import com.pg85.otg.common.LocalWorld;
+import com.pg85.otg.configuration.standard.PluginStandardValues;
 import com.pg85.otg.configuration.world.WorldConfig;
 import com.pg85.otg.logging.LogMarker;
 import com.pg85.otg.network.ConfigProvider;
@@ -20,23 +21,25 @@ public class LayerMix extends Layer
         this.defaultFrozenOceanId = defaultFrozenOceanId;
         this.child = childLayer;
         this.configs = configs;
-        this.riverBiomes = new int[world.getMaxBiomesCount()];
-
+        this.riverBiomes = new int[PluginStandardValues.MAX_RIVER_BIOMES];
+        
+        LocalBiome biome;
+        LocalBiome riverBiome;
         for (int id = 0; id < this.riverBiomes.length; id++)
         {
-            LocalBiome biome = configs.getBiomeByOTGIdOrNull(id);
+            biome = configs.getBiomeByOTGIdOrNull(id);
 
             if (biome == null || biome.getBiomeConfig().riverBiome.isEmpty())
             {
                 this.riverBiomes[id] = -1;
             } else {
-            	LocalBiome riverBiome = world.getBiomeByNameOrNull(biome.getBiomeConfig().riverBiome);
+            	riverBiome = world.getBiomeByNameOrNull(biome.getBiomeConfig().riverBiome);
     			if(riverBiome == null)
     			{
     				OTG.log(LogMarker.WARN, "RiverBiome: " + biome.getBiomeConfig().riverBiome + " could not be found for biome \"" + biome.getName() + "\", substituting self.");
     				riverBiome = biome;
     			}
-            	this.riverBiomes[id] = riverBiome.getIds().getOTGBiomeId();
+            	this.riverBiomes[id] = riverBiome.getOTGBiomeId();
             }
         }
     }

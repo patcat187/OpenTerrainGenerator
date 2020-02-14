@@ -1,6 +1,8 @@
 package com.pg85.otg.common;
 
+import com.pg85.otg.OTG;
 import com.pg85.otg.configuration.biome.BiomeConfig;
+import com.pg85.otg.configuration.dimensions.DimensionConfig;
 import com.pg85.otg.configuration.standard.TreeType;
 import com.pg85.otg.customobjects.SpawnableObject;
 import com.pg85.otg.customobjects.bofunctions.EntityFunction;
@@ -10,7 +12,6 @@ import com.pg85.otg.network.ConfigProvider;
 import com.pg85.otg.terraingen.ChunkBuffer;
 import com.pg85.otg.terraingen.ObjectSpawner;
 import com.pg85.otg.terraingen.biome.BiomeGenerator;
-import com.pg85.otg.util.BiomeIds;
 import com.pg85.otg.util.ChunkCoordinate;
 import com.pg85.otg.util.bo3.NamedBinaryTag;
 
@@ -18,27 +19,27 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Random;
 
-public interface LocalWorld
+public abstract class LocalWorld
 {
-    public String getName();
+    public abstract String getName();
 
-    public String getWorldSettingsName();
+    public abstract String getWorldSettingsName();
     
-	public int getDimensionId();
+	public abstract int getDimensionId();
 
-    public long getSeed();
+    public abstract long getSeed();
 
-	public File getWorldSaveDir();
+	public abstract File getWorldSaveDir();
 
-    public ConfigProvider getConfigs();
+    public abstract ConfigProvider getConfigs();
     
-	public ObjectSpawner getObjectSpawner();
+	public abstract ObjectSpawner getObjectSpawner();
 	
-    public CustomStructureCache getStructureCache();
+    public abstract CustomStructureCache getStructureCache();
 
-	public WorldSession getWorldSession();
+	public abstract WorldSession getWorldSession();
 
-	public void deleteWorldSessionData();
+	public abstract void deleteWorldSessionData();
 	   
     /**
      * Gets the height the base terrain of the world is capped at. Resources
@@ -46,7 +47,7 @@ public interface LocalWorld
      *
      * @return The height the base terrain of the world is capped at.
      */
-    public int getHeightCap();
+    public abstract int getHeightCap();
 
     /**
      * Returns the vertical scale of the world. 128 blocks is the normal
@@ -55,7 +56,7 @@ public interface LocalWorld
      *
      * @return The vertical scale of the world.
      */
-    public int getHeightScale();
+    public abstract int getHeightScale();
     
 	
 	// Biomes
@@ -64,47 +65,23 @@ public interface LocalWorld
      * Gets the biome generator.
      * @return The biome generator.
      */
-    public BiomeGenerator getBiomeGenerator();
+    public abstract BiomeGenerator getBiomeGenerator();
     
 	/**
      * Creates a LocalBiome instance for the given biome.
      * @param biomeConfig The settings for the biome, which are saved in
      * the LocalBiome instance.
-     * @param requestedBiomeIds The ids of the biome, used to register the
-     * LocalBiome instance. The implementation is allowed to use another id if
-     * necessary.
      * @return The LocalBiome instance.
      */
-    public LocalBiome createBiomeFor(BiomeConfig biomeConfig, BiomeIds biomeIds, ConfigProvider configProvider, boolean isReload);
+    public abstract LocalBiome createBiomeFor(BiomeConfig biomeConfig, int otgBiomeId, ConfigProvider configProvider, boolean isReload);
 
-    /**
-     * Gets how many different biome ids are in the world. Biome ids will start
-     * at zero, so a returned value of 1024 means that the biome ids range from
-     * 0 to 1023, inclusive.
-     *
-     * @return How many different biome ids are in the world.
-     */
-    public int getMaxBiomesCount();
+    public abstract ArrayList<LocalBiome> getAllBiomes();
 
-    /**
-     * Gets how many different biome ids Minecraft can actually save to the map
-     * files. Biome ids will start at zero, so a returned value of 256 means
-     * that the biome ids range from 0 to 255, inclusive. Biomes outside of this
-     * range, but inside the range of {@link #getMaxBiomesCount()} must have a
-     * ReplaceToBiomeName setting bringing their saved id back into the normal
-     * range.
-     *
-     * @return How many different biome ids are in the save files.
-     */
-    public int getMaxSavedBiomesCount();
-
-    public ArrayList<LocalBiome> getAllBiomes();
-
-    public LocalBiome getBiomeByOTGIdOrNull(int id);
+    public abstract LocalBiome getBiomeByOTGIdOrNull(int id);
     
-    public LocalBiome getFirstBiomeOrNull();
+    public abstract LocalBiome getFirstBiomeOrNull();
 
-    public LocalBiome getBiomeByNameOrNull(String name);
+    public abstract LocalBiome getBiomeByNameOrNull(String name);
 
     /**
      * Calculates the biome at the given coordinates. This is usually taken
@@ -118,47 +95,28 @@ public interface LocalWorld
      * @see #getCalculatedBiome(int, int) to always use the biome generator.
      * @see #getSavedBiome(int, int) to always use the chunk data.
      */
-    public LocalBiome getBiome(int x, int z) throws BiomeNotFoundException;
+    public abstract LocalBiome getBiome(int x, int z) throws BiomeNotFoundException;
 
-    /**
-     * Gets the (stored) biome at the given coordinates.
-     *
-     * @param x The block x.
-     * @param z The block z.
-     * @return The name of the saved biome at the given coordinates.
-     */
-    public String getSavedBiomeName(int x, int z);
-
-    /**
-     * Gets the biome as generated by the biome generator.
-     * @param x The block x.
-     * @param z The block z.
-     * @return The biome.
-     */
-    public LocalBiome getCalculatedBiome(int x, int z);
-
-	public int getRegisteredBiomeId(String resourceLocation);
-    
     // Default generators
     
-    public void prepareDefaultStructures(int chunkX, int chunkZ, boolean dry);
+    public abstract void prepareDefaultStructures(int chunkX, int chunkZ, boolean dry);
 
-    public boolean placeDungeon(Random rand, int x, int y, int z);
+    public abstract boolean placeDungeon(Random rand, int x, int y, int z);
 
-    public boolean placeFossil(Random rand, ChunkCoordinate chunkCoord);
+    public abstract boolean placeFossil(Random rand, ChunkCoordinate chunkCoord);
 
-    public boolean placeTree(TreeType type, Random rand, int x, int y, int z);
+    public abstract boolean placeTree(TreeType type, Random rand, int x, int y, int z);
 
-    public boolean placeDefaultStructures(Random rand, ChunkCoordinate chunkCoord);
+    public abstract boolean placeDefaultStructures(Random rand, ChunkCoordinate chunkCoord);
 
     /**
      * Gets a structure part in Mojang's structure format.
      * @param name Full name of the structure.
      * @return The structure, or null if it does not exist.
      */
-    SpawnableObject getMojangStructurePart(String name);
+    public abstract SpawnableObject getMojangStructurePart(String name);
 
-	public boolean chunkHasDefaultStructure(Random rand, ChunkCoordinate chunk);
+	public abstract boolean chunkHasDefaultStructure(Random rand, ChunkCoordinate chunk);
     
     // Mobs / entities
     
@@ -169,9 +127,9 @@ public interface LocalWorld
      * @param random     Random number generator.
      * @param chunkCoord The chunk to spawn the mobs in.
      */
-    public void placePopulationMobs(LocalBiome biome, Random random, ChunkCoordinate chunkCoord);
+    public abstract void placePopulationMobs(LocalBiome biome, Random random, ChunkCoordinate chunkCoord);
 
-	void spawnEntity(EntityFunction<?> entityData, ChunkCoordinate chunkBeingPopulated);
+    public abstract void spawnEntity(EntityFunction<?> entityData, ChunkCoordinate chunkBeingPopulated);
     
     // Population start and end
     
@@ -181,34 +139,34 @@ public interface LocalWorld
      * @throws IllegalStateException If another chunks is being populated. Call {@link #endPopulation()} first.
      * @see #endPopulation()
      */
-    public void startPopulation(ChunkCoordinate chunkCoord);
+    public abstract void startPopulation(ChunkCoordinate chunkCoord);
 
     /**
      * Stops the population step. New chunks may be created again. Implementations may cache the chunk.
      * @throws IllegalStateException If no chunk was being populated.
      * @see #startPopulation(ChunkCoordinate)
      */
-    public void endPopulation();
+    public abstract void endPopulation();
 
     // Blocks
         
-    public LocalMaterialData getMaterial(int x, int y, int z, ChunkCoordinate chunkBeingPopulated);
+    public abstract LocalMaterialData getMaterial(int x, int y, int z, ChunkCoordinate chunkBeingPopulated);
 
-    public int getBlockAboveLiquidHeight(int x, int z, ChunkCoordinate chunkBeingPopulated);
+    public abstract int getBlockAboveLiquidHeight(int x, int z, ChunkCoordinate chunkBeingPopulated);
 
-    public int getBlockAboveSolidHeight(int x, int z, ChunkCoordinate chunkBeingPopulated);
+    public abstract int getBlockAboveSolidHeight(int x, int z, ChunkCoordinate chunkBeingPopulated);
 
-    public int getHighestBlockAboveYAt(int x, int z, ChunkCoordinate chunkBeingPopulated);
+    public abstract int getHighestBlockAboveYAt(int x, int z, ChunkCoordinate chunkBeingPopulated);
     
-    public int getHighestBlockYAt(int x, int z, boolean findSolid, boolean findLiquid, boolean ignoreLiquid, boolean ignoreSnow, boolean ignoreLeaves, ChunkCoordinate chunkBeingPopulated);
+    public abstract int getHighestBlockYAt(int x, int z, boolean findSolid, boolean findLiquid, boolean ignoreLiquid, boolean ignoreSnow, boolean ignoreLeaves, ChunkCoordinate chunkBeingPopulated);
 
-	public int getHeightMapHeight(int x, int z, ChunkCoordinate chunkBeingPopulated);
+	public abstract int getHeightMapHeight(int x, int z, ChunkCoordinate chunkBeingPopulated);
     
-    public int getLightLevel(int x, int y, int z, ChunkCoordinate chunkBeingPopulated);
+    public abstract int getLightLevel(int x, int y, int z, ChunkCoordinate chunkBeingPopulated);
 
-	public void setBlock(int x, int y, int z, LocalMaterialData material, NamedBinaryTag metaDataTag, ChunkCoordinate chunkBeingPopulated);
+	public abstract void setBlock(int x, int y, int z, LocalMaterialData material, NamedBinaryTag metaDataTag, ChunkCoordinate chunkBeingPopulated);
 	
-	public LocalMaterialData[] getBlockColumnInUnloadedChunk(int x, int z);
+	public abstract LocalMaterialData[] getBlockColumnInUnloadedChunk(int x, int z);
 	
     /**
      * Executes ReplacedBlocks.
@@ -229,17 +187,31 @@ public interface LocalWorld
      * population offset.
      * @param chunkCoord The top left chunk for ReplacedBlocks.
      */
-    public void replaceBlocks(ChunkCoordinate chunkCoord);
+    public abstract void replaceBlocks(ChunkCoordinate chunkCoord);
 	
 	// Chunks
 	
-	boolean isInsidePregeneratedRegion(ChunkCoordinate chunk);
+    public abstract boolean isInsidePregeneratedRegion(ChunkCoordinate chunk);
 
-	public ChunkCoordinate getSpawnChunk();
+	public abstract ChunkCoordinate getSpawnChunk();
 
-	public boolean generateModdedCaveGen(int x, int z, ChunkBuffer chunkBuffer);
+	public abstract boolean generateModdedCaveGen(int x, int z, ChunkBuffer chunkBuffer);
 
-	public boolean isInsideWorldBorder(ChunkCoordinate chunkCoordinate);
+	public abstract boolean isInsideWorldBorder(ChunkCoordinate chunkCoordinate);
 
-	public boolean isOTGPlus();
+	private boolean isOTGPlusLoaded = false;
+	private boolean isOTGPlus = false;
+	public boolean isOTGPlus()
+	{
+		if(!isOTGPlusLoaded)
+		{
+			isOTGPlusLoaded = true;
+			DimensionConfig dimConfig = OTG.getDimensionsConfig().getDimensionConfig(this.getName());
+			if(dimConfig != null && dimConfig.Settings.IsOTGPlus)		
+			{
+				isOTGPlus = true;
+			}
+		}
+		return isOTGPlus;
+	}
 }

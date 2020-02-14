@@ -154,7 +154,7 @@ public class BO4 implements StructuredCustomObject
     	LocalMaterialData bo3GroundBlock = null;
     	LocalMaterialData airMaterial = null;
 
-    	airMaterial = MaterialHelper.toLocalMaterialData(DefaultMaterial.AIR, 0);
+    	airMaterial = MaterialHelper.toLocalMaterialData(DefaultMaterial.AIR);
 
 		if(config == null)
 		{
@@ -165,7 +165,7 @@ public class BO4 implements StructuredCustomObject
     	try {
     		bo3SurfaceBlock = replaceWithSurfaceBlock != null && replaceWithSurfaceBlock.length() > 0 ? MaterialHelper.readMaterial(replaceWithSurfaceBlock) : MaterialHelper.readMaterial("GRASS");
 		} catch (InvalidConfigException e1) {
-			bo3SurfaceBlock = MaterialHelper.toLocalMaterialData(DefaultMaterial.GRASS, 0);
+			bo3SurfaceBlock = MaterialHelper.toLocalMaterialData(DefaultMaterial.GRASS);
 			if(OTG.getPluginConfig().spawnLog)
 			{
 				OTG.log(LogMarker.WARN, "Value " + replaceWithSurfaceBlock + " for replaceWithSurfaceBlock in BO3 " + this.getName() + " was not recognised. Using GRASS instead.");
@@ -174,7 +174,7 @@ public class BO4 implements StructuredCustomObject
     	try {
     		bo3GroundBlock = replaceWithGroundBlock != null && replaceWithGroundBlock.length() > 0 ? MaterialHelper.readMaterial(replaceWithGroundBlock) : MaterialHelper.readMaterial("DIRT");
 		} catch (InvalidConfigException e1) {
-			bo3GroundBlock = MaterialHelper.toLocalMaterialData(DefaultMaterial.DIRT, 0);
+			bo3GroundBlock = MaterialHelper.toLocalMaterialData(DefaultMaterial.DIRT);
 			if(OTG.getPluginConfig().spawnLog)
 			{
 				OTG.log(LogMarker.WARN, "Value " + replaceWithGroundBlock + " for replaceWithGroundBlock in BO3 " + this.getName() + " was not recognised. Using DIRT instead.");
@@ -184,7 +184,7 @@ public class BO4 implements StructuredCustomObject
     	try {
 			replaceBelowMaterial = config.replaceBelow != null && config.replaceBelow.toLowerCase().equals("none") ? null : replaceBelow != null && replaceBelow.length() > 0 ? MaterialHelper.readMaterial(replaceBelow) : null;
 		} catch (InvalidConfigException e1) {
-			replaceBelowMaterial = MaterialHelper.toLocalMaterialData(DefaultMaterial.DIRT, 0);
+			replaceBelowMaterial = MaterialHelper.toLocalMaterialData(DefaultMaterial.DIRT);
 			if(OTG.getPluginConfig().spawnLog)
 			{
 				OTG.log(LogMarker.INFO, "Value " + config.replaceBelow + " for replaceBelow in BO3 " + this.getName() + " was not recognised. Using DIRT instead.");
@@ -193,7 +193,7 @@ public class BO4 implements StructuredCustomObject
     	try {
 			replaceAboveMaterial = config.replaceAbove != null && config.replaceAbove.toLowerCase().equals("none") ? null : replaceAbove != null && replaceAbove.length() > 0 ? MaterialHelper.readMaterial(replaceAbove) : null;
 		} catch (InvalidConfigException e1) {
-			replaceAboveMaterial = MaterialHelper.toLocalMaterialData(DefaultMaterial.AIR, 0);
+			replaceAboveMaterial = MaterialHelper.toLocalMaterialData(DefaultMaterial.AIR);
 			if(OTG.getPluginConfig().spawnLog)
 			{
 				OTG.log(LogMarker.INFO, "Value " + config.replaceAbove + " for replaceAbove in BO3 " + this.getName() + " was not recognised. Using AIR instead.");
@@ -229,22 +229,22 @@ public class BO4 implements StructuredCustomObject
 	        biomeSurfaceBlock = biomeConfig.surfaceBlock;
 	        if(biomeSurfaceBlock == null)
 	        {
-				biomeSurfaceBlock = MaterialHelper.toLocalMaterialData(DefaultMaterial.GRASS,0);
+				biomeSurfaceBlock = MaterialHelper.toLocalMaterialData(DefaultMaterial.GRASS);
 	        }
 
 	        biomeGroundBlock = biomeConfig.groundBlock;
 	        if(biomeGroundBlock == null)
 	        {
-				biomeGroundBlock = MaterialHelper.toLocalMaterialData(DefaultMaterial.DIRT,0);
+				biomeGroundBlock = MaterialHelper.toLocalMaterialData(DefaultMaterial.DIRT);
 	        }
 
 	        if(biomeSurfaceBlock.toDefaultMaterial().equals(DefaultMaterial.SNOW))
 	        {
-	        	biomeSurfaceBlock = MaterialHelper.toLocalMaterialData(DefaultMaterial.SNOW_BLOCK,0);
+	        	biomeSurfaceBlock = MaterialHelper.toLocalMaterialData(DefaultMaterial.SNOW_BLOCK);
 	        }
 	        if(biomeGroundBlock.toDefaultMaterial().equals(DefaultMaterial.SNOW))
 	        {
-	        	biomeGroundBlock = MaterialHelper.toLocalMaterialData(DefaultMaterial.SNOW_BLOCK,0);
+	        	biomeGroundBlock = MaterialHelper.toLocalMaterialData(DefaultMaterial.SNOW_BLOCK);
 	        }
     	}
 
@@ -388,7 +388,7 @@ public class BO4 implements StructuredCustomObject
 
     						sourceBlockMaterial = world.getMaterial(blockToQueueForSpawn.x, blockToQueueForSpawn.y, blockToQueueForSpawn.z, chunkBeingPopulated);
 
-                			if(!sourceBlockMaterial.toDefaultMaterial().equals(blockToQueueForSpawn.material.toDefaultMaterial()) || sourceBlockMaterial.getBlockData() != blockToQueueForSpawn.material.getBlockData())
+                			if(!sourceBlockMaterial.toDefaultMaterial().equals(blockToQueueForSpawn.material.toDefaultMaterial()))
                 			{
             					ChunkCoordinate destChunk = ChunkCoordinate.fromBlockCoords(blockToQueueForSpawn.x, blockToQueueForSpawn.z);
             					if(chunkCoord.equals(destChunk))
@@ -438,7 +438,7 @@ public class BO4 implements StructuredCustomObject
 
 	    						sourceBlockMaterial = world.getMaterial(blockToQueueForSpawn.x, blockToQueueForSpawn.y, blockToQueueForSpawn.z, chunkBeingPopulated);
 
-	                			if(!sourceBlockMaterial.isSolid() && !sourceBlockMaterial.toDefaultMaterial().equals(blockToQueueForSpawn.material.toDefaultMaterial()) || sourceBlockMaterial.getBlockData() != blockToQueueForSpawn.material.getBlockData())
+	                			if(!sourceBlockMaterial.isSolid() && !sourceBlockMaterial.toDefaultMaterial().equals(blockToQueueForSpawn.material.toDefaultMaterial()))
 	                			{
                 					ChunkCoordinate destChunk = ChunkCoordinate.fromBlockCoords(blockToQueueForSpawn.x, blockToQueueForSpawn.z);
                 					if(chunkCoord.equals(destChunk))
@@ -482,30 +482,30 @@ public class BO4 implements StructuredCustomObject
         	    	        biomeSurfaceBlock = biomeConfig.surfaceBlock;
         	    	        if(biomeSurfaceBlock == null)
         	    	        {
-        	    				biomeSurfaceBlock = MaterialHelper.toLocalMaterialData(DefaultMaterial.GRASS,0);
+        	    				biomeSurfaceBlock = MaterialHelper.toLocalMaterialData(DefaultMaterial.GRASS);
         	    	        }
 
         	    	        biomeGroundBlock = biomeConfig.groundBlock;
         	    	        if(biomeGroundBlock == null)
         	    	        {
-        	    				biomeGroundBlock = MaterialHelper.toLocalMaterialData(DefaultMaterial.DIRT,0);
+        	    				biomeGroundBlock = MaterialHelper.toLocalMaterialData(DefaultMaterial.DIRT);
         	    	        }
 
     		    	        if(biomeSurfaceBlock.toDefaultMaterial().equals(DefaultMaterial.SNOW))
     		    	        {
-    		    	        	biomeSurfaceBlock = MaterialHelper.toLocalMaterialData(DefaultMaterial.SNOW_BLOCK,0);
+    		    	        	biomeSurfaceBlock = MaterialHelper.toLocalMaterialData(DefaultMaterial.SNOW_BLOCK);
     		    	        }
     		    	        if(biomeGroundBlock.toDefaultMaterial().equals(DefaultMaterial.SNOW))
     		    	        {
-    		    	        	biomeGroundBlock = MaterialHelper.toLocalMaterialData(DefaultMaterial.SNOW_BLOCK,0);
+    		    	        	biomeGroundBlock = MaterialHelper.toLocalMaterialData(DefaultMaterial.SNOW_BLOCK);
     		    	        }
                         }
 
-    					if(blockToQueueForSpawn.material.toDefaultMaterial().equals(bo3GroundBlock.toDefaultMaterial()) && blockToQueueForSpawn.material.getBlockData() == bo3GroundBlock.getBlockData())
+    					if(blockToQueueForSpawn.material.toDefaultMaterial().equals(bo3GroundBlock.toDefaultMaterial()))
     					{
     						blockToQueueForSpawn.material = biomeGroundBlock;
     					}
-    					else if(blockToQueueForSpawn.material.toDefaultMaterial().equals(bo3SurfaceBlock.toDefaultMaterial()) && blockToQueueForSpawn.material.getBlockData() == bo3SurfaceBlock.getBlockData())
+    					else if(blockToQueueForSpawn.material.toDefaultMaterial().equals(bo3SurfaceBlock.toDefaultMaterial()))
     					{
     						blockToQueueForSpawn.material = biomeSurfaceBlock;
 
@@ -528,13 +528,11 @@ public class BO4 implements StructuredCustomObject
                         {
                         	if(
                     			(
-            						blockToQueueForSpawn.material.toDefaultMaterial().equals(biomeGroundBlock.toDefaultMaterial()) &&
-            						blockToQueueForSpawn.material.getBlockData() == biomeGroundBlock.getBlockData()
+            						blockToQueueForSpawn.material.toDefaultMaterial().equals(biomeGroundBlock.toDefaultMaterial())
         						)
         						||
         						(
-    								blockToQueueForSpawn.material.toDefaultMaterial().equals(biomeSurfaceBlock.toDefaultMaterial()) &&
-    								blockToQueueForSpawn.material.getBlockData() == biomeSurfaceBlock.getBlockData()
+    								blockToQueueForSpawn.material.toDefaultMaterial().equals(biomeSurfaceBlock.toDefaultMaterial())
 								)
             				)
                         	{
@@ -552,7 +550,7 @@ public class BO4 implements StructuredCustomObject
     					continue;
     				}
 
-    				if(!sourceBlockMaterial.toDefaultMaterial().equals(blockToQueueForSpawn.material.toDefaultMaterial()) || sourceBlockMaterial.getBlockData() != blockToQueueForSpawn.material.getBlockData())
+    				if(!sourceBlockMaterial.toDefaultMaterial().equals(blockToQueueForSpawn.material.toDefaultMaterial()))
     				{
     					ChunkCoordinate destChunk = ChunkCoordinate.fromBlockCoords(blockToQueueForSpawn.x, blockToQueueForSpawn.z);
     					if(chunkCoord.equals(destChunk))
@@ -618,7 +616,7 @@ public class BO4 implements StructuredCustomObject
             	        		OriginalTopBlocks.put(ChunkCoordinate.fromChunkCoords(blockToQueueForSpawn.x, blockToQueueForSpawn.z), world.getMaterial(blockToQueueForSpawn.x, highestBlockY, blockToQueueForSpawn.z, chunkBeingPopulated));
             	        	}
 
-                			if(!sourceBlockMaterial.toDefaultMaterial().equals(blockToQueueForSpawn.material.toDefaultMaterial()) || sourceBlockMaterial.getBlockData() != blockToQueueForSpawn.material.getBlockData())
+                			if(!sourceBlockMaterial.toDefaultMaterial().equals(blockToQueueForSpawn.material.toDefaultMaterial()))
                 			{
             					ChunkCoordinate destChunk = ChunkCoordinate.fromBlockCoords(blockToQueueForSpawn.x, blockToQueueForSpawn.z);
             					if(chunkCoord.equals(destChunk))
@@ -679,7 +677,7 @@ public class BO4 implements StructuredCustomObject
 	            	        		OriginalTopBlocks.put(ChunkCoordinate.fromChunkCoords(blockToQueueForSpawn.x, blockToQueueForSpawn.z), world.getMaterial(blockToQueueForSpawn.x, highestBlockY, blockToQueueForSpawn.z, chunkBeingPopulated));
 	            	        	}
 
-	                			if(!sourceBlockMaterial.isSolid() && !sourceBlockMaterial.toDefaultMaterial().equals(blockToQueueForSpawn.material.toDefaultMaterial()) || sourceBlockMaterial.getBlockData() != blockToQueueForSpawn.material.getBlockData())
+	                			if(!sourceBlockMaterial.isSolid() && !sourceBlockMaterial.toDefaultMaterial().equals(blockToQueueForSpawn.material.toDefaultMaterial()))
 	                			{
                 					ChunkCoordinate destChunk = ChunkCoordinate.fromBlockCoords(blockToQueueForSpawn.x, blockToQueueForSpawn.z);
                 					if(chunkCoord.equals(destChunk))
@@ -744,19 +742,19 @@ public class BO4 implements StructuredCustomObject
 
     		    	        if(biomeSurfaceBlock.toDefaultMaterial().equals(DefaultMaterial.SNOW))
     		    	        {
-    		    	        	biomeSurfaceBlock = MaterialHelper.toLocalMaterialData(DefaultMaterial.SNOW_BLOCK,0);
+    		    	        	biomeSurfaceBlock = MaterialHelper.toLocalMaterialData(DefaultMaterial.SNOW_BLOCK);
     		    	        }
     		    	        if(biomeGroundBlock.toDefaultMaterial().equals(DefaultMaterial.SNOW))
     		    	        {
-    		    	        	biomeGroundBlock = MaterialHelper.toLocalMaterialData(DefaultMaterial.SNOW_BLOCK,0);
+    		    	        	biomeGroundBlock = MaterialHelper.toLocalMaterialData(DefaultMaterial.SNOW_BLOCK);
     		    	        }
                         }
 
-    					if(blockToQueueForSpawn.material.toDefaultMaterial().equals(bo3GroundBlock.toDefaultMaterial()) && blockToQueueForSpawn.material.getBlockData() == bo3GroundBlock.getBlockData())
+    					if(blockToQueueForSpawn.material.toDefaultMaterial().equals(bo3GroundBlock.toDefaultMaterial()))
     					{
     						blockToQueueForSpawn.material = biomeGroundBlock;
     					}
-    					else if(blockToQueueForSpawn.material.toDefaultMaterial().equals(bo3SurfaceBlock.toDefaultMaterial()) && blockToQueueForSpawn.material.getBlockData() == bo3SurfaceBlock.getBlockData())
+    					else if(blockToQueueForSpawn.material.toDefaultMaterial().equals(bo3SurfaceBlock.toDefaultMaterial()))
     					{
     						blockToQueueForSpawn.material = biomeSurfaceBlock;
 
@@ -779,13 +777,11 @@ public class BO4 implements StructuredCustomObject
                         {
                         	if(
                     			(
-            						blockToQueueForSpawn.material.toDefaultMaterial().equals(biomeGroundBlock.toDefaultMaterial()) &&
-            						blockToQueueForSpawn.material.getBlockData() == biomeGroundBlock.getBlockData()
+            						blockToQueueForSpawn.material.toDefaultMaterial().equals(biomeGroundBlock.toDefaultMaterial())
         						)
         						||
         						(
-    								blockToQueueForSpawn.material.toDefaultMaterial().equals(biomeSurfaceBlock.toDefaultMaterial()) &&
-    								blockToQueueForSpawn.material.getBlockData() == biomeSurfaceBlock.getBlockData()
+    								blockToQueueForSpawn.material.toDefaultMaterial().equals(biomeSurfaceBlock.toDefaultMaterial())
 								)
             				)
                         	{
@@ -803,7 +799,7 @@ public class BO4 implements StructuredCustomObject
     					continue;
     				}
 
-    				if(!sourceBlockMaterial.toDefaultMaterial().equals(blockToQueueForSpawn.material.toDefaultMaterial()) || sourceBlockMaterial.getBlockData() != blockToQueueForSpawn.material.getBlockData())
+    				if(!sourceBlockMaterial.toDefaultMaterial().equals(blockToQueueForSpawn.material.toDefaultMaterial()))
     				{
     					ChunkCoordinate destChunk = ChunkCoordinate.fromBlockCoords(blockToQueueForSpawn.x, blockToQueueForSpawn.z);
     					if(chunkCoord.equals(destChunk))
@@ -868,7 +864,7 @@ public class BO4 implements StructuredCustomObject
 					material.toDefaultMaterial() == DefaultMaterial.EMERALD_BLOCK
     			)
 		    	{
-		    		world.setBlock(x, y, z, MaterialHelper.toLocalMaterialData(DefaultMaterial.GLOWSTONE, 0), null, chunkBeingPopulated);
+		    		world.setBlock(x, y, z, MaterialHelper.toLocalMaterialData(DefaultMaterial.GLOWSTONE), null, chunkBeingPopulated);
 		    	}
 		    	return;
 		    }

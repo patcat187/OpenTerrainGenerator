@@ -3,6 +3,7 @@ package com.pg85.otg.forge;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+
 import com.pg85.otg.OTGEngine;
 import com.pg85.otg.common.LocalMaterialData;
 import com.pg85.otg.common.LocalWorld;
@@ -11,13 +12,13 @@ import com.pg85.otg.configuration.biome.BiomeLoadInstruction;
 import com.pg85.otg.configuration.standard.DefaultMaterial;
 import com.pg85.otg.configuration.standard.PluginStandardValues;
 import com.pg85.otg.exception.InvalidConfigException;
+import com.pg85.otg.forge.biomes.ForgeBiomeRegistryManager;
+import com.pg85.otg.forge.materials.ForgeMaterialData;
 import com.pg85.otg.forge.util.ForgeLogger;
 import com.pg85.otg.forge.world.WorldLoader;
 
 public class ForgeEngine extends OTGEngine
 {
-	//public static LinkedHashMap<String, DimensionConfigGui> Presets = new LinkedHashMap<String, DimensionConfigGui>();
-	//private ForgeBiomeRegistryManager biomeRegistryManager;
 	private WorldLoader worldLoader;
 	
     public ForgeEngine()
@@ -25,7 +26,13 @@ public class ForgeEngine extends OTGEngine
         super(new ForgeLogger());
         
         this.worldLoader = new WorldLoader();      
-        //this.biomeRegistryManager = new ForgeBiomeRegistryManager();
+    }
+    
+    // Getters
+    
+    public WorldLoader getWorldLoader()
+    {
+    	return worldLoader;
     }
 
     // Folders
@@ -47,8 +54,22 @@ public class ForgeEngine extends OTGEngine
 	{
         return new File(this.getOTGRootFolder(), PluginStandardValues.PresetsDirectoryName);
 	}
+	
+	// Material
+	
+    @Override
+    public LocalMaterialData readMaterial(String input) throws InvalidConfigException
+    {
+        return ForgeMaterialData.ofString(input);
+    }
 
-	//
+    @Override
+    public LocalMaterialData toLocalMaterialData(DefaultMaterial defaultMaterial)
+    {
+        return ForgeMaterialData.ofDefaultMaterial(defaultMaterial);
+    }
+	
+	// Worlds
 	
 	@Override
 	public LocalWorld getWorld(String name)
@@ -70,21 +91,9 @@ public class ForgeEngine extends OTGEngine
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	@Override
-	public LocalMaterialData readMaterial(String name) throws InvalidConfigException
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public LocalMaterialData toLocalMaterialData(DefaultMaterial defaultMaterial, int blockData)
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+	
+	// Misc
+	
 	@Override
 	public boolean isModLoaded(String mod)
 	{
@@ -93,17 +102,9 @@ public class ForgeEngine extends OTGEngine
 	}
 
 	@Override
-	public boolean areEnoughBiomeIdsAvailableForPresets(ArrayList<String> presetNames)
-	{
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
 	public Collection<BiomeLoadInstruction> getDefaultBiomes()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return ForgeBiomeRegistryManager.getDefaultBiomes();
 	}
 
 	@Override

@@ -57,7 +57,7 @@ public class LayerBiome extends Layer
                             {
                                 if (biome.getValue() != null && biome.getValue().getBiomeConfig().biomeSize == this.depth)
                                 {
-                                    currentPiece |= biome.getValue().getIds().getOTGBiomeId() |
+                                    currentPiece |= biome.getValue().getOTGBiomeId() |
                                         // Set IceBit based on Biome Temperature
                                         (biome.getValue().getBiomeConfig().biomeTemperature <= freezeTemp ? IceBit : 0) |
                                         // Set BiomeBitsAreSetBit

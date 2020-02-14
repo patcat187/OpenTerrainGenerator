@@ -41,15 +41,15 @@ public class MesaSurfaceGenerator implements SurfaceGenerator
         this.brycePillars = mountainMesa;
         this.hasForest = forestMesa;
 
-        this.hardenedClay = MaterialHelper.toLocalMaterialData(DefaultMaterial.HARD_CLAY, 0);
-        this.redSand = MaterialHelper.toLocalMaterialData(DefaultMaterial.SAND, 1);
-        this.coarseDirt = MaterialHelper.toLocalMaterialData(DefaultMaterial.DIRT, 1);
-        this.whiteStainedClay = MaterialHelper.toLocalMaterialData(DefaultMaterial.STAINED_CLAY, 0);
-        this.orangeStainedClay = MaterialHelper.toLocalMaterialData(DefaultMaterial.STAINED_CLAY, 1);
-        this.yellowStainedClay = MaterialHelper.toLocalMaterialData(DefaultMaterial.STAINED_CLAY, 4);
-        this.brownStainedClay = MaterialHelper.toLocalMaterialData(DefaultMaterial.STAINED_CLAY, 12);
-        this.redStainedClay = MaterialHelper.toLocalMaterialData(DefaultMaterial.STAINED_CLAY, 14);
-        this.silverStainedClay = MaterialHelper.toLocalMaterialData(DefaultMaterial.STAINED_CLAY, 8);
+        this.hardenedClay = MaterialHelper.toLocalMaterialData(DefaultMaterial.TERRACOTTA);
+        this.redSand = MaterialHelper.toLocalMaterialData(DefaultMaterial.RED_SAND);
+        this.coarseDirt = MaterialHelper.toLocalMaterialData(DefaultMaterial.COARSE_DIRT);
+        this.whiteStainedClay = MaterialHelper.toLocalMaterialData(DefaultMaterial.WHITE_TERRACOTTA);
+        this.orangeStainedClay = MaterialHelper.toLocalMaterialData(DefaultMaterial.ORANGE_TERRACOTTA);
+        this.yellowStainedClay = MaterialHelper.toLocalMaterialData(DefaultMaterial.YELLOW_TERRACOTTA);
+        this.brownStainedClay = MaterialHelper.toLocalMaterialData(DefaultMaterial.BROWN_TERRACOTTA);
+        this.redStainedClay = MaterialHelper.toLocalMaterialData(DefaultMaterial.RED_TERRACOTTA);
+        this.silverStainedClay = MaterialHelper.toLocalMaterialData(DefaultMaterial.LIGHT_GRAY_TERRACOTTA);
     }
 
     /**
@@ -103,11 +103,14 @@ public class MesaSurfaceGenerator implements SurfaceGenerator
         }
 
         int i2 = random.nextInt(4) + 2;
+        int j;
+        int k;
 
+        
         for (int i = 0; i < i2; ++i)
         {
-            int j = random.nextInt(3) + 1;
-            int k = random.nextInt(64);
+            j = random.nextInt(3) + 1;
+            k = random.nextInt(64);
 
             for (int l = 0; k + l < 64 && l < j; ++l)
             {
@@ -116,11 +119,13 @@ public class MesaSurfaceGenerator implements SurfaceGenerator
         }
 
         int j2 = random.nextInt(4) + 2;
+        int i3;
+        int l3;
 
         for (int k2 = 0; k2 < j2; ++k2)
         {
-            int i3 = random.nextInt(3) + 2;
-            int l3 = random.nextInt(64);
+            i3 = random.nextInt(3) + 2;
+            l3 = random.nextInt(64);
 
             for (int i1 = 0; l3 + i1 < 64 && i1 < i3; ++i1)
             {
@@ -129,11 +134,13 @@ public class MesaSurfaceGenerator implements SurfaceGenerator
         }
 
         int l2 = random.nextInt(4) + 2;
-
+        int i4;
+        int k4;
+        
         for (int j3 = 0; j3 < l2; ++j3)
         {
-            int i4 = random.nextInt(3) + 1;
-            int k4 = random.nextInt(64);
+            i4 = random.nextInt(3) + 1;
+            k4 = random.nextInt(64);
 
             for (int j1 = 0; k4 + j1 < 64 && j1 < i4; ++j1)
             {
@@ -317,7 +324,7 @@ public class MesaSurfaceGenerator implements SurfaceGenerator
                             }
                         } else {
                             chunkBuffer.setBlock(x, y, z, currentGroundBlock);
-                            if (currentGroundBlock.isMaterial(DefaultMaterial.STAINED_CLAY))
+                            if (currentGroundBlock.isMaterial(DefaultMaterial.WHITE_TERRACOTTA))
                             {
                                 chunkBuffer.setBlock(x, y, z, this.orangeStainedClay);
                             }

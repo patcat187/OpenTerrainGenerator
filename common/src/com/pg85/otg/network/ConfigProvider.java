@@ -1,7 +1,5 @@
 package com.pg85.otg.network;
 
-import java.util.List;
-
 import com.pg85.otg.common.LocalBiome;
 import com.pg85.otg.configuration.world.WorldConfig;
 
@@ -34,14 +32,7 @@ public interface ConfigProvider
      * @return The array.
      */
     LocalBiome[] getBiomeArrayByOTGId();
-
-    /**
-     * Gets a list of all biomes ordered by generation id.
-     * Only used by the biome generator for backwards compatibility.
-     * @return
-     */
-    List<LocalBiome> getBiomeArrayLegacy();
-    
+   
     /**
      * Reloads all settings. If this implementation doesn't support reloading
      * (for example because it is read once from a network stream), this

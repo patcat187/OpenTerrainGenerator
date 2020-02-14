@@ -71,9 +71,11 @@ public abstract class LayeredBiomeGenerator extends BiomeGenerator
 
         ArraysCache cache = ArraysCacheManager.getCache();
         if (outputType == OutputType.DEFAULT_FOR_WORLD)
+        {
             cache.outputType = defaultOutputType;
-        else
+        } else {
             cache.outputType = outputType;
+        }
         int[] arrayOfInt = this.biomeLayer.getInts(world, cache, x, z, x_size, z_size);
         ArraysCacheManager.releaseCache(cache);
 

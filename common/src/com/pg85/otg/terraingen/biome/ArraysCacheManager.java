@@ -3,13 +3,14 @@ package com.pg85.otg.terraingen.biome;
 // TODO: Is this actually useful? Remove or rewrite this and document it.
 public class ArraysCacheManager
 {
-
     private static final ArraysCache[] ARRAYS_CACHES = new ArraysCache[4];
 
     static
     {
         for (int i = 0; i < ARRAYS_CACHES.length; i++)
+        {
             ARRAYS_CACHES[i] = new ArraysCache();
+        }
 
     }
 
@@ -38,7 +39,5 @@ public class ArraysCacheManager
         }
     }
 
-    private ArraysCacheManager()
-    {
-    }
+    private ArraysCacheManager() { }
 }

@@ -8,7 +8,7 @@ import java.util.Random;
 import com.pg85.otg.OTG;
 import com.pg85.otg.forge.biomes.ForgeBiome;
 import com.pg85.otg.forge.biomes.ForgeBiomeRegistryManager;
-import com.pg85.otg.forge.terraingen.OTGChunkGenerator;
+import com.pg85.otg.forge.generator.OTGChunkGenerator;
 import com.pg85.otg.logging.LogMarker;
 import com.pg85.otg.network.ConfigProvider;
 import com.pg85.otg.network.ServerConfigProvider;

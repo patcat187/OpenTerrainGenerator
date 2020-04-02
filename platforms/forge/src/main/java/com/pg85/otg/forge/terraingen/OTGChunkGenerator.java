@@ -1,4 +1,4 @@
-package com.pg85.otg.forge.generator;
+package com.pg85.otg.forge.terraingen;
 
 import java.io.File;
 import java.util.BitSet;

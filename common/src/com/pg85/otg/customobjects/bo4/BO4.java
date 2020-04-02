@@ -21,7 +21,6 @@ import com.pg85.otg.customobjects.structures.Branch;
 import com.pg85.otg.customobjects.structures.StructuredCustomObject;
 import com.pg85.otg.exception.InvalidConfigException;
 import com.pg85.otg.logging.LogMarker;
-import com.pg85.otg.terraingen.surface.MesaSurfaceGenerator;
 import com.pg85.otg.util.ChunkCoordinate;
 import com.pg85.otg.util.bo3.NamedBinaryTag;
 import com.pg85.otg.util.bo3.Rotation;
@@ -75,7 +74,7 @@ public class BO4 implements StructuredCustomObject
     	try
     	{
     		this.config = new BO4Config(new FileSettingsReaderOTGPlus(name, file), true);
-    		if(this.config.settingsMode != ConfigMode.WriteDisable)
+    		if(this.config.settingsMode != ConfigMode.WriteDisable && !this.config.isBO4Data)
     		{
     			FileSettingsWriterOTGPlus.writeToFile(this.config, this.config.settingsMode);
     		}
@@ -165,7 +164,7 @@ public class BO4 implements StructuredCustomObject
     	try {
     		bo3SurfaceBlock = replaceWithSurfaceBlock != null && replaceWithSurfaceBlock.length() > 0 ? MaterialHelper.readMaterial(replaceWithSurfaceBlock) : MaterialHelper.readMaterial("GRASS");
 		} catch (InvalidConfigException e1) {
-			bo3SurfaceBlock = MaterialHelper.toLocalMaterialData(DefaultMaterial.GRASS);
+			bo3SurfaceBlock = MaterialHelper.toLocalMaterialData(DefaultMaterial.GRASS_BLOCK);
 			if(OTG.getPluginConfig().spawnLog)
 			{
 				OTG.log(LogMarker.WARN, "Value " + replaceWithSurfaceBlock + " for replaceWithSurfaceBlock in BO3 " + this.getName() + " was not recognised. Using GRASS instead.");
@@ -229,7 +228,7 @@ public class BO4 implements StructuredCustomObject
 	        biomeSurfaceBlock = biomeConfig.surfaceBlock;
 	        if(biomeSurfaceBlock == null)
 	        {
-				biomeSurfaceBlock = MaterialHelper.toLocalMaterialData(DefaultMaterial.GRASS);
+				biomeSurfaceBlock = MaterialHelper.toLocalMaterialData(DefaultMaterial.GRASS_BLOCK);
 	        }
 
 	        biomeGroundBlock = biomeConfig.groundBlock;
@@ -482,7 +481,7 @@ public class BO4 implements StructuredCustomObject
         	    	        biomeSurfaceBlock = biomeConfig.surfaceBlock;
         	    	        if(biomeSurfaceBlock == null)
         	    	        {
-        	    				biomeSurfaceBlock = MaterialHelper.toLocalMaterialData(DefaultMaterial.GRASS);
+        	    				biomeSurfaceBlock = MaterialHelper.toLocalMaterialData(DefaultMaterial.GRASS_BLOCK);
         	    	        }
 
         	    	        biomeGroundBlock = biomeConfig.groundBlock;
@@ -521,6 +520,8 @@ public class BO4 implements StructuredCustomObject
     	        			}
     					}
 
+    					// TODO: Reimplement this for 1.15.x
+    					/*
                         if(
                     		biomeConfig.surfaceAndGroundControl != null &&
                     		biomeConfig.surfaceAndGroundControl instanceof MesaSurfaceGenerator
@@ -543,6 +544,7 @@ public class BO4 implements StructuredCustomObject
             		        	}
                         	}
                         }
+                        */
     				}
 
     				if(spawnUnderWater && blockToQueueForSpawn.material.toDefaultMaterial().equals(DefaultMaterial.TORCH) && sourceBlockMaterial.isLiquid())
@@ -770,6 +772,8 @@ public class BO4 implements StructuredCustomObject
     	        			}
     					}
 
+    					// TODO: Reimplement this for 1.15.x
+    					/*
                         if(
                     		biomeConfig.surfaceAndGroundControl != null &&
                     		biomeConfig.surfaceAndGroundControl instanceof MesaSurfaceGenerator
@@ -792,6 +796,7 @@ public class BO4 implements StructuredCustomObject
             		        	}
                         	}
                         }
+                        */
     				}
 
     				if(spawnUnderWater && blockToQueueForSpawn.material.toDefaultMaterial().equals(DefaultMaterial.TORCH) && sourceBlockMaterial.isLiquid())

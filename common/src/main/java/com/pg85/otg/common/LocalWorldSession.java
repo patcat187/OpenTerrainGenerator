@@ -13,11 +13,11 @@ import com.pg85.otg.customobjects.structures.bo4.BO4CustomStructure;
 import com.pg85.otg.util.ChunkCoordinate;
 
 // TODO: Implement this properly for spigot (maybe one day..)
-public abstract class WorldSession
+public abstract class LocalWorldSession
 {
 	protected LocalWorld world;
 
-	public WorldSession(LocalWorld world)
+	public LocalWorldSession(LocalWorld world)
 	{
 		this.world = world;
 	}

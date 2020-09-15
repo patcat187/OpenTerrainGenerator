@@ -22,22 +22,22 @@ public class OTGBiomeProvider extends BiomeProvider
 		(p_235302_0_) ->
 		{
 			return p_235302_0_.group(
-			Codec.LONG.fieldOf("seed").stable().forGetter((p_235304_0_) -> 
-			{ 
-				return p_235304_0_.field_235298_h_; 
-			}), 
-			Codec.BOOL.optionalFieldOf("legacy_biome_init_layer", Boolean.valueOf(false), Lifecycle.stable()).forGetter((p_235303_0_) -> 
-			{ 
-				return p_235303_0_.field_235299_i_; 
-			}), 
-			Codec.BOOL.fieldOf("large_biomes").orElse(false).stable().forGetter((p_235301_0_) ->
-			{
-				return p_235301_0_.field_235300_j_;
-			}), 
-			RegistryLookupCodec.func_244331_a(Registry.field_239720_u_).forGetter((p_242637_0_) -> 
-			{
-				return p_242637_0_.field_242636_k;
-			})
+				Codec.LONG.fieldOf("seed").stable().forGetter((p_235304_0_) -> 
+				{ 
+					return p_235304_0_.field_235298_h_; 
+				}), 
+				Codec.BOOL.optionalFieldOf("legacy_biome_init_layer", Boolean.valueOf(false), Lifecycle.stable()).forGetter((p_235303_0_) -> 
+				{ 
+					return p_235303_0_.field_235299_i_; 
+				}), 
+				Codec.BOOL.fieldOf("large_biomes").orElse(false).stable().forGetter((p_235301_0_) ->
+				{
+					return p_235301_0_.field_235300_j_;
+				}), 
+				RegistryLookupCodec.func_244331_a(Registry.field_239720_u_).forGetter((p_242637_0_) -> 
+				{
+					return p_242637_0_.field_242636_k;
+				})
 			).apply(p_235302_0_, p_235302_0_.stable(OTGBiomeProvider::new));
 		}
 	);

@@ -37,7 +37,6 @@ import net.minecraft.world.gen.DimensionSettings;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.INoiseGenerator;
 import net.minecraft.world.gen.ImprovedNoiseGenerator;
-import net.minecraft.world.gen.NoiseChunkGenerator;
 import net.minecraft.world.gen.OctavesNoiseGenerator;
 import net.minecraft.world.gen.PerlinNoiseGenerator;
 import net.minecraft.world.gen.SimplexNoiseGenerator;

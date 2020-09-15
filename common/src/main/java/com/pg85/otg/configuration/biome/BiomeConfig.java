@@ -1,7 +1,8 @@
 package com.pg85.otg.configuration.biome;
 
 import com.pg85.otg.OTG;
-import com.pg85.otg.common.LocalMaterialData;
+import com.pg85.otg.common.materials.LocalMaterialData;
+import com.pg85.otg.common.materials.LocalMaterials;
 import com.pg85.otg.configuration.ConfigFile;
 import com.pg85.otg.configuration.ConfigFunction;
 import com.pg85.otg.configuration.biome.BiomeConfigFinder.BiomeConfigStub;
@@ -21,18 +22,17 @@ import com.pg85.otg.generator.surface.SimpleSurfaceGenerator;
 import com.pg85.otg.generator.surface.SurfaceGenerator;
 import com.pg85.otg.generator.terrain.TerrainShapeBase;
 import com.pg85.otg.logging.LogMarker;
+import com.pg85.otg.util.BiomeResourceLocation;
 import com.pg85.otg.util.helpers.StreamHelper;
 import com.pg85.otg.util.helpers.StringHelper;
-import com.pg85.otg.util.materials.MaterialHelper;
 import com.pg85.otg.util.minecraft.defaults.BiomeRegistryNames;
-import com.pg85.otg.util.minecraft.defaults.DefaultMaterial;
-
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.*;
 
 public class BiomeConfig extends ConfigFile
 {
+	private final BiomeResourceLocation registryKey;	
     private StandardBiomeTemplate defaultSettings;
     public WorldConfig worldConfig;
 	
@@ -186,10 +186,12 @@ public class BiomeConfig extends ConfigFile
 
     public RareBuildingType rareBuildingType;
 
-    public BiomeConfig(BiomeLoadInstruction loadInstruction, BiomeConfigStub biomeConfigStub, SettingsMap settings, WorldConfig worldConfig)
+    public BiomeConfig(BiomeLoadInstruction loadInstruction, BiomeConfigStub biomeConfigStub, SettingsMap settings, WorldConfig worldConfig, String presetName)
     {
         super(loadInstruction.getBiomeName());
-        
+
+        this.registryKey = new BiomeResourceLocation(presetName, this.getName());
+
         // Mob inheritance
         // Mob spawning data was already loaded seperately before the rest of the biomeconfig to make inheritance work properly
         // Forge: If this is a vanilla biome then mob spawning settings have been inherited from vanilla MC biomes
@@ -247,6 +249,11 @@ public class BiomeConfig extends ConfigFile
             this.riverWaterLevel = this.configRiverWaterLevel;
         }
     }
+    
+	public BiomeResourceLocation getRegistryKey()
+	{
+		return this.registryKey;
+	}
 
     public List<CustomStructureGen> getCustomStructures()
     {
@@ -296,11 +303,16 @@ public class BiomeConfig extends ConfigFile
         return gen;
     }
 
-    public SaplingGen getCustomSaplingGen(LocalMaterialData materialData, boolean wideTrunk) {
-        if (wideTrunk) {
-            return customBigSaplingGrowers.get(materialData.withBlockData(materialData.getBlockData() % 8));
+    public SaplingGen getCustomSaplingGen(LocalMaterialData materialData, boolean wideTrunk)
+    {
+    	// TODO: Re-implement this when block data works
+        if (wideTrunk)
+        {
+        	return customBigSaplingGrowers.get(materialData);
+            //return customBigSaplingGrowers.get(materialData.withBlockData(materialData.getBlockData() % 8));
         }
-        return customSaplingGrowers.get(materialData.withBlockData(materialData.getBlockData() % 8));
+        return customSaplingGrowers.get(materialData);
+        //return customSaplingGrowers.get(materialData.withBlockData(materialData.getBlockData() % 8));
     }
 
     @Override
@@ -334,10 +346,8 @@ public class BiomeConfig extends ConfigFile
         this.CHCSmoothRadius = settings.getSetting(BiomeStandardValues.CUSTOM_HEIGHT_CONTROL_SMOOTH_RADIUS);
 
         this.stoneBlock = settings.getSetting(BiomeStandardValues.STONE_BLOCK);
-        this.surfaceBlock = settings.getSetting(BiomeStandardValues.SURFACE_BLOCK,
-                MaterialHelper.toLocalMaterialData(defaultSettings.defaultSurfaceBlock, 0));
-        this.groundBlock = settings.getSetting(BiomeStandardValues.GROUND_BLOCK,
-                MaterialHelper.toLocalMaterialData(defaultSettings.defaultGroundBlock, 0));
+        this.surfaceBlock = settings.getSetting(BiomeStandardValues.SURFACE_BLOCK, defaultSettings.defaultSurfaceBlock);
+        this.groundBlock = settings.getSetting(BiomeStandardValues.GROUND_BLOCK, defaultSettings.defaultGroundBlock);
         this.replacedBlocks = settings.getSetting(BiomeStandardValues.REPLACED_BLOCKS);
         this.surfaceAndGroundControl = readSurfaceAndGroundControlSettings(settings);
 
@@ -413,12 +423,10 @@ public class BiomeConfig extends ConfigFile
             try
             {
                 defaultSetting = BiomeStandardValues.SURFACE_AND_GROUND_CONTROL.read(defaultString);
-            } catch (InvalidConfigException e)
-            {
+            } catch (InvalidConfigException e) {
                 throw new AssertionError(e);
             }
-        } else
-        {
+        } else {
             defaultSetting = new SimpleSurfaceGenerator();
         }
 
@@ -1050,10 +1058,10 @@ public class BiomeConfig extends ConfigFile
             {
                 settings.addConfigFunctions(Arrays.<ConfigFunction<?>> asList(
                         Resource.createResource(this, SmallLakeGen.class,
-                                DefaultMaterial.WATER, 4, 7, 8,
+                                LocalMaterials.WATER, 4, 7, 8,
                                 worldConfig.worldHeightCap),
                         Resource.createResource(this, SmallLakeGen.class,
-                                DefaultMaterial.LAVA, 2, 3, 8,
+                        		LocalMaterials.LAVA, 2, 3, 8,
                                 worldConfig.worldHeightCap - 8)));
             }
         }
@@ -1087,7 +1095,7 @@ public class BiomeConfig extends ConfigFile
             {
                 try
                 {
-                    LocalMaterialData fromId = MaterialHelper.readMaterial(replacedBlock.split("=")[0]);
+                    LocalMaterialData fromId = OTG.getEngine().readMaterial(replacedBlock.split("=")[0]);
                     String rest = replacedBlock.split("=")[1];
                     LocalMaterialData to;
                     int minHeight = 0;
@@ -1098,12 +1106,12 @@ public class BiomeConfig extends ConfigFile
                     if (start != -1 && end != -1)
                     {   // Found height settings
                         String[] ranges = rest.substring(start + 1, end).split("-");
-                        to = MaterialHelper.readMaterial(rest.substring(0, start));
+                        to = OTG.getEngine().readMaterial(rest.substring(0, start));
                         minHeight = StringHelper.readInt(ranges[0], minHeight, maxHeight);
                         maxHeight = StringHelper.readInt(ranges[1], minHeight, maxHeight);
                     } else {
                     	// No height settings
-                        to = MaterialHelper.readMaterial(rest);
+                        to = OTG.getEngine().readMaterial(rest);
                     }
 
                     output.add(new ReplacedBlocksInstruction(fromId, to, minHeight, maxHeight));

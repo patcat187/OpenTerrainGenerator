@@ -1,19 +1,18 @@
 package com.pg85.otg.configuration.world;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import com.pg85.otg.OTG;
-import com.pg85.otg.common.LocalMaterialData;
-import com.pg85.otg.common.LocalWorld;
+import com.pg85.otg.common.materials.LocalMaterialData;
 import com.pg85.otg.configuration.ConfigFile;
 import com.pg85.otg.configuration.ConfigFunction;
 import com.pg85.otg.configuration.biome.BiomeGroup;
@@ -31,16 +30,14 @@ import com.pg85.otg.configuration.standard.WorldStandardValues;
 import com.pg85.otg.exception.InvalidConfigException;
 import com.pg85.otg.generator.biome.BiomeGenerator;
 import com.pg85.otg.logging.LogMarker;
-import com.pg85.otg.util.materials.MaterialHelper;
+import com.pg85.otg.util.BiomeResourceLocation;
 import com.pg85.otg.util.minecraft.defaults.DefaultBiome;
 
 public class WorldConfig extends ConfigFile
 {
-    public final File settingsDir;
+    public final Path settingsDir;
 
     public ArrayList<String> worldBiomes = new ArrayList<String>();
-
-    public Map<String, Integer> customBiomeGenerationIds = new HashMap<String, Integer>();
 
     // Biome Groups and special biome lists
     public BiomeGroupManager biomeGroupManager;
@@ -108,7 +105,7 @@ public class WorldConfig extends ConfigFile
     public int imageXOffset;
     public int imageZOffset;
 
-    public HashMap<Integer, Integer> biomeColorMap;
+    public HashMap<Integer, BiomeResourceLocation> biomeColorMap;
 
     // Look settings
     public int worldFog;
@@ -352,7 +349,7 @@ public class WorldConfig extends ConfigFile
     	}
     }
         
-    public WorldConfig(File settingsDir, SettingsMap settingsReader, LocalWorld world, ArrayList<String> biomes)
+    public WorldConfig(Path settingsDir, SettingsMap settingsReader, ArrayList<String> biomes)
     {
         super(settingsReader.getName());
 
@@ -375,10 +372,10 @@ public class WorldConfig extends ConfigFile
        	this.correctSettings(biomes != null); // If biomes is null then we're not interested in loading biomes, squelch biome warnings.        
     }
     
-    public static DefaulWorldData createDefaultOTGWorldConfig(File settingsDir, String worldName)
+    public static DefaulWorldData createDefaultOTGWorldConfig(Path settingsDir, String worldName)
     {
     	SimpleSettingsMap settingsMap = new SimpleSettingsMap(worldName, true);
-    	WorldConfig defaultWorldConfig = new WorldConfig(settingsDir, settingsMap, null, getDefaultBiomeNames());
+    	WorldConfig defaultWorldConfig = new WorldConfig(settingsDir, settingsMap, getDefaultBiomeNames());
     	defaultWorldConfig.writeConfigSettings(settingsMap);
     	return new DefaulWorldData(defaultWorldConfig, settingsMap);
     }
@@ -417,7 +414,7 @@ public class WorldConfig extends ConfigFile
                 {
                     try
                     {
-                        material = MaterialHelper.readMaterial(replacement);
+                        material = OTG.getEngine().readMaterial(replacement);
                     }
                     catch (InvalidConfigException e)
                     {
@@ -461,7 +458,7 @@ public class WorldConfig extends ConfigFile
     			try {
     				// TODO: If the block is unknown it will return the ReplaceUnknownBlockWithMaterial instead.
     				// This can cause unexpected results like wrong blocks being replaced when ReplaceUnknownBlockWithMaterial is used as sourceBlock or targetBlock.
-					replaceBlocksDict.put(MaterialHelper.readMaterial(blockNames.getSourceBlock()), MaterialHelper.readMaterial(blockNames.getTargetBlock()));
+					replaceBlocksDict.put(OTG.getEngine().readMaterial(blockNames.getSourceBlock()), OTG.getEngine().readMaterial(blockNames.getTargetBlock()));
 				} catch (InvalidConfigException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -547,7 +544,7 @@ public class WorldConfig extends ConfigFile
 
         if (biomeMode == OTG.getBiomeModeManager().FROM_IMAGE)
         {
-            File mapFile = new File(settingsDir, imageFile);
+            File mapFile = new File(settingsDir.toString(), imageFile);
             if (!mapFile.exists())
             {
                 OTG.log(LogMarker.WARN, "Biome map file not found. Switching BiomeMode to Normal");
@@ -626,7 +623,6 @@ public class WorldConfig extends ConfigFile
         // Specialized Biomes
         this.isleBiomes = reader.getSetting(WorldStandardValues.ISLE_BIOMES);
         this.borderBiomes = reader.getSetting(WorldStandardValues.BORDER_BIOMES);
-        readCustomBiomes(reader);
 
         this.improvedBiomeBorders = reader.getSetting(WorldStandardValues.IMPROVED_BIOME_BORDERS);
         this.improvedBiomeGroups = reader.getSetting(WorldStandardValues.IMPROVED_BIOME_GROUPS);
@@ -878,35 +874,6 @@ public class WorldConfig extends ConfigFile
                 Arrays.asList("Mega Taiga", "Mega Spruce Taiga"));
         this.biomeGroupManager.registerGroup(megaTaigaGroup);
     }
-
-    private void readCustomBiomes(SettingsMap reader)
-    {
-        List<String> biomes = reader.getSetting(WorldStandardValues.CUSTOM_BIOMES);
-
-        for (String biome : biomes)
-        {
-            try
-            {
-                String[] keys = biome.split(":");
-                if (keys[0].isEmpty())
-                {
-                    // Don't allow biomes with empty names
-                    continue;
-                }
-                if (keys.length == 2)
-                {
-                    int otgBiomeId = Integer.parseInt(keys[1]);
-                    customBiomeGenerationIds.put(keys[0], otgBiomeId);
-                } else {
-                    customBiomeGenerationIds.put(keys[0], -1);
-                }
-
-            } catch (NumberFormatException e)
-            {
-                System.out.println("Wrong custom biome id settings: '" + biome + "'");
-            }
-        }
-    }
     
     @Override
     protected void writeConfigSettings(SettingsMap writer)
@@ -948,11 +915,6 @@ public class WorldConfig extends ConfigFile
                 "For old maps two more modes are available:",
                 "   BeforeGroups - Minecraft 1.0 - 1.6.4 biome generator, only supports the biome groups NormalBiomes and IceBiomes");//,
                 //"   OldGenerator - Minecraft Beta 1.7.3 biome generator");
-
-        // Custom biomes
-        writer.bigTitle("Custom biomes");
-
-        writeCustomBiomes(writer);
 
         // Settings for BiomeMode:Normal
         writer.bigTitle("Settings for BiomeMode: Normal",
@@ -1391,7 +1353,7 @@ public class WorldConfig extends ConfigFile
         // Dimensions
         writer.bigTitle("Dimension");
         writer.putSetting(WorldStandardValues.DIMENSIONS, this.dimensions,
-                "Dimensions that should be loaded for this world at world creation. A world directory of the same name must be present in mods/OpenTerrainGenerator/"+ PluginStandardValues.PresetsDirectoryName + "/");
+                "Dimensions that should be loaded for this world at world creation. A world directory of the same name must be present in mods/OpenTerrainGenerator/"+ PluginStandardValues.PRESETS_FOLDER + "/");
         writer.putSetting(WorldStandardValues.DIMENSIONBELOW, this.dimensionBelow,
                 "When a player goes below Y 0, they will be teleported to this dimension. The dimension must be registered either via Dimensions in the worldconfig or via the /otg dim -c <dimname> console command.");
         writer.putSetting(WorldStandardValues.DIMENSIONABOVE, this.dimensionAbove,
@@ -1578,59 +1540,16 @@ public class WorldConfig extends ConfigFile
         {
             return o1.getValue() - o2.getValue();
         }
-    };    
+    };
     
-    private void writeCustomBiomes(SettingsMap writer)
-    {
-        List<String> output = new ArrayList<String>();
-        // Custom biome id
-        List<Entry<String, Integer>> cbi = new ArrayList<Entry<String, Integer>>(this.customBiomeGenerationIds.entrySet());
-        Collections.sort(cbi, CBV);
-        // Print all custom biomes
-        for (Iterator<Entry<String, Integer>> it = cbi.iterator(); it.hasNext();)
-        {
-            Entry<String, Integer> entry = it.next();
-    		if(!((entry.getValue() > 39 && entry.getValue() < 127) || (entry.getValue() > 167)))
-        	{
-    			// Skip custom biomes with vanilla id's.
-    			// Forge adds these to the custom biomes list
-    			// to make vanilla biomes fully customisable
-    			// but the vanilla biome id's shouldn't actually
-    			// be written to the WorldConfig.ini file
-    			continue;
-        	}
-            output.add(entry.getKey() + ":" + entry.getValue());
-        }
-        writer.putSetting(WorldStandardValues.CUSTOM_BIOMES, output,
-        		"NOTE: This is a legacy setting and is only used for OTG worlds created with 1.12.2 v6 or lower.",
-        		"For 1.12.2 v6 or higher, OTG reads all biomes in the BiomeConfigs directory and assigns biome id's.",
-                "You need to register your custom biomes here. This setting will make Open Terrain Generator",
-                "generate setting files for them. However, it won't place them in the world automatically.",
-                "See the settings for your BiomeMode below on how to add them to the world.",
-                "",
-                "Syntax: CustomBiomes:BiomeName:id[,AnotherBiomeName:id[,...]]",
-                "Example: CustomBiomes:TestBiome1:30,BiomeTest2:31",
-                "This will add two biomes and generate the BiomeConfigs for them.",
-                "All changes here need a server restart.",
-                "",
-                "Due to the way Mojang's loading code works, all biome ids need to be unique",
-                "on the server. If you don't do this, the client will display the biomes just fine,",
-                "but the server can think it is another biome with the same id. This will cause saplings,",
-                "snowfall and mobs to work as in the other biome.",
-                "",
-                "The available ids range from 0 to 1023 and the ids 0-39 and 127-167 are taken by vanilla.",
-                "The ids 256-1023 cannot be saved to the map files, so use ReplaceToBiomeName in that biome."
-				);
-    }
-    
-	public static WorldConfig fromDisk(File worldDir)
+	public static WorldConfig fromDisk(Path worldDir)
 	{
-        File worldConfigFile = new File(worldDir, WorldStandardValues.WORLD_CONFIG_FILE_NAME);
+        File worldConfigFile = Paths.get(worldDir.toString(), WorldStandardValues.WORLD_CONFIG_FILE_NAME).toFile();
         if(!worldConfigFile.exists())
         {
         	return null;
         }
-        SettingsMap settingsMap = FileSettingsReader.read(worldDir.getName(), worldConfigFile);
-        return new WorldConfig(worldDir, settingsMap, null, null);
+        SettingsMap settingsMap = FileSettingsReader.read(worldDir.toFile().getName(), worldConfigFile);
+        return new WorldConfig(worldDir, settingsMap, null);
 	}
 }

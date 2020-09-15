@@ -6,6 +6,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
@@ -176,7 +178,7 @@ public class DimensionsConfig
 		return presetsConfig;
 	}
 	
-	static DimensionsConfig defaultConfigfromFile(File file, File otgRootFolder)
+	static DimensionsConfig defaultConfigfromFile(File file, Path otgRootFolder)
 	{
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
         DimensionsConfig presetsConfig = null;
@@ -198,7 +200,7 @@ public class DimensionsConfig
        	return presetsConfig;
 	}
 	
-	private static void updateConfig(DimensionsConfig dimsConfig, File otgRootFolder)
+	private static void updateConfig(DimensionsConfig dimsConfig, Path otgRootFolder)
 	{
        	// Update the config if necessary
        	if(dimsConfig.version == 0)
@@ -206,7 +208,7 @@ public class DimensionsConfig
        		// Update the IsOTGPlus field from the worldconfig, added for v1.
        		if(dimsConfig.Overworld != null && dimsConfig.Overworld.PresetName != null)
        		{
-       			WorldConfig worldConfig = WorldConfig.fromDisk(new File(otgRootFolder, PluginStandardValues.PresetsDirectoryName + File.separator + dimsConfig.Overworld.PresetName));
+       			WorldConfig worldConfig = WorldConfig.fromDisk(Paths.get(otgRootFolder.toString(), PluginStandardValues.PRESETS_FOLDER + File.separator + dimsConfig.Overworld.PresetName));
        			if(worldConfig != null)
        			{
        				dimsConfig.Overworld.Settings.IsOTGPlus = worldConfig.isOTGPlus;
@@ -216,7 +218,7 @@ public class DimensionsConfig
        		{
        			for(DimensionConfig dimConfig : dimsConfig.Dimensions)
        			{
-           			WorldConfig worldConfig = WorldConfig.fromDisk(new File(otgRootFolder, PluginStandardValues.PresetsDirectoryName + File.separator + dimConfig.PresetName));
+           			WorldConfig worldConfig = WorldConfig.fromDisk(Paths.get(otgRootFolder.toString(), PluginStandardValues.PRESETS_FOLDER + File.separator + dimConfig.PresetName));
            			if(worldConfig != null)
            			{
            				dimConfig.Settings.IsOTGPlus = worldConfig.isOTGPlus;
@@ -232,7 +234,7 @@ public class DimensionsConfig
 	 * @param mcWorldSaveDir Refers to mc/saves/worlddir/
 	 * @return
 	 */
-	public static DimensionsConfig loadFromFile(File mcWorldSaveDir, File otgRootFolder)
+	public static DimensionsConfig loadFromFile(File mcWorldSaveDir, Path otgRootFolder)
 	{
 		File dimensionsConfigFile = new File(mcWorldSaveDir + File.separator + PluginStandardValues.PLUGIN_NAME + File.separator + WorldStandardValues.DimensionsConfigFileName);		
 		File dimensionsConfigBackupFile = new File(mcWorldSaveDir + File.separator + PluginStandardValues.PLUGIN_NAME + File.separator + WorldStandardValues.DimensionsConfigBackupFileName);

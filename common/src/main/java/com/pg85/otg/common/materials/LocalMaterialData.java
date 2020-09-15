@@ -1,33 +1,21 @@
-package com.pg85.otg.common;
+package com.pg85.otg.common.materials;
 
 import com.pg85.otg.OTGEngine;
-import com.pg85.otg.configuration.standard.PluginStandardValues;
-import com.pg85.otg.util.helpers.BlockHelper;
-import com.pg85.otg.util.minecraft.defaults.DefaultMaterial;
+import com.pg85.otg.common.LocalWorld;
 
 /**
  * Represents one of Minecraft's materials. Also includes its data value.
  * Immutable.
  * 
  * @see OTGEngine#readMaterial(String)
- * @see OTGEngine#toLocalMaterialData(DefaultMaterial, int)
  */
 public abstract class LocalMaterialData
 {
-	protected DefaultMaterial defaultMaterial;
 	protected String rawEntry;
 	protected boolean isBlank = false;
 	protected boolean checkedFallbacks = false;
 	protected boolean parsedDefaultMaterial = false;
 	
-    /**
-     * Gets a {@code LocalMaterialData} of the given material and data.
-     * @param material The material.
-     * @param data     The block data.
-     * @return The {@code LocalMaterialData} instance.
-     */
-	protected abstract LocalMaterialData ofDefaultMaterialPrivate(DefaultMaterial material, int data);
-    
     /**
      * Gets the name of this material. If a {@link #toDefaultMaterial()
      * DefaultMaterial is available,} that name is used, otherwise it's up to
@@ -37,23 +25,6 @@ public abstract class LocalMaterialData
      * @return The name of this material.
      */
 	public abstract String getName();
-
-    /**
-     * Gets the internal block id. At the moment, all of Minecraft's vanilla
-     * materials have a static id, but this can change in the future. Mods
-     * already have dynamic ids.
-     * 
-     * @return The internal block id.
-     */
-	public abstract int getBlockId();
-
-    /**
-     * Gets the internal block data. Block data represents things like growth
-     * stage and rotation.
-     * 
-     * @return The internal block data.
-     */
-    public abstract byte getBlockData();
 
     /**
      * Gets whether this material is a liquid, like water or lava.
@@ -83,15 +54,6 @@ public abstract class LocalMaterialData
     public abstract boolean isAir();
 
     public abstract boolean isEmpty();
-    
-    /**
-     * Gets the default material belonging to this material. The block data will
-     * be lost. If the material is not one of the vanilla Minecraft materials,
-     * {@link DefaultMaterial#UNKNOWN_BLOCK} is returned.
-     * 
-     * @return The default material.
-     */
-    public abstract DefaultMaterial toDefaultMaterial();
 
     /**
      * Gets whether snow can fall on this block.
@@ -100,25 +62,7 @@ public abstract class LocalMaterialData
      */
     public abstract boolean canSnowFallOn();
 
-    /**
-     * Gets whether the block is of the given material. Block data is ignored,
-     * as {@link DefaultMaterial} doesn't include block data.
-     * 
-     * @param material
-     *            The material to check.
-     * @return True if this block is of the given material, false otherwise.
-     */
-    public abstract boolean isMaterial(DefaultMaterial material);
-
-    /**
-     * Gets an instance with the same material as this object, but with the
-     * given block data. This instance is not modified.
-     *
-     * @param newData
-     *            The new block data.
-     * @return An instance with the given block data.
-     */
-    public abstract LocalMaterialData withBlockData(int newData);
+    public abstract boolean isMaterial(LocalMaterialData material);
 
     /**
      * Gets an instance with the same material as this object, but the default
@@ -137,28 +81,6 @@ public abstract class LocalMaterialData
      * @return True if the materials are equal, false otherwise.
      */
     public abstract boolean equals(Object other);
-
-    /**
-     * Gets the hashCode of the material, based on the block id and block data.
-     * The hashCode must be unique, which is possible considering that there are
-     * only 4096 * 16 possible materials.
-     * 
-     * @return The unique hashCode.
-     */
-    public abstract int hashCode();
-
-    /**
-     * Gets the hashCode of the material, based on only the block id. No
-     * hashCode returned by this method may be the same as any hashCode returned
-     * by {@link #hashCode()}.
-     * 
-     * @return The unique hashCode.
-     */
-    public int hashCodeWithoutBlockData()
-    {
-        // From 0 to 4095 when there are 4096 block ids
-        return getBlockId();
-    }
     
     public String toString()
     {
@@ -187,7 +109,8 @@ public abstract class LocalMaterialData
     public LocalMaterialData rotate(int rotateTimes)
     {
     	// TODO: Rotate modded blocks?
-    	
+    	// TODO: Reimplement this when block data has been implemented
+    	/*
         // Try to rotate
         DefaultMaterial defaultMaterial = toDefaultMaterial();
         if (defaultMaterial != null)
@@ -205,6 +128,7 @@ public abstract class LocalMaterialData
             	return ofDefaultMaterialPrivate(defaultMaterial, newData);
             }
         }
+        */
 
         // No changes, return object itself
         return this;
@@ -240,9 +164,9 @@ public abstract class LocalMaterialData
 				)
 			) || (
 	    		(
-					isMaterial(DefaultMaterial.ICE) ||
-					isMaterial(DefaultMaterial.PACKED_ICE) ||
-					isMaterial(DefaultMaterial.FROSTED_ICE) ||
+					isMaterial(LocalMaterials.ICE) ||
+					isMaterial(LocalMaterials.PACKED_ICE) ||
+					isMaterial(LocalMaterials.FROSTED_ICE) ||
 					(
 						isSolid() || 
 						(
@@ -253,11 +177,26 @@ public abstract class LocalMaterialData
 				(
 					allowWood || 
 					!(
-						isMaterial(DefaultMaterial.LOG) || 
-						isMaterial(DefaultMaterial.LOG_2)
+						isMaterial(LocalMaterials.LOG) || 
+						isMaterial(LocalMaterials.LOG_2)
 					)
 				) &&
-				!isMaterial(DefaultMaterial.WATER_LILY)
+				!isMaterial(LocalMaterials.WATER_LILY)
 			);
     }
+    
+	public boolean isOre()
+	{
+    	return
+			isMaterial(LocalMaterials.COAL_ORE) ||
+			isMaterial(LocalMaterials.DIAMOND_ORE) ||
+			isMaterial(LocalMaterials.EMERALD_ORE) ||
+			isMaterial(LocalMaterials.GLOWING_REDSTONE_ORE) ||
+			isMaterial(LocalMaterials.GOLD_ORE) ||
+			isMaterial(LocalMaterials.IRON_ORE) ||
+			isMaterial(LocalMaterials.LAPIS_ORE) ||
+			isMaterial(LocalMaterials.QUARTZ_ORE) ||
+			isMaterial(LocalMaterials.REDSTONE_ORE)
+		;
+	}
 }

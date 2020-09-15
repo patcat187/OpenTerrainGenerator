@@ -1,8 +1,8 @@
 package com.pg85.otg.customobjects.bo2;
 
-import com.pg85.otg.common.LocalMaterialData;
+import com.pg85.otg.OTG;
+import com.pg85.otg.common.materials.LocalMaterialData;
 import com.pg85.otg.exception.InvalidConfigException;
-import com.pg85.otg.util.materials.MaterialHelper;
 
 class ObjectCoordinate
 {
@@ -11,16 +11,16 @@ class ObjectCoordinate
     int z;
     private int hash;
     LocalMaterialData material;
-    private int BranchDirection;
-    private int BranchOdds;
+    private int branchDirection;
+    private int branchOdds;
 
     private ObjectCoordinate(int _x, int _y, int _z)
     {
         this.x = _x;
         this.y = _y;
         this.z = _z;
-        this.BranchDirection = -1;
-        this.BranchOdds = -1;
+        this.branchDirection = -1;
+        this.branchOdds = -1;
 
         hash = x + z << 8 + y << 16;
     }
@@ -46,13 +46,13 @@ class ObjectCoordinate
     {
         ObjectCoordinate newCoordinate = new ObjectCoordinate(this.z, this.y, (this.x * -1));
         newCoordinate.material = material.rotate();
-        newCoordinate.BranchOdds = this.BranchOdds;
+        newCoordinate.branchOdds = this.branchOdds;
 
-        if (this.BranchDirection != -1)
+        if (this.branchDirection != -1)
         {
-            newCoordinate.BranchDirection = this.BranchDirection + 1;
-            if (newCoordinate.BranchDirection > 3)
-                newCoordinate.BranchDirection = 0;
+            newCoordinate.branchDirection = this.branchDirection + 1;
+            if (newCoordinate.branchDirection > 3)
+                newCoordinate.branchDirection = 0;
         }
 
         return newCoordinate;
@@ -69,13 +69,11 @@ class ObjectCoordinate
 
         try
         {
-
             int x = Integer.parseInt(coordinates[0]);
             int z = Integer.parseInt(coordinates[1]);
             int y = Integer.parseInt(coordinates[2]);
 
             ObjectCoordinate newCoordinate = new ObjectCoordinate(x, y, z);
-
 
             String workingDataString = value;
             if (workingDataString.contains("#"))
@@ -83,24 +81,21 @@ class ObjectCoordinate
                 String stringSet[] = workingDataString.split("#");
                 workingDataString = stringSet[0];
                 String branchData[] = stringSet[1].split("@");
-                newCoordinate.BranchDirection = Integer.parseInt(branchData[0]);
-                newCoordinate.BranchOdds = Integer.parseInt(branchData[1]);
+                newCoordinate.branchDirection = Integer.parseInt(branchData[0]);
+                newCoordinate.branchOdds = Integer.parseInt(branchData[1]);
 
             }
-            newCoordinate.material = MaterialHelper.readMaterial(workingDataString);
+            newCoordinate.material = OTG.getEngine().readMaterial(workingDataString);
 
             return newCoordinate;
-
         }
         catch (NumberFormatException e)
         {
             return null;
-
         }
         catch (InvalidConfigException e)
         {
             return null;
-            
         }
     }
 }

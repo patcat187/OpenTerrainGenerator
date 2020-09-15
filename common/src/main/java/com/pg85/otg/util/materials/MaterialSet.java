@@ -1,12 +1,11 @@
 package com.pg85.otg.util.materials;
 
 import com.pg85.otg.OTG;
-import com.pg85.otg.common.LocalMaterialData;
 import com.pg85.otg.common.LocalWorld;
+import com.pg85.otg.common.materials.LocalMaterialData;
 import com.pg85.otg.exception.InvalidConfigException;
 import com.pg85.otg.util.helpers.StringHelper;
 
-import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -16,9 +15,6 @@ import java.util.Set;
  * this set, and as such, this set can't be iterated over and its size remains
  * unknown.
  */
-// TODO: This seems really inefficient and riddiculously overcomplicated, burn with fire.
-// Looks like this is optimised mainly for use with blockchecks and BOfunctions, resources like oregen also use it though,
-// they shouldn't need any other functionality than containing a list of materials.
 public class MaterialSet
 {
     /**
@@ -43,9 +39,7 @@ public class MaterialSet
     private boolean allSolidMaterials = false;
     private boolean allNonSolidMaterials = false;
 
-    private int[] materialIntSet = new int[0];
     public Set<MaterialSetEntry> materials = new LinkedHashSet<MaterialSetEntry>();
-    private boolean intSetUpToDate = true;
     private boolean parsed = false;
 
     /**
@@ -83,7 +77,7 @@ public class MaterialSet
             return;
         }
 
-        LocalMaterialData material = MaterialHelper.readMaterial(input);
+        LocalMaterialData material = OTG.getEngine().readMaterial(input);
         
         boolean checkIncludesBlockData = StringHelper.specifiesBlockData(input);
         
@@ -94,18 +88,6 @@ public class MaterialSet
         
         // Add to set
         add(new MaterialSetEntry(material, checkIncludesBlockData));
-    }
-
-    @Override
-    public int hashCode()
-    {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + (allMaterials ? 1231 : 1237);
-        result = prime * result + (allNonSolidMaterials ? 1231 : 1237);
-        result = prime * result + (allSolidMaterials ? 1231 : 1237);
-        result = prime * result + materials.hashCode();
-        return result;
     }
 
     @Override
@@ -150,12 +132,11 @@ public class MaterialSet
      */
     private void add(MaterialSetEntry entry)
     {
-        // Add the appropriate hashCode
-        intSetUpToDate = false;
         materials.add(entry);
     }
     
-    public void parseForWorld(LocalWorld world) {
+    public void parseForWorld(LocalWorld world)
+    {
         if (!parsed)
         {
             for (MaterialSetEntry material : materials)
@@ -163,33 +144,7 @@ public class MaterialSet
                 material.parseForWorld(world);
             }
             parsed = true;
-            intSetUpToDate = false;
         }
-    }
-
-    /**
-     * Updates the int (hashCode) set, so that is is up to date again with the
-     * material set.
-     */
-    private void updateIntSet()
-    {
-        if (intSetUpToDate)
-        {
-            // Already up to date
-            return;
-        }
-
-        // Update the int set
-        materialIntSet = new int[materials.size()];
-        int i = 0;
-        for (MaterialSetEntry entry : materials)
-        {
-            materialIntSet[i] = entry.hashCode();
-            i++;
-        }
-        // Sort int set so that we can use Arrays.binarySearch
-        Arrays.sort(materialIntSet);
-        intSetUpToDate = true;
     }
 
     /**
@@ -218,18 +173,14 @@ public class MaterialSet
             return true;
         }
 
-        // Try to update int set
-        updateIntSet();
-
-        // Check if the material is included
-        if (Arrays.binarySearch(materialIntSet, material.hashCodeWithoutBlockData()) >= 0)
+        for(MaterialSetEntry entry : this.materials)
         {
-            return true;
+        	if(entry.material.equals(material))
+        	{
+        		return true;
+        	}
         }
-        if (Arrays.binarySearch(materialIntSet, material.hashCode()) >= 0)
-        {
-            return true;
-        }
+                
         return false;
     }
 
@@ -295,12 +246,10 @@ public class MaterialSet
         {
             rotated.allNonSolidMaterials = true;
         }
-        rotated.intSetUpToDate = false;
         for (MaterialSetEntry material : this.materials)
         {
             rotated.materials.add(material.rotate());
         }
         return rotated;
     }
-
 }

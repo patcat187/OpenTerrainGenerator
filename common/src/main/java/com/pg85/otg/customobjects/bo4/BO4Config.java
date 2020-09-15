@@ -1,7 +1,7 @@
 package com.pg85.otg.customobjects.bo4;
 
 import com.pg85.otg.OTG;
-import com.pg85.otg.common.LocalMaterialData;
+import com.pg85.otg.common.materials.LocalMaterialData;
 import com.pg85.otg.configuration.customobjects.CustomObjectConfigFile;
 import com.pg85.otg.configuration.customobjects.CustomObjectConfigFunction;
 import com.pg85.otg.configuration.customobjects.CustomObjectErroredFunction;
@@ -30,7 +30,6 @@ import com.pg85.otg.logging.LogMarker;
 import com.pg85.otg.util.bo3.NamedBinaryTag;
 import com.pg85.otg.util.bo3.Rotation;
 import com.pg85.otg.util.helpers.StreamHelper;
-import com.pg85.otg.util.materials.MaterialHelper;
 import com.pg85.otg.util.minecraft.defaults.DefaultStructurePart;
 
 import java.io.DataOutput;
@@ -479,11 +478,11 @@ public class BO4Config extends CustomObjectConfigFile
     	{
     		File currentFile = this.getFile().getParentFile();
     		this.worldName = currentFile.getName();
-    		while(currentFile.getParentFile() != null && !currentFile.getName().toLowerCase().equals(PluginStandardValues.PresetsDirectoryName))
+    		while(currentFile.getParentFile() != null && !currentFile.getName().equals(PluginStandardValues.PRESETS_FOLDER))
     		{
     			this.worldName = currentFile.getName();
     			currentFile = currentFile.getParentFile();
-    			if(this.worldName.toLowerCase().equals("globalobjects"))
+    			if(this.worldName.equals(PluginStandardValues.GLOBAL_OBJECTS_FOLDER))
     			{
     				this.worldName = null;
     				break;
@@ -1931,7 +1930,7 @@ public class BO4Config extends CustomObjectConfigFile
 		        {
 		        	String materialName = StreamHelper.readStringFromBuffer(buffer);
 		        	try {
-						blocksArr[i] = MaterialHelper.readMaterial(materialName);
+						blocksArr[i] = OTG.getEngine().readMaterial(materialName);
 					} catch (InvalidConfigException e) {
 						if(OTG.getPluginConfig().spawnLog)
 						{

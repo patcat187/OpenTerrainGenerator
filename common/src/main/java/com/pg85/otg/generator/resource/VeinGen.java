@@ -6,7 +6,6 @@ import com.pg85.otg.configuration.standard.PluginStandardValues;
 import com.pg85.otg.exception.InvalidConfigException;
 import com.pg85.otg.util.ChunkCoordinate;
 import com.pg85.otg.util.helpers.RandomHelper;
-import com.pg85.otg.util.materials.MaterialHelper;
 import com.pg85.otg.util.materials.MaterialSet;
 
 import java.util.List;
@@ -141,7 +140,7 @@ public class VeinGen extends Resource
 
         if(world.getConfigs().getWorldConfig().disableOreGen)
         {
-        	if(MaterialHelper.isOre(this.material))
+        	if(this.material.isOre())
         	{
         		return;
         	}

@@ -1,7 +1,7 @@
 package com.pg85.otg.util.materials;
 
-import com.pg85.otg.common.LocalMaterialData;
 import com.pg85.otg.common.LocalWorld;
+import com.pg85.otg.common.materials.LocalMaterialData;
 
 //TODO: This seems really inefficient and riddiculously overcomplicated, burn with fire.
 //Looks like this is optimised mainly for use with blockchecks and BOfunctions, resources like oregen also use it though,
@@ -28,27 +28,6 @@ public class MaterialSetEntry
         return false;
     }
 
-    /**
-     * Gets the hashCode of this entry, which is equal to either
-     * {@link LocalMaterialData#hashCode()} or
-     * {@link LocalMaterialData#hashCodeWithoutBlockData()}. This means that
-     * the hashCode is unique.
-     *
-     * @return The unique hashCode.
-     */
-    @Override
-    public int hashCode()
-    {
-        // TODO: Why is this needed, clean up this class and remove all the exceptions for parsing materials!
-        if (includesBlockData)
-        {
-            return material.hashCode();
-        } else
-        {
-            return material.hashCodeWithoutBlockData();
-        }
-    }
-
     public void parseForWorld(LocalWorld world)
     {
     	material.parseForWorld(world);
@@ -59,11 +38,11 @@ public class MaterialSetEntry
     {
         String output = material.toString();
         // TODO: Why is this needed, clean up this class and remove all the exceptions for parsing materials!
-        if (includesBlockData && !output.contains(":") && material.getBlockData() == 0)
+        //if (includesBlockData && !output.contains(":") && material.getBlockData() == 0)
         {
             // Turn things like "WOOL" back into "WOOL:0" (material.toString
             // never includes "*:0")
-            return output + ":0";
+            //return output + ":0";
         }
         return output;
     }

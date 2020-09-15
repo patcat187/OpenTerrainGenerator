@@ -6,9 +6,11 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.Map.Entry;
 
+import com.pg85.otg.OTG;
 import com.pg85.otg.common.LocalBiome;
-import com.pg85.otg.common.LocalMaterialData;
 import com.pg85.otg.common.LocalWorld;
+import com.pg85.otg.common.materials.LocalMaterialData;
+import com.pg85.otg.common.materials.LocalMaterials;
 import com.pg85.otg.configuration.biome.BiomeConfig;
 import com.pg85.otg.configuration.standard.PluginStandardValues;
 import com.pg85.otg.customobjects.bo4.BO4;
@@ -21,8 +23,6 @@ import com.pg85.otg.generator.surface.MesaSurfaceGenerator;
 import com.pg85.otg.util.ChunkCoordinate;
 import com.pg85.otg.util.bo3.NamedBinaryTag;
 import com.pg85.otg.util.bo3.Rotation;
-import com.pg85.otg.util.materials.MaterialHelper;
-import com.pg85.otg.util.minecraft.defaults.DefaultMaterial;
 
 public class SmoothingAreaGenerator
 {   
@@ -1431,7 +1431,7 @@ public class SmoothingAreaGenerator
 			if(((BO4)start.getObject()).getConfig().smoothingSurfaceBlock != null && ((BO4)start.getObject()).getConfig().smoothingSurfaceBlock.trim().length() > 0)
 			{
 				try {
-					LocalMaterialData material = MaterialHelper.readMaterial(((BO4)start.getObject()).getConfig().smoothingSurfaceBlock);
+					LocalMaterialData material = OTG.getEngine().readMaterial(((BO4)start.getObject()).getConfig().smoothingSurfaceBlock);
 					surfaceBlockSet = true;
 					surfaceBlockMaterial = material;
 				}
@@ -1445,7 +1445,7 @@ public class SmoothingAreaGenerator
 			{
 				try
 				{
-					LocalMaterialData material = MaterialHelper.readMaterial(((BO4)start.getObject()).getConfig().smoothingGroundBlock);
+					LocalMaterialData material = OTG.getEngine().readMaterial(((BO4)start.getObject()).getConfig().smoothingGroundBlock);
 					groundBlockSet = true;
 					groundBlockMaterial = material;
 				}
@@ -1457,12 +1457,12 @@ public class SmoothingAreaGenerator
 
             if(surfaceBlockMaterial == null)
             {
-            	surfaceBlockMaterial = MaterialHelper.GRASS;
+            	surfaceBlockMaterial = LocalMaterials.GRASS;
             }
 
             if(groundBlockMaterial == null)
             {
-            	groundBlockMaterial = MaterialHelper.DIRT;
+            	groundBlockMaterial = LocalMaterials.DIRT;
             }
             
             LocalMaterialData replaceAboveMaterial = null;
@@ -1470,7 +1470,7 @@ public class SmoothingAreaGenerator
 			{
 				try
 				{
-					LocalMaterialData material = MaterialHelper.readMaterial(((BO4)start.getObject()).getConfig().replaceAbove);
+					LocalMaterialData material = OTG.getEngine().readMaterial(((BO4)start.getObject()).getConfig().replaceAbove);
 					replaceAboveMaterial = material;
 				}
 				catch (InvalidConfigException e)
@@ -1532,7 +1532,7 @@ public class SmoothingAreaGenerator
 
 		                if(surfaceBlockMaterial == null)
 		                {
-		                	surfaceBlockMaterial = MaterialHelper.GRASS;
+		                	surfaceBlockMaterial = LocalMaterials.GRASS;
 		                }
 	                }
 
@@ -1542,7 +1542,7 @@ public class SmoothingAreaGenerator
 
 		                if(groundBlockMaterial == null)
 		                {
-		                	groundBlockMaterial = MaterialHelper.DIRT;
+		                	groundBlockMaterial = LocalMaterials.DIRT;
 		                }
 	                }
                 }
@@ -1564,7 +1564,7 @@ public class SmoothingAreaGenerator
 
                     if(surfaceBlockMaterial == null)
                     {
-                    	surfaceBlockMaterial = MaterialHelper.GRASS;
+                    	surfaceBlockMaterial = LocalMaterials.GRASS;
                     }
             	}
 
@@ -1603,7 +1603,7 @@ public class SmoothingAreaGenerator
 
 	                    if(materialToSet == null)
 	                    {
-	                    	materialToSet = MaterialHelper.DIRT;
+	                    	materialToSet = LocalMaterials.DIRT;
 	                    }
 	                    
                         blockToQueueForSpawn = new SmoothingAreaBlock();
@@ -1712,7 +1712,7 @@ public class SmoothingAreaGenerator
 	        	                		sourceBlockMaterialAbove = world.getMaterial(blockToSpawn.x, y + 1, blockToSpawn.z, chunkBeingPopulated);
 	        	                		if(sourceBlockMaterialAbove == null || sourceBlockMaterialAbove.isAir())
 	        	                		{
-	        	                			materialToSet = MaterialHelper.AIR; // Make sure that canyons/caves etc aren't covered
+	        	                			materialToSet = LocalMaterials.AIR; // Make sure that canyons/caves etc aren't covered
 	        	                		} else {
 	        	                        	materialToSet = groundBlockMaterial;
 	        	                		}
@@ -1726,7 +1726,7 @@ public class SmoothingAreaGenerator
 
                     	if(materialToSet.isLiquid() && ((BO4)start.getObject()).getConfig().spawnUnderWater && y >= (biomeConfig.useWorldWaterLevel ? world.getConfigs().getWorldConfig().waterLevelMax : biomeConfig.waterLevelMax))
                     	{
-                    		materialToSet = MaterialHelper.AIR;
+                    		materialToSet = LocalMaterials.AIR;
                     	}
                     	
                         blockToQueueForSpawn = new SmoothingAreaBlock();
@@ -2668,7 +2668,7 @@ public class SmoothingAreaGenerator
 	                        if(filler.x == originPointX && filler.z == originPointZ)
 	                        {
 	            	    		try {
-	            					World.setBlock(originPointX, originPointY, originPointZ,MaterialHelper.readMaterial("STONE"), null, true);
+	            					World.setBlock(originPointX, originPointY, originPointZ,LocalMaterialManager.readMaterial("STONE"), null, true);
 	            				} catch (InvalidConfigException e) {
 	            					// TODO Auto-generated catch block
 	            					e.printStackTrace();
@@ -2889,7 +2889,7 @@ public class SmoothingAreaGenerator
 	                        if(filler.x == originPointX && filler.z == originPointZ)
 	                        {
 	            	    		try {
-	            					World.setBlock(originPointX, originPointY, originPointZ,MaterialHelper.readMaterial("STONE"), null, true);
+	            					World.setBlock(originPointX, originPointY, originPointZ,LocalMaterialManager.readMaterial("STONE"), null, true);
 	            				} catch (InvalidConfigException e) {
 	            					// TODO Auto-generated catch block
 	            					e.printStackTrace();
@@ -3024,7 +3024,7 @@ public class SmoothingAreaGenerator
                         if(filler.x == originPointX && filler.z == originPointZ)
                         {
             	    		try {
-            					World.setBlock(originPointX, originPointY, originPointZ,MaterialHelper.readMaterial("STONE"), null, true);
+            					World.setBlock(originPointX, originPointY, originPointZ,LocalMaterialManager.readMaterial("STONE"), null, true);
             				} catch (InvalidConfigException e) {
             					// TODO Auto-generated catch block
             					e.printStackTrace();

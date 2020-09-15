@@ -3,14 +3,13 @@ package com.pg85.otg.generator.surface;
 import java.util.Arrays;
 import java.util.Random;
 
-import com.pg85.otg.common.LocalMaterialData;
 import com.pg85.otg.common.LocalWorld;
+import com.pg85.otg.common.materials.LocalMaterialData;
+import com.pg85.otg.common.materials.LocalMaterials;
 import com.pg85.otg.configuration.biome.BiomeConfig;
 import com.pg85.otg.generator.ChunkBuffer;
 import com.pg85.otg.generator.GeneratingChunk;
 import com.pg85.otg.generator.noise.NoiseGeneratorPerlinMesaBlocks;
-import com.pg85.otg.util.materials.MaterialHelper;
-import com.pg85.otg.util.minecraft.defaults.DefaultMaterial;
 
 public class MesaSurfaceGenerator implements SurfaceGenerator
 {
@@ -67,7 +66,7 @@ public class MesaSurfaceGenerator implements SurfaceGenerator
     private void generateBands(long p_150619_1_)
     {
         this.clayBands = new LocalMaterialData[64];
-        Arrays.fill(this.clayBands, MaterialHelper.HARDENED_CLAY);
+        Arrays.fill(this.clayBands, LocalMaterials.TERRACOTTA);
         Random random = new Random(p_150619_1_);
 
         this.clayBandsOffsetNoise = new NoiseGeneratorPerlinMesaBlocks(random, 1);
@@ -78,7 +77,7 @@ public class MesaSurfaceGenerator implements SurfaceGenerator
 
             if (l1 < 64)
             {
-                this.clayBands[l1] = MaterialHelper.ORANGE_STAINED_CLAY;
+                this.clayBands[l1] = LocalMaterials.ORANGE_STAINED_CLAY;
             }
         }
 
@@ -91,7 +90,7 @@ public class MesaSurfaceGenerator implements SurfaceGenerator
 
             for (int l = 0; k + l < 64 && l < j; ++l)
             {
-                this.clayBands[k + l] = MaterialHelper.YELLOW_STAINED_CLAY;
+                this.clayBands[k + l] = LocalMaterials.YELLOW_STAINED_CLAY;
             }
         }
 
@@ -104,7 +103,7 @@ public class MesaSurfaceGenerator implements SurfaceGenerator
 
             for (int i1 = 0; l3 + i1 < 64 && i1 < i3; ++i1)
             {
-                this.clayBands[l3 + i1] = MaterialHelper.BROWN_STAINED_CLAY;
+                this.clayBands[l3 + i1] = LocalMaterials.BROWN_STAINED_CLAY;
             }
         }
 
@@ -117,7 +116,7 @@ public class MesaSurfaceGenerator implements SurfaceGenerator
 
             for (int j1 = 0; k4 + j1 < 64 && j1 < i4; ++j1)
             {
-                this.clayBands[k4 + j1] = MaterialHelper.RED_STAINED_CLAY;
+                this.clayBands[k4 + j1] = LocalMaterials.RED_STAINED_CLAY;
             }
         }
 
@@ -131,16 +130,16 @@ public class MesaSurfaceGenerator implements SurfaceGenerator
 
             for (int k1 = 0; j4 + k1 < 64 && k1 < 1; ++k1)
             {
-                this.clayBands[j4 + k1] = MaterialHelper.WHITE_STAINED_CLAY;
+                this.clayBands[j4 + k1] = LocalMaterials.WHITE_STAINED_CLAY;
 
                 if (j4 + k1 > 1 && random.nextBoolean())
                 {
-                    this.clayBands[j4 + k1 - 1] = MaterialHelper.SILVER_STAINED_CLAY;
+                    this.clayBands[j4 + k1 - 1] = LocalMaterials.SILVER_STAINED_CLAY;
                 }
 
                 if (j4 + k1 < 63 && random.nextBoolean())
                 {
-                    this.clayBands[j4 + k1 + 1] = MaterialHelper.SILVER_STAINED_CLAY;
+                    this.clayBands[j4 + k1 + 1] = LocalMaterials.SILVER_STAINED_CLAY;
                 }
             }
         }
@@ -202,8 +201,8 @@ public class MesaSurfaceGenerator implements SurfaceGenerator
         
         int waterLevel = generatingChunk.getWaterLevel(x, z);
         
-        LocalMaterialData currentSurfaceBlock = MaterialHelper.WHITE_STAINED_CLAY;
-        LocalMaterialData currentGroundBlock = MaterialHelper.WHITE_STAINED_CLAY;
+        LocalMaterialData currentSurfaceBlock = LocalMaterials.WHITE_STAINED_CLAY;
+        LocalMaterialData currentGroundBlock = LocalMaterials.WHITE_STAINED_CLAY;
         
         LocalMaterialData surfaceBlock = biomeConfig.surfaceBlock.parseForWorld(world);
         LocalMaterialData groundBlock = biomeConfig.groundBlock.parseForWorld(world);
@@ -256,7 +255,7 @@ public class MesaSurfaceGenerator implements SurfaceGenerator
                         }
                         else if (y >= waterLevel - 4 && y <= waterLevel + 1)
                         {
-                            currentSurfaceBlock = MaterialHelper.WHITE_STAINED_CLAY;
+                            currentSurfaceBlock = LocalMaterials.WHITE_STAINED_CLAY;
                             currentGroundBlock = groundBlock;
                         }
 
@@ -272,7 +271,7 @@ public class MesaSurfaceGenerator implements SurfaceGenerator
                             {
                                 if (cosNoiseIsLargerThanZero)
                                 {
-                                    chunkBuffer.setBlock(x, y, z, MaterialHelper.COARSE_DIRT);
+                                    chunkBuffer.setBlock(x, y, z, LocalMaterials.COARSE_DIRT);
                                 } else {
                                     chunkBuffer.setBlock(x, y, z, surfaceBlock);
                                 }
@@ -283,24 +282,24 @@ public class MesaSurfaceGenerator implements SurfaceGenerator
                                 {
                                     if (cosNoiseIsLargerThanZero)
                                     {
-                                    	worldMaterial = MaterialHelper.HARDENED_CLAY;
+                                    	worldMaterial = LocalMaterials.TERRACOTTA;
                                     } else {
                                     	worldMaterial = this.getBand(xInWorld, y, zInWorld);
                                     }
                                 } else {
-                                	worldMaterial = MaterialHelper.ORANGE_STAINED_CLAY;
+                                	worldMaterial = LocalMaterials.ORANGE_STAINED_CLAY;
                                 }
 
                                 chunkBuffer.setBlock(x, y, z, worldMaterial);
                             } else {
-                                chunkBuffer.setBlock(x, y, z, MaterialHelper.RED_SAND);
+                                chunkBuffer.setBlock(x, y, z, LocalMaterials.RED_SAND);
                                 belowSand = true;
                             }
                         } else {
                             chunkBuffer.setBlock(x, y, z, currentGroundBlock);
-                            if (currentGroundBlock.isMaterial(DefaultMaterial.STAINED_CLAY))
+                            if (currentGroundBlock.isMaterial(LocalMaterials.STAINED_CLAY))
                             {
-                                chunkBuffer.setBlock(x, y, z, MaterialHelper.ORANGE_STAINED_CLAY);
+                                chunkBuffer.setBlock(x, y, z, LocalMaterials.ORANGE_STAINED_CLAY);
                             }
                         }
                     }
@@ -309,7 +308,7 @@ public class MesaSurfaceGenerator implements SurfaceGenerator
                         --k1;
                         if (belowSand)
                         {
-                            chunkBuffer.setBlock(x, y, z, MaterialHelper.ORANGE_STAINED_CLAY);
+                            chunkBuffer.setBlock(x, y, z, LocalMaterials.ORANGE_STAINED_CLAY);
                         } else {
                         	worldMaterial = this.getBand(xInWorld, y, zInWorld);
                             chunkBuffer.setBlock(x, y, z, worldMaterial);

@@ -1,6 +1,7 @@
 package com.pg85.otg.configuration.standard;
 
-import com.pg85.otg.common.LocalMaterialData;
+import com.pg85.otg.common.materials.LocalMaterialData;
+import com.pg85.otg.common.materials.LocalMaterials;
 import com.pg85.otg.configuration.biome.settings.ReplaceBlocks;
 import com.pg85.otg.configuration.settingType.MaterialListSetting;
 import com.pg85.otg.configuration.settingType.MaterialSetting;
@@ -10,7 +11,6 @@ import com.pg85.otg.configuration.world.WorldConfig.ConfigMode;
 import com.pg85.otg.configuration.world.WorldConfig.ImageMode;
 import com.pg85.otg.configuration.world.WorldConfig.ImageOrientation;
 import com.pg85.otg.configuration.world.WorldConfig.TerrainMode;
-import com.pg85.otg.util.minecraft.defaults.DefaultMaterial;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,8 +20,8 @@ public class WorldStandardValues extends Settings
     // Files and folders
     public static final String WORLD_CONFIG_FILE_NAME = "WorldConfig.ini";
     public static final String FALLBACK_FILE_NAME = "Fallbacks.ini";
-    public static final String WORLD_BIOMES_DIRECTORY_NAME = "WorldBiomes";
-    public static final String WORLD_OBJECTS_DIRECTORY_NAME = "WorldObjects";
+    public static final String WORLD_BIOMES_DIRECTORY_NAME = "Biomes";
+    public static final String WORLD_OBJECTS_DIRECTORY_NAME = "Objects";
 
 	public static String DimensionsConfigFileName = "Config.yaml";
 	public static String DimensionsConfigBackupFileName = "Config-backup.yaml";
@@ -96,7 +96,6 @@ public class WorldStandardValues extends Settings
     	PORTAL_COLOR = stringSetting("PortalColor", "default"),
     	PORTAL_PARTICLE_TYPE = stringSetting("PortalParticleType", "portal"),
     	PORTAL_MOB_TYPE = stringSetting("PortalMobType", "zombie_pigman");
-	;
 
     public static final Setting<Integer>
         WORLD_HEIGHT_SCALE_BITS = intSetting("WorldHeightScaleBits", 7, 5, 8),
@@ -158,7 +157,6 @@ public class WorldStandardValues extends Settings
 		SPAWN_POINT_Z = intSetting("SpawnPointZ", 0, -999999, 999999),
 		
 		PORTAL_MOB_SPAWN_CHANCE = intSetting("PortalMobSpawnChance", 2000, 0, 999999);
-    ;
     
     public static final Setting<Boolean>
         RIVERS_ENABLED = booleanSetting("RiversEnabled", true),
@@ -225,32 +223,30 @@ public class WorldStandardValues extends Settings
         SPAWN_POINT_SET = booleanSetting("SpawnPointSet", false),
         PLAYERS_CAN_BREAK_BLOCKS = booleanSetting("PlayersCanBreakBlocks", true),
         EXPLOSIONS_CAN_BREAK_BLOCKS = booleanSetting("ExplosionsCanBreakBlocks", true),
-        PLAYERS_CAN_PLACE_BLOCKS = booleanSetting("PlayersCanPlaceBlocks", true)
-    ;
+        PLAYERS_CAN_PLACE_BLOCKS = booleanSetting("PlayersCanPlaceBlocks", true);
 
     public static final Setting<LocalMaterialData>
-    	WATER_BLOCK = new MaterialSetting("WaterBlock", DefaultMaterial.STATIONARY_WATER),
-        ICE_BLOCK = new MaterialSetting("IceBlock", DefaultMaterial.ICE),
-        COOLED_LAVA_BLOCK = new MaterialSetting("CooledLavaBlock", DefaultMaterial.STATIONARY_LAVA),
-        BEDROCK_BLOCK = new MaterialSetting("BedrockobBlock", DefaultMaterial.BEDROCK);
+    	WATER_BLOCK = new MaterialSetting("WaterBlock", LocalMaterials.WATER_NAME),
+        ICE_BLOCK = new MaterialSetting("IceBlock", LocalMaterials.ICE_NAME),
+        COOLED_LAVA_BLOCK = new MaterialSetting("CooledLavaBlock", LocalMaterials.LAVA_NAME),
+        BEDROCK_BLOCK = new MaterialSetting("BedrockobBlock", LocalMaterials.BEDROCK_NAME);
 
     public static final Setting<ArrayList<LocalMaterialData>>
-    	DIMENSION_PORTAL_MATERIALS = new MaterialListSetting("DimensionPortalMaterials", new DefaultMaterial[] { DefaultMaterial.QUARTZ_BLOCK });
+    	DIMENSION_PORTAL_MATERIALS = new MaterialListSetting("DimensionPortalMaterials", new String[] { LocalMaterials.QUARTZ_BLOCK_NAME });
 
     public static final Setting<List<ReplaceBlocks>>
 		REPLACE_BLOCKS_LIST = replaceBlocksListSetting("ReplaceBlocksList");
 
     public static final Setting<List<String>>
         ISLE_BIOMES = stringListSetting("IsleBiomes", "Deep Ocean", "MushroomIsland",
-                "Ice Mountains", "DesertHills", "ForestHills", "Forest", "TaigaHills",
-                "JungleHills", "Cold Taiga Hills", "Birch Forest Hills", "Extreme Hills+",
-                "Mesa Plateau", "Mesa Plateau F", "Mesa Plateau M", "Mesa Plateau F M",
-                "Mesa (Bryce)", "Mega Taiga Hills", "Mega Spruce Taiga Hills"),
+            "Ice Mountains", "DesertHills", "ForestHills", "Forest", "TaigaHills",
+            "JungleHills", "Cold Taiga Hills", "Birch Forest Hills", "Extreme Hills+",
+            "Mesa Plateau", "Mesa Plateau F", "Mesa Plateau M", "Mesa Plateau F M",
+            "Mesa (Bryce)", "Mega Taiga Hills", "Mega Spruce Taiga Hills"),
         BORDER_BIOMES = stringListSetting("BorderBiomes",
-                "JungleEdge", "JungleEdge M", "MushroomIslandShore", "Beach", "Extreme Hills Edge", "Desert", "Taiga"),
+            "JungleEdge", "JungleEdge M", "MushroomIslandShore", "Beach", "Extreme Hills Edge", "Desert", "Taiga"),
     	CUSTOM_BIOMES = stringListSetting("CustomBiomes"),
-		DIMENSIONS = stringListSetting("Dimensions")
-	;
+		DIMENSIONS = stringListSetting("Dimensions");
 
     public static final Setting<Double>
         FROZEN_OCEAN_TEMPERATURE = doubleSetting("OceanFreezingTemperature", 0.15, 0, 2),
@@ -259,14 +255,11 @@ public class WorldStandardValues extends Settings
         FRACTURE_HORIZONTAL = doubleSetting("FractureHorizontal", 0, -500, 500),
         FRACTURE_VERTICAL = doubleSetting("FractureVertical", 0, -500, 500),
         STRONGHOLD_DISTANCE = doubleSetting("StrongholdDistance", 32, 1, 1000),
-
 		FogColorRed = doubleSetting("FogColorRed", 0.20000000298023224D, Double.MIN_VALUE, Double.MAX_VALUE),
 		FogColorGreen = doubleSetting("FogColorGreen", 0.029999999329447746D, Double.MIN_VALUE, Double.MAX_VALUE),
 		FogColorBlue = doubleSetting("FogColorBlue", 0.029999999329447746D, Double.MIN_VALUE, Double.MAX_VALUE),
 		VoidFogYFactor = doubleSetting("VoidFogYFactor", 0.03125D, Double.MIN_VALUE, Double.MAX_VALUE),
-
-		GravityFactor = doubleSetting("GravityFactor", 0.08D, 0.0D, Double.MAX_VALUE)
-    ;
+		GravityFactor = doubleSetting("GravityFactor", 0.08D, 0.0D, Double.MAX_VALUE);
 
     public static final Setting<Integer>
 	    WORLD_FOG = colorSetting("WorldFog", "0xC0D8FF"),
@@ -277,7 +270,6 @@ public class WorldStandardValues extends Settings
     // Deprecated settings
     public static final Setting<Boolean> FROZEN_RIVERS = booleanSetting("FrozenRivers", true);
     public static final Setting<List<String>> NORMAL_BIOMES = stringListSetting("NormalBiomes", "Desert", "Forest", "Extreme Hills",
-            "Swampland", "Plains", "Taiga", "Jungle", "River");
+        "Swampland", "Plains", "Taiga", "Jungle", "River");
     public static final Setting<List<String>> ICE_BIOMES = stringListSetting("IceBiomes", "Ice Plains");
-
 }

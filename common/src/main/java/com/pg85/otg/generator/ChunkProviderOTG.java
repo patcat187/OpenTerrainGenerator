@@ -2,8 +2,9 @@ package com.pg85.otg.generator;
 
 import com.pg85.otg.OTG;
 import com.pg85.otg.common.LocalBiome;
-import com.pg85.otg.common.LocalMaterialData;
 import com.pg85.otg.common.LocalWorld;
+import com.pg85.otg.common.materials.LocalMaterialData;
+import com.pg85.otg.common.materials.LocalMaterials;
 import com.pg85.otg.configuration.biome.BiomeConfig;
 import com.pg85.otg.configuration.world.WorldConfig;
 import com.pg85.otg.generator.biome.BiomeGenerator;
@@ -16,7 +17,6 @@ import com.pg85.otg.generator.terrain.TerrainGenBase;
 import com.pg85.otg.network.ConfigProvider;
 import com.pg85.otg.util.ChunkCoordinate;
 import com.pg85.otg.util.helpers.MathHelper;
-import com.pg85.otg.util.materials.MaterialHelper;
 
 import static com.pg85.otg.util.ChunkCoordinate.CHUNK_X_SIZE;
 import static com.pg85.otg.util.ChunkCoordinate.CHUNK_Z_SIZE;
@@ -241,7 +241,7 @@ public class ChunkProviderOTG
                             {
                                 final BiomeConfig biomeConfig = toBiomeConfig(biomeArray[(z1 * 4 + piece_z) * 16 + (piece_x + x1 * 4)]);
                                 final int waterLevelMax = waterLevel[(z1 * 4 + piece_z) * 16 + (piece_x + x1 * 4)] & 0xFF;
-                                LocalMaterialData block = MaterialHelper.AIR;
+                                LocalMaterialData block = LocalMaterials.AIR;
                                 if (y * 8 + piece_y < waterLevelMax && y * 8 + piece_y > biomeConfig.waterLevelMin)
                                 {
                                     block = biomeConfig.waterBlock;

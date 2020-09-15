@@ -2,15 +2,14 @@ package com.pg85.otg.generator.surface;
 
 import static com.pg85.otg.util.ChunkCoordinate.CHUNK_Y_SIZE;
 
-import com.pg85.otg.common.LocalMaterialData;
 import com.pg85.otg.common.LocalWorld;
+import com.pg85.otg.common.materials.LocalMaterialData;
+import com.pg85.otg.common.materials.LocalMaterials;
 import com.pg85.otg.configuration.biome.BiomeConfig;
 import com.pg85.otg.configuration.standard.WorldStandardValues;
 import com.pg85.otg.configuration.world.WorldConfig;
 import com.pg85.otg.generator.ChunkBuffer;
 import com.pg85.otg.generator.GeneratingChunk;
-import com.pg85.otg.util.materials.MaterialHelper;
-import com.pg85.otg.util.minecraft.defaults.DefaultMaterial;
 
 /**
  * Implementation of {@link SurfaceGenerator} that does absolutely nothing.
@@ -81,7 +80,7 @@ public class SimpleSurfaceGenerator implements SurfaceGenerator
                         // Set when variable was reset
                         if (surfaceBlocksNoise <= 0 && !worldConfig.removeSurfaceStone)
                         {
-                            currentSurfaceBlock = MaterialHelper.AIR;
+                            currentSurfaceBlock = LocalMaterials.AIR;
                             currentGroundBlock = stoneBlock;
                         }
                         else if ((y >= currentWaterLevel - 4) && (y <= currentWaterLevel + 1))
@@ -118,10 +117,12 @@ public class SimpleSurfaceGenerator implements SurfaceGenerator
                         chunkBuffer.setBlock(x, y, z, currentGroundBlock);
 
                         // Place sandstone under stand
-                        if ((surfaceBlocksCount == 0) && (currentGroundBlock.isMaterial(DefaultMaterial.SAND)) && surfaceBlocksNoise > 1)
+                        if ((surfaceBlocksCount == 0) && (currentGroundBlock.isMaterial(LocalMaterials.SAND)) && surfaceBlocksNoise > 1)
                         {
                             surfaceBlocksCount = generatingChunk.random.nextInt(4) + Math.max(0, y - generatingChunk.getWaterLevel(x, z));
-                            currentGroundBlock = currentGroundBlock.getBlockData() == 1 ? MaterialHelper.RED_SANDSTONE : MaterialHelper.SANDSTONE;
+                            // TODO: Reimplement this when block data works
+                            currentGroundBlock = LocalMaterials.SANDSTONE;
+                            //currentGroundBlock = currentGroundBlock.getBlockData() == 1 ? LocalMaterialManager.RED_SANDSTONE : LocalMaterialManager.SANDSTONE;
                         }
                     }
                 }

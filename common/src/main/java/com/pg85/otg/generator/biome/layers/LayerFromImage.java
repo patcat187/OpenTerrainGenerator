@@ -5,6 +5,7 @@ import com.pg85.otg.common.LocalWorld;
 import com.pg85.otg.configuration.world.WorldConfig;
 import com.pg85.otg.generator.biome.ArraysCache;
 import com.pg85.otg.logging.LogMarker;
+import com.pg85.otg.util.BiomeResourceLocation;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -36,7 +37,7 @@ public class LayerFromImage extends Layer
         // Read from file
         try
         {
-            final File image = new File(config.settingsDir, config.imageFile);
+            final File image = new File(config.settingsDir.toString(), config.imageFile);
             final BufferedImage map = ImageIO.read(image);
 
             this.mapWidth = map.getWidth(null);
@@ -95,13 +96,15 @@ public class LayerFromImage extends Layer
 
             this.biomeMap = new int[colorMap.length];
 
+            BiomeResourceLocation biomeResourceLocation;
+            
             for (int nColor = 0; nColor < colorMap.length; nColor++)
             {
                 int color = colorMap[nColor] & 0x00FFFFFF;
 
                 if (config.biomeColorMap.containsKey(color))
-                {
-                    this.biomeMap[nColor] = config.biomeColorMap.get(color);
+                {                	
+                    this.biomeMap[nColor] = world.getBiomeId(config.biomeColorMap.get(color));
                 } else {
                     // ContinueNormal interprets a -1 as "Use the childLayer"
                     if (this.imageMode == WorldConfig.ImageMode.ContinueNormal)

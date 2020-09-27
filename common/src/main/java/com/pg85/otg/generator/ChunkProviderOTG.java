@@ -123,7 +123,7 @@ public class ChunkProviderOTG
                 
         if(!this.localWorld.generateModdedCaveGen(x, z, chunkBuffer))
         {
-            this.caveGen.generate(chunkBuffer);        	
+            this.caveGen.generate(chunkBuffer);
         }
         this.canyonGen.generate(chunkBuffer);
 
@@ -152,11 +152,8 @@ public class ChunkProviderOTG
         int chunkX = chunkCoord.getChunkX();
         int chunkZ = chunkCoord.getChunkZ();
 
-        final int four = 4;
-        final int oneEightOfHeight = this.heightCap / 8;
-
-        final int maxYSections = this.heightCap / 8 + 1;
-        final int usedYSections = this.heightScale / 8 + 1;
+        int maxYSections = this.heightCap / 8 + 1;
+        int usedYSections = this.heightScale / 8 + 1;
 
         WorldConfig worldConfig = configProvider.getWorldConfig();
         BiomeGenerator biomeGenerator = this.localWorld.getBiomeGenerator();
@@ -173,96 +170,117 @@ public class ChunkProviderOTG
             biomeArray = biomeGenerator.getBiomes(biomeArray, chunkX * CHUNK_X_SIZE, chunkZ * CHUNK_Z_SIZE, CHUNK_X_SIZE, CHUNK_Z_SIZE, OutputType.DEFAULT_FOR_WORLD);
         }
 
-        double[] rawTerrain = generateTerrainNoise(chunkX * four, 0, chunkZ * four, maxYSections, usedYSections, biomeArray, riverArray);
+        double[] rawTerrain = generateTerrainNoise(chunkX * 4, chunkZ * 4, maxYSections, usedYSections, biomeArray, riverArray);
 
-        // Now that the raw terrain is generated, replace raw biome array with
-        // fine-tuned one.
+        // Now that the raw terrain is generated, replace raw biome array (5 x 5) with a higher resolution (16 x 16) one.
         if (biomeGenerator.canGenerateUnZoomed())
         {
             biomeArray = biomeGenerator.getBiomes(biomeArray, chunkX * CHUNK_X_SIZE, chunkZ * CHUNK_Z_SIZE, CHUNK_X_SIZE, CHUNK_Z_SIZE, OutputType.DEFAULT_FOR_WORLD);
         }
 
-        final double oneEight = 0.125D;
-        final double oneFourth = 0.25D;
-
-        for (int x1 = 0; x1 < four; x1++)
+        // The terrain generator takes low resolution noise and upscales it to a full chunk through trilinear interpolation.
+        // The generator gets a 5 x 33 x 5 array of noise in the beginning, where 8 units of noise in a cube create a 4x8x4 voxel of terrain.
+        // Unfortunately, this method has many issues. The most noticeable of which is the discontinuity along interpolation borders,
+        // especially vertical ones every 8 blocks. Unfortunately due to the nature of trilinear interpolation, there's no easy way to solve this.
+        // TODO: tricubic interpolation seems like the fix here. Implementing that will take time, effort, and will break existing worldgen so we'll need to proceed with caution.
+        // Since the terrain generator needs 5 noise values along the x and z axis, some of that data spills out into neighboring chunks.
+        // TODO: Caching the noise data will allow us to re-use noise data and save significant computational time.
+        for (int noiseX = 0; noiseX < 4; noiseX++)
         {
-            for (int z1 = 0; z1 < four; z1++)
+            for (int noiseZ = 0; noiseZ < 4; noiseZ++)
             {
-                // Water level (fill final array based on smaller,
-                // non-smoothed
-                // array)
-                double waterLevel_x0z0 = this.waterLevelRaw[(x1 + 0) * NOISE_MAX_X + (z1 + 0)] & 0xFF;
-                double waterLevel_x0z1 = this.waterLevelRaw[(x1 + 0) * NOISE_MAX_X + (z1 + 1)] & 0xFF;
-                final double waterLevel_x1z0 = ((this.waterLevelRaw[(x1 + 1) * NOISE_MAX_X + (z1 + 0)] & 0xFF) - waterLevel_x0z0) * oneFourth;
-                final double waterLevel_x1z1 = ((this.waterLevelRaw[(x1 + 1) * NOISE_MAX_X + (z1 + 1)] & 0xFF) - waterLevel_x0z1) * oneFourth;
+                // Water level (fill final array based on smaller, non-smoothed array)
+                //TODO: remove this interpolation and use the raw biome data instead for better results
+                double waterLevel_x0z0 = this.waterLevelRaw[noiseX * NOISE_MAX_X + noiseZ] & 0xFF;
+                double waterLevel_x0z1 = this.waterLevelRaw[noiseX * NOISE_MAX_X + noiseZ + 1] & 0xFF;
+                double waterLevel_x1z0 = this.waterLevelRaw[(noiseX + 1) * NOISE_MAX_X + noiseZ] & 0xFF;
+                double waterLevel_x1z1 = this.waterLevelRaw[(noiseX + 1) * NOISE_MAX_X + noiseZ + 1] & 0xFF;
 
-                for (int piece_x = 0; piece_x < 4; piece_x++)
+                // Use bilinear interpolation to smooth out the water table array.
+                for (int pieceX = 0; pieceX < 4; pieceX++)
                 {
-                    double waterLevelForArray = waterLevel_x0z0;
-                    final double d17_1 = (waterLevel_x0z1 - waterLevel_x0z0) * oneFourth;
+                    double xLerp = pieceX / 4.0;
 
-                    for (int piece_z = 0; piece_z < 4; piece_z++)
+                    double z0 = lerp(xLerp, waterLevel_x0z0, waterLevel_x1z0);
+                    double z1 = lerp(xLerp, waterLevel_x0z1, waterLevel_x1z1);
+
+                    for (int pieceZ = 0; pieceZ < 4; pieceZ++)
                     {
+                        double waterLevelForArray = lerp(pieceZ / 8.0, z0, z1);
                         // Fill water level array
-                        waterLevel[(z1 * 4 + piece_z) * 16 + (piece_x + x1 * 4)] = (byte) waterLevelForArray;
-                        waterLevelForArray += d17_1;
+                        waterLevel[(noiseZ * 4 + pieceZ) * 16 + (pieceX + noiseX * 4)] = (byte) waterLevelForArray;
                     }
-                    waterLevel_x0z0 += waterLevel_x1z0;
-                    waterLevel_x0z1 += waterLevel_x1z1;
 
                 }
 
-                // Terrain noise
-                for (int y = 0; y < oneEightOfHeight; y++)
+                for (int noiseY = 0; noiseY < this.heightCap / 8; noiseY++)
                 {
-                    double x0z0 = rawTerrain[(((x1 + 0) * NOISE_MAX_Z + (z1 + 0)) * maxYSections + (y + 0))];
-                    double x0z1 = rawTerrain[(((x1 + 0) * NOISE_MAX_Z + (z1 + 1)) * maxYSections + (y + 0))];
-                    double x1z0 = rawTerrain[(((x1 + 1) * NOISE_MAX_Z + (z1 + 0)) * maxYSections + (y + 0))];
-                    double x1z1 = rawTerrain[(((x1 + 1) * NOISE_MAX_Z + (z1 + 1)) * maxYSections + (y + 0))];
+                    // Lower 4 corners of the cube
+                    double x0z0y0 = rawTerrain[(noiseX * NOISE_MAX_Z + noiseZ) * maxYSections + noiseY];
+                    double x0z1y0 = rawTerrain[(noiseX * NOISE_MAX_Z + noiseZ + 1) * maxYSections + noiseY];
+                    double x1z0y0 = rawTerrain[((noiseX + 1) * NOISE_MAX_Z + noiseZ) * maxYSections + noiseY];
+                    double x1z1y0 = rawTerrain[((noiseX + 1) * NOISE_MAX_Z + noiseZ + 1) * maxYSections + noiseY];
 
-                    final double x0z0y1 = (rawTerrain[(((x1 + 0) * NOISE_MAX_Z + (z1 + 0)) * maxYSections + (y + 1))] - x0z0) * oneEight;
-                    final double x0z1y1 = (rawTerrain[(((x1 + 0) * NOISE_MAX_Z + (z1 + 1)) * maxYSections + (y + 1))] - x0z1) * oneEight;
-                    final double x1z0y1 = (rawTerrain[(((x1 + 1) * NOISE_MAX_Z + (z1 + 0)) * maxYSections + (y + 1))] - x1z0) * oneEight;
-                    final double x1z1y1 = (rawTerrain[(((x1 + 1) * NOISE_MAX_Z + (z1 + 1)) * maxYSections + (y + 1))] - x1z1) * oneEight;
+                    // Upper 4 corners of the cube
+                    double x0z0y1 = rawTerrain[(noiseX * NOISE_MAX_Z + noiseZ) * maxYSections + noiseY + 1];
+                    double x0z1y1 = rawTerrain[(noiseX * NOISE_MAX_Z + noiseZ + 1) * maxYSections + noiseY + 1];
+                    double x1z0y1 = rawTerrain[((noiseX + 1) * NOISE_MAX_Z + noiseZ) * maxYSections + noiseY + 1];
+                    double x1z1y1 = rawTerrain[((noiseX + 1) * NOISE_MAX_Z + noiseZ + 1) * maxYSections + noiseY + 1];
 
-                    for (int piece_y = 0; piece_y < 8; piece_y++)
+                    // Now that we've sampled the corners of the cube, we can now interpolate between them to expand the noise into a 4x8x4 voxel.
+                    // First, we'll evaluate the current progress of the vertical sides, then move onto the sides on the x axis, then the z axis to
+                    // get the noise at a real block position.
+                    for (int pieceY = 0; pieceY < 8; pieceY++)
                     {
-                        double d11 = x0z0;
-                        double d12 = x0z1;
-                        final double d13 = (x1z0 - x0z0) * oneFourth;
-                        final double d14 = (x1z1 - x0z1) * oneFourth;
+                        // Progress along the verticals (y axis) of the voxel
+                        double yLerp = pieceY / 8.0;
 
-                        for (int piece_x = 0; piece_x < 4; piece_x++)
+                        // Interpolate noise data based on y progress
+                        double x0z0 = lerp(yLerp, x0z0y0, x0z0y1);
+                        double x1z0 = lerp(yLerp, x1z0y0, x1z0y1);
+                        double x0z1 = lerp(yLerp, x0z1y0, x0z1y1);
+                        double x1z1 = lerp(yLerp, x1z1y0, x1z1y1);
+
+                        for (int pieceX = 0; pieceX < 4; pieceX++)
                         {
-                            double d16 = d11;
-                            final double d17 = (d12 - d11) * oneFourth;
-                            for (int piece_z = 0; piece_z < 4; piece_z++)
+                            // Progress along the x axis of the voxel
+                            double xLerp = pieceX / 4.0;
+
+                            // Interpolate noise based on x progress
+                            double z0 = lerp(xLerp, x0z0, x1z0);
+                            double z1 = lerp(xLerp, x0z1, x1z1);
+
+                            for (int pieceZ = 0; pieceZ < 4; pieceZ++)
                             {
-                                final BiomeConfig biomeConfig = toBiomeConfig(biomeArray[(z1 * 4 + piece_z) * 16 + (piece_x + x1 * 4)]);
-                                final int waterLevelMax = waterLevel[(z1 * 4 + piece_z) * 16 + (piece_x + x1 * 4)] & 0xFF;
+                                BiomeConfig biomeConfig = toBiomeConfig(biomeArray[(noiseZ * 4 + pieceZ) * 16 + (pieceX + noiseX * 4)]);
+                                int waterLevelMax = waterLevel[(noiseZ * 4 + pieceZ) * 16 + (pieceX + noiseX * 4)] & 0xFF;
+
+                                // Progress along the z axis of the voxel
+                                double zLerp = pieceZ / 4.0;
+
+                                // Get the final density based on the z progress
+                                double density = lerp(zLerp, z0, z1);
+
                                 LocalMaterialData block = MaterialHelper.AIR;
-                                if (y * 8 + piece_y < waterLevelMax && y * 8 + piece_y > biomeConfig.waterLevelMin)
+
+                                int realY = (noiseY * 8) + pieceY;
+
+                                // If the y here is within the water level range, set water
+                                if (realY < waterLevelMax && realY > biomeConfig.waterLevelMin)
                                 {
                                     block = biomeConfig.waterBlock;
                                 }
 
-                                if (d16 > 0.0D)
+                                // Make densities above 0 solid
+                                if (density > 0.0D)
                                 {
                                     block = biomeConfig.stoneBlock;
                                 }
 
-                                chunkBuffer.setBlock(piece_x + x1 * 4, y * 8 + piece_y, z1 * 4 + piece_z, block);
-                                d16 += d17;
+                                // Set the generating block at this position.
+                                chunkBuffer.setBlock(pieceX + noiseX * 4, realY, noiseZ * 4 + pieceZ, block);
                             }
-                            d11 += d13;
-                            d12 += d14;
                         }
-
-                        x0z0 += x0z0y1;
-                        x0z1 += x0z1y1;
-                        x1z0 += x1z0y1;
-                        x1z1 += x1z1y1;
                     }
                 }
             }
@@ -273,6 +291,7 @@ public class ChunkProviderOTG
 		{
         	dry = addBiomeBlocksAndCheckWater(chunkBuffer, biomeArray, waterLevel);
 		}
+
         return dry;
     }
 
@@ -319,27 +338,30 @@ public class ChunkProviderOTG
         return dryBlocksOnSurface > 250;
     }
 
-    private double[] generateTerrainNoise(int xOffset, int yOffset, int zOffset, int maxYSections, int usedYSections, int[] biomeArray, int[] riverArray)
+    private double[] generateTerrainNoise(int xOffset, int zOffset, int maxYSections, int usedYSections, int[] biomeArray, int[] riverArray)
     {
         double[] rawTerrain = new double[NOISE_MAX_X * maxYSections * NOISE_MAX_Z];
 
         WorldConfig worldConfig = configProvider.getWorldConfig();
-        final double xzScale = 684.41200000000003D * worldConfig.getFractureHorizontal();
-        final double yScale = 684.41200000000003D * worldConfig.getFractureVertical();
+        double xzScale = 684.41200000000003D * worldConfig.getFractureHorizontal();
+        double yScale = 684.41200000000003D * worldConfig.getFractureVertical();
 
+        // Initialize the noise generators
         if (worldConfig.oldTerrainGenerator)
         {
             this.oldTerrainGeneratorNoise = this.oldTerrainGeneratorNoiseGen.Noise2D(this.oldTerrainGeneratorNoise, xOffset, zOffset, NOISE_MAX_X, NOISE_MAX_Z, 1.121D, 1.121D);
         }
         this.noiseHeightNoise = this.noiseHeightNoiseGen.Noise2D(this.noiseHeightNoise, xOffset, zOffset, NOISE_MAX_X, NOISE_MAX_Z, 200.0D, 200.0D);
 
-        this.volNoise = this.volNoiseGen.Noise3D(this.volNoise, xOffset, yOffset, zOffset, NOISE_MAX_X, maxYSections, NOISE_MAX_Z, xzScale / 80.0D, yScale / 160.0D, xzScale / 80.0D);
-        this.vol1Noise = this.vol1NoiseGen.Noise3D(this.vol1Noise, xOffset, yOffset, zOffset, NOISE_MAX_X, maxYSections, NOISE_MAX_Z, xzScale, yScale, xzScale);
-        this.vol2Noise = this.vol2NoiseGen.Noise3D(this.vol2Noise, xOffset, yOffset, zOffset, NOISE_MAX_X, maxYSections, NOISE_MAX_Z, xzScale, yScale, xzScale);
+        this.volNoise = this.volNoiseGen.Noise3D(this.volNoise, xOffset, 0, zOffset, NOISE_MAX_X, maxYSections, NOISE_MAX_Z, xzScale / 80.0D, yScale / 160.0D, xzScale / 80.0D);
+        this.vol1Noise = this.vol1NoiseGen.Noise3D(this.vol1Noise, xOffset, 0, zOffset, NOISE_MAX_X, maxYSections, NOISE_MAX_Z, xzScale, yScale, xzScale);
+        this.vol2Noise = this.vol2NoiseGen.Noise3D(this.vol2Noise, xOffset, 0, zOffset, NOISE_MAX_X, maxYSections, NOISE_MAX_Z, xzScale, yScale, xzScale);
 
+        // These variables are used to index 3d and 2d noise arrays quickly, respectively
         int i3D = 0;
         int i2D = 0;
 
+        // Fill the noise array with terrain noise
         for (int x = 0; x < NOISE_MAX_X; x++)
         {
             for (int z = 0; z < NOISE_MAX_Z; z++)
@@ -356,6 +378,7 @@ public class ChunkProviderOTG
                 double maxAverageDepth = biomeConfig.maxAverageDepth;
                 double maxAverageHeight = biomeConfig.maxAverageHeight;
 
+                // If improved smoothing is enabled, smooth all these values as well
                 if (worldConfig.improvedSmoothing)
                 {
                     double[] data = smoothRemainingData(x, z, biomeArray);
@@ -367,13 +390,17 @@ public class ChunkProviderOTG
                     maxAverageHeight = data[5];
                 }
 
+                // Compute noise height additions, to make the terrain height more varied.
                 double noiseHeight = this.noiseHeightNoise[i2D] / 8000.0D;
                 if (noiseHeight < 0.0D)
                 {
+                    // If the height addition is negative, normalize it to be positive.
                     noiseHeight = -noiseHeight * 0.3D;
                 }
+
                 noiseHeight = noiseHeight * 3.0D - 2.0D;
 
+                // If the height is negative, then clamp, normalize it and subtract the max average depth.
                 if (noiseHeight < 0.0D)
                 {
                     noiseHeight /= 2.0D;
@@ -387,6 +414,7 @@ public class ChunkProviderOTG
                 }
                 else
                 {
+                    // Clamp and add the max average height
                     if (noiseHeight > 1.0D)
                     {
                         noiseHeight = 1.0D;
@@ -451,31 +479,38 @@ public class ChunkProviderOTG
                         columnHeight *= 4.0D;
                     }
 
-                    final double vol1 = this.vol1Noise[i3D] / 512.0D * volatility1;
-                    final double vol2 = this.vol2Noise[i3D] / 512.0D * volatility2;
+                    // The volatility noises create the "actual" terrain and have a range of (-256, 256) * volatility1/2.
+                    double vol1 = this.vol1Noise[i3D] / 512.0D * volatility1;
+                    double vol2 = this.vol2Noise[i3D] / 512.0D * volatility2;
 
-                    final double noise = (this.volNoise[i3D] / 10.0D + 1.0D) / 2.0D;
-                    if (noise < volatilityWeight1)
+                    // To create a more varied landscape, a 3rd noise is used to interpolate between the two other noises.
+                    // Due to the nature of Minecraft's noise functions, most of the time this noise chooses either volatility instead of interpolating.
+                    double interpolationNoise = (this.volNoise[i3D] / 10.0D + 1.0D) / 2.0D;
+                    if (interpolationNoise < volatilityWeight1)
                     {
                         output = vol1;
                     }
-                    else if (noise > volatilityWeight2)
+                    else if (interpolationNoise > volatilityWeight2)
                     {
                         output = vol2;
                     } else
                     {
-                        output = vol1 + (vol2 - vol1) * noise;
+                        // Linearly interpolate between the two volatility values.
+                        output = lerp(interpolationNoise, vol1, vol2);
                     }
 
+                    // Add the column height to the noise if default height control is enabled.
+                    // If not, then BiomeHeight and BiomeVolatility will have no effect on the terrain
+                    // and everything will depend on CHC and the other volatility controls.
                     if (!biomeConfig.disableNotchHeightControl)
                     {
                         output += columnHeight;
 
                         if (y > maxYSections - 4)
                         {
-                            final double d12 = (y - (maxYSections - 4)) / 3.0F;
-                            // Reduce last three layers
-                            output = output * (1.0D - d12) + -10.0D * d12;
+                            double topFalloff = (y - (maxYSections - 4)) / 3.0F;
+                            // Reduce last three layers of noise
+                            output = output * (1.0D - topFalloff) + -10.0D * topFalloff;
                         }
                     }
                     if (this.riverFound)
@@ -483,9 +518,11 @@ public class ChunkProviderOTG
                     	output += riverCHC[Math.min(biomeConfig.riverHeightMatrix.length - 1, y)];
                     } else
                     {
+                        // CHC directly modifies the terrain noise at a given column, providing for fine access
                     	output += CHC[Math.min(biomeConfig.heightMatrix.length - 1, y)];
                     }
 
+                    // Store the terrain noise for use in the trilinear interpolation
                     rawTerrain[i3D] = output;
                     i3D++;
                 }
@@ -495,7 +532,7 @@ public class ChunkProviderOTG
         return rawTerrain;
     }
 
-    private void oldBiomeFactor(int x, int z, int i4, int ySections, double noiseHeight, int[] biomeArray)
+    private void oldBiomeFactor(int x, int z, int i2D, int ySections, double noiseHeight, int[] biomeArray)
     {
         final BiomeConfig biomeConfig = toBiomeConfig(biomeArray[(x + this.maxSmoothRadius + (z + this.maxSmoothRadius) * (NOISE_MAX_X + this.maxSmoothDiameter))]);
         this.volatilityFactor = (1.0D - Math.min(1, biomeConfig.biomeTemperature) * biomeConfig.biomeWetness);
@@ -503,7 +540,7 @@ public class ChunkProviderOTG
         this.volatilityFactor *= this.volatilityFactor;
         this.volatilityFactor = 1.0D - this.volatilityFactor * this.volatilityFactor;
 
-        this.volatilityFactor = (this.volNoise[i4] + 256.0D) / 512.0D * this.volatilityFactor;
+        this.volatilityFactor = (this.volNoise[i2D] + 256.0D) / 512.0D * this.volatilityFactor;
         if (this.volatilityFactor > 1.0D)
         {
             this.volatilityFactor = 1.0D;
@@ -737,5 +774,11 @@ public class ChunkProviderOTG
         }
 
         return biomeConfig;
+    }
+
+    // Performs a linear interpolation along one axis.
+    private static double lerp(double delta, double start, double end)
+    {
+        return start + delta * (end - start);
     }
 }
